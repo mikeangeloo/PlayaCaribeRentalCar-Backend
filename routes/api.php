@@ -26,9 +26,17 @@ Route::prefix('dash')->group(function () {
         Route::get('sucursales/all', 'SucursalesController@getAll');
         Route::resource('sucursales', 'SucursalesController');
 
+        Route::get('colores/all', 'ColoresController@getAll');
+        Route::resource('colores', 'ColoresController');
 
+        Route::get('marcas/all', 'MarcasController@getAll');
+        Route::resource('marcas', 'MarcasController');
 
-        Route::resource('users', 'UsersController');
+        Route::get('modelos/all', 'ModelosController@getAll');
+        Route::resource('modelos', 'ModelosController');
+
+        Route::get('usuarios/all', 'UsersController@getAll');
+        Route::resource('usuarios', 'UsersController');
     });
 });
 

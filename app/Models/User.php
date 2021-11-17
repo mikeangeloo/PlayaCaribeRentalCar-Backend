@@ -46,7 +46,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public static function validateBeforeSave($request) {
+    public static function validateBeforeSave($request, $isUpdate = null) {
         $validate = Validator::make($request, [
             'area_trabajo_id' => 'required|exists:areas_trabajo,id',
             'role_id' => 'required|exists:roles,id',
@@ -54,11 +54,18 @@ class User extends Authenticatable
             'apellidos' => 'required|string',
             'email' => 'required|email',
             'telefono' => 'required|string',
-            'username' => 'required|unique:usuarios,username',
-            'password' => 'required|string',
+            'username' => 'nullable',
+            'password' => 'nullable|string',
             'sucursal_id' => 'required|exists:sucursales,id',
             'empresa_id' => 'required|exists:empresas,id'
         ]);
+
+        if (is_null($isUpdate)) {
+            $user = User::where('username', $request['username'])->first();
+            if ($user) {
+                return ['El username debe ser único'];
+            }
+        }
 
         if ($validate->fails()) {
             return $validate->errors()->all();
