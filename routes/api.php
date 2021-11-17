@@ -37,6 +37,12 @@ Route::prefix('dash')->group(function () {
 
         Route::get('usuarios/all', 'UsersController@getAll');
         Route::resource('usuarios', 'UsersController');
+
+        Route::get('areas-trabajo/all', 'AreasTrabajoController@getAll');
+        Route::resource('areas-trabajo', 'AreasTrabajoController');
+
+        Route::get('roles/all', 'RolesController@getAll');
+        Route::resource('roles', 'RolesController');
     });
 });
 
