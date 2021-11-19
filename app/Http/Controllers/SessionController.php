@@ -403,7 +403,7 @@ class SessionController extends Controller
         if ($tokenData->data->audience === AudienceEnum::DASH) {
             $userData = User::where('id', '=', $userId)
             ->where('email', '=', $request->verifyEmail)
-            ->where('active', '=', true)
+            ->where('activo', '=', true)
             ->first();
         } else if ($tokenData->data->audience === AudienceEnum::AGENTS) {
             return response()->json([
