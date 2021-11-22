@@ -46,6 +46,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function rol() {
+        return $this->belongsTo(Roles::class, 'role_id', 'id')->select('id', 'rol');
+    }
+
+    public function area_trabajo() {
+        return $this->belongsTo(AreasTrabajo::class, 'area_trabajo_id', 'id')->select('id', 'nombre as area');
+    }
+
     public static function validateBeforeSave($request, $isUpdate = null) {
         $validate = Validator::make($request, [
             'area_trabajo_id' => 'required|exists:areas_trabajo,id',
@@ -73,4 +81,6 @@ class User extends Authenticatable
 
         return true;
     }
+
+
 }

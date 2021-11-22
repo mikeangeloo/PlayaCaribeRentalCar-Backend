@@ -111,14 +111,22 @@ class SessionController extends Controller
                 ], JsonResponse::BAD_REQUEST);
             }
 
-            $message = 'Bienvenido nuevamente ';
-            $message .= ($audience ===  'admin' || $audience ===  'operators') ? $user->login :  $user->name;
+            $message = 'Bienvenido nuevamente '. $user->name;
+            //$message .= ($audience ===  AudienceEnum::DASH || $audience ===  AudienceEnum::AGENTS) ? $user->name . ' ' . $user->apellidos :  $user->name;
+            $data = null;
+
+            if ($audience === AudienceEnum::DASH) {
+                $user->load('rol');
+                $user->load('area_trabajo');
+                $user->makeHidden('id', 'username', 'created_at', 'updated_at', 'role_id', 'area_trabajo_id', 'sucursal_id', 'empresa_id');
+            }
 
             return response()->json(
                 [
                     'ok' => true,
                     'token' => $jwt,
-                    'message' => $message
+                    'message' => $message,
+                    'data' => $user
                 ],
                 JsonResponse::OK
             );
