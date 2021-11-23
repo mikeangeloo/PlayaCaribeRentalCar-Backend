@@ -28,6 +28,7 @@ Route::prefix('dash')->group(function () {
 
     Route::middleware('verify.jwt')->group(function () {
         Route::get('empresas/all', 'EmpresasController@getAll');
+        Route::get('empresas/enable/{id}', 'EmpresasController@enable');
         Route::resource('empresas', 'EmpresasController');
 
         Route::get('sucursales/all', 'SucursalesController@getAll');

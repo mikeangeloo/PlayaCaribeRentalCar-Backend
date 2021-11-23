@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\JsonResponse;
 use App\Models\Empresas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 
 class EmpresasController extends Controller
 {
@@ -200,5 +201,31 @@ class EmpresasController extends Controller
             'ok' => true,
             'empresas' => $empresas
         ], JsonResponse::OK);
+    }
+
+    public function enable($id) {
+        $empresa = Empresas::where('id', $id)->first();
+        if (!$empresa) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['No hay registros']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        if ($empresa->activo === 1 || $empresa->activo == true) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['El registro ya fue activado']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $empresa->activo = true;
+
+        if ($empresa->save()) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Registro habilitado correctamente'
+            ], JsonResponse::OK);
+        }
     }
 }
