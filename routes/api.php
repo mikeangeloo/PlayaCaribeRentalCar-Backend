@@ -48,6 +48,7 @@ Route::prefix('dash')->group(function () {
         Route::resource('modelos', 'ModelosController');
 
         Route::get('usuarios/all', 'UsersController@getAll');
+        Route::get('usuarios/enable/{id}', 'UsersController@enable');
         Route::resource('usuarios', 'UsersController');
 
         Route::get('areas-trabajo/all', 'AreasTrabajoController@getAll');

@@ -214,11 +214,39 @@ class UsersController extends Controller
     }
 
     public function getAll(Request $request) {
-        $users = User::orderBy('id', 'DESC')->get();
+        $user = $request->user;
+        $users = User::orderBy('id', 'DESC')->where('id', '!=', $user->id)->get();
+        $users->load('area_trabajo', 'rol', 'sucursal');
 
         return response()->json([
             'ok' => true,
-            'users' => $users
+            'usuarios' => $users
         ], JsonResponse::OK);
+    }
+
+    public function enable($id) {
+        $data = User::where('id', $id)->first();
+        if (!$data) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['No hay registros']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        if ($data->activo === 1 || $data->activo == true) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['El registro ya fue activado']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $data->activo = true;
+
+        if ($data->save()) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Registro habilitado correctamente'
+            ], JsonResponse::OK);
+        }
     }
 }

@@ -54,6 +54,10 @@ class User extends Authenticatable
         return $this->belongsTo(AreasTrabajo::class, 'area_trabajo_id', 'id')->select('id', 'nombre as area');
     }
 
+    public function sucursal() {
+        return $this->belongsTo(Sucursales::class, 'sucursal_id', 'id')->select('id', 'nombre');
+    }
+
     public static function validateBeforeSave($request, $isUpdate = null) {
         $validate = Validator::make($request, [
             'area_trabajo_id' => 'required|exists:areas_trabajo,id',
