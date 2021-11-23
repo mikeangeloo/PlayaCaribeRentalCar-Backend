@@ -65,7 +65,7 @@ class UsersController extends Controller
         $user->password = Hash::make($request->password);
         $user->username = $request->username;
         $user->sucursal_id = $request->sucursal_id;
-        $user->empresa_id = $request->empresa_id;
+        //$user->empresa_id = $request->empresa_id;
 
 
         if ($user->save()) {
@@ -158,7 +158,7 @@ class UsersController extends Controller
         }
 
         $user->sucursal_id = $request->sucursal_id;
-        $user->empresa_id = $request->empresa_id;
+        //$user->empresa_id = $request->empresa_id;
 
 
         if ($user->save()) {

@@ -12,6 +12,10 @@ class Modelos extends Model
     protected $table = 'modelos';
     protected $primaryKey = 'id';
 
+    public function marca() {
+        return $this->belongsTo(Marcas::class, 'marca_id', 'id')->select('id', 'marca');
+    }
+
     public static function validateBeforeSave($request) {
         $validateData = Validator::make($request, [
             'modelo' => 'required|string|max:100',

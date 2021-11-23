@@ -55,7 +55,6 @@ class SucursalesController extends Controller
         }
 
         $sucursal = new Sucursales();
-        $sucursal->empresas_id = $request->empresas_id;
         $sucursal->nombre = $request->nombre;
         $sucursal->direccion = $request->direccion;
         $sucursal->codigo = $request->codigo;
@@ -137,7 +136,6 @@ class SucursalesController extends Controller
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $sucursal->empresas_id = $request->empresas_id;
         $sucursal->nombre = $request->nombre;
         $sucursal->direccion = $request->direccion;
         $sucursal->codigo = $request->codigo;
@@ -202,5 +200,31 @@ class SucursalesController extends Controller
             'ok' => true,
             'sucursales' => $sucursales
         ], JsonResponse::OK);
+    }
+
+    public function enable($id) {
+        $data = Sucursales::where('id', $id)->first();
+        if (!$data) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['No hay registros']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        if ($data->activo === 1 || $data->activo == true) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['El registro ya fue activado']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $data->activo = true;
+
+        if ($data->save()) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Registro habilitado correctamente'
+            ], JsonResponse::OK);
+        }
     }
 }

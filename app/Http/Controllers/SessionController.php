@@ -118,7 +118,7 @@ class SessionController extends Controller
             if ($audience === AudienceEnum::DASH) {
                 $user->load('rol');
                 $user->load('area_trabajo');
-                $user->makeHidden('id', 'username', 'created_at', 'updated_at', 'role_id', 'area_trabajo_id', 'sucursal_id', 'empresa_id');
+                $user->makeHidden('id', 'username', 'created_at', 'updated_at', 'role_id', 'area_trabajo_id', 'sucursal_id');
             }
 
             return response()->json(

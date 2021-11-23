@@ -12,13 +12,9 @@ class Sucursales extends Model
     protected $table = 'sucursales';
     protected $primaryKey = 'id';
 
-    public function empresa() {
-        return $this->belongsTo(Empresas::class, 'empresas_id', 'id');
-    }
 
     public static function validateBeforeSave($request) {
         $validateData = Validator::make($request, [
-            'empresas_id' => 'required|exists:empresas,id',
             'nombre' => 'required|string',
             'direccion' => 'required|string',
             'codigo' => 'required|string|max:50',

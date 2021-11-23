@@ -16,6 +16,7 @@ class ModelosController extends Controller
     public function index()
     {
         $modelos = Modelos::where('activo', true)->orderBy('id', 'DESC')->get();
+        $modelos->load('marca');
 
         return response()->json([
             'ok' => true,
@@ -80,6 +81,7 @@ class ModelosController extends Controller
     public function show($id)
     {
         $modelo = Modelos::where('id', $id)->first();
+        $modelo->load('marca');
 
         if (!$modelo) {
             return response()->json([
@@ -190,10 +192,37 @@ class ModelosController extends Controller
 
     public function getAll(Request $request) {
         $modelos = Modelos::orderBy('id', 'DESC')->get();
+        $modelos->load('marca');
 
         return response()->json([
             'ok' => true,
             'modelos' => $modelos
         ], JsonResponse::OK);
+    }
+
+    public function enable($id) {
+        $data = Modelos::where('id', $id)->first();
+        if (!$data) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['No hay registros']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        if ($data->activo === 1 || $data->activo == true) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['El registro ya fue activado']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $data->activo = true;
+
+        if ($data->save()) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Registro habilitado correctamente'
+            ], JsonResponse::OK);
+        }
     }
 }

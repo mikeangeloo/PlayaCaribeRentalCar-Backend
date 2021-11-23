@@ -65,7 +65,7 @@ class User extends Authenticatable
             'username' => 'nullable',
             'password' => 'nullable|string',
             'sucursal_id' => 'required|exists:sucursales,id',
-            'empresa_id' => 'required|exists:empresas,id'
+            //'empresa_id' => 'required|exists:empresas,id'
         ]);
 
         if (is_null($isUpdate)) {

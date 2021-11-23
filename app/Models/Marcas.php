@@ -12,6 +12,8 @@ class Marcas extends Model
     protected $table = 'marcas';
     protected $primaryKey = 'id';
 
+
+
     public static function validateBeforeSave($request) {
         $validateData = Validator::make($request, [
             'marca' => 'required|string|max:100',
