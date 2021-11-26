@@ -58,6 +58,11 @@ Route::prefix('dash')->group(function () {
         Route::get('roles/all', 'RolesController@getAll');
         Route::get('roles/enable/{id}', 'RolesController@enable');
         Route::resource('roles', 'RolesController');
+
+
+        Route::get('vehiculos/all', 'VehiculosController@getAll');
+        Route::get('vehiculos/enable/{id}', 'VehiculosController@enable');
+        Route::resource('vehiculos', 'VehiculosController');
     });
 });
 

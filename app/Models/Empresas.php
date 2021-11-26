@@ -27,7 +27,7 @@ class Empresas extends Model
         if (is_null($isUpdate)) {
             $empresa = Empresas::where('rfc', $request['rfc'])->first();
             if ($empresa) {
-                return ['The rfc must be unique'];
+                return ['Este RFC ya fue registrado previamente.'];
             }
         }
 
