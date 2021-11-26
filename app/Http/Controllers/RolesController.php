@@ -194,4 +194,31 @@ class RolesController extends Controller
             'roles' => $roles
         ], JsonResponse::OK);
     }
+
+
+    public function enable($id) {
+        $data = Roles::where('id', $id)->first();
+        if (!$data) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['No hay registros']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        if ($data->activo === 1 || $data->activo == true) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['El registro ya fue activado']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $data->activo = true;
+
+        if ($data->save()) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Registro habilitado correctamente'
+            ], JsonResponse::OK);
+        }
+    }
 }

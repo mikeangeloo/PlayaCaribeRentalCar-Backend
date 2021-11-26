@@ -52,9 +52,11 @@ Route::prefix('dash')->group(function () {
         Route::resource('usuarios', 'UsersController');
 
         Route::get('areas-trabajo/all', 'AreasTrabajoController@getAll');
+        Route::get('areas-trabajo/enable/{id}', 'AreasTrabajoController@enable');
         Route::resource('areas-trabajo', 'AreasTrabajoController');
 
         Route::get('roles/all', 'RolesController@getAll');
+        Route::get('roles/enable/{id}', 'RolesController@enable');
         Route::resource('roles', 'RolesController');
     });
 });
