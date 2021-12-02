@@ -110,7 +110,7 @@
 <div class="contenido">
     <header>
         <div class="header-content" style="flex: 0">
-            <img class="logo" src="https://app.econogruas.com/web/binary/company_logo" alt="Econogruas Logo"/>
+            {{-- <img class="logo" src="https://app.econogruas.com/web/binary/company_logo" alt="Apollo Logo"/> --}}
         </div>
         <div class="header-content">
             <p style="margin: 0; padding: 0; text-align: end; font-size: 12px; font-weight: bold;">{{$date_reg}}</p>
@@ -131,8 +131,8 @@
         <p style="line-height: normal;">
             Gracias.
             <br><br><br><br>
-            Equipo de EconoGruas<br><br>
-            <span class="greenText">Econogruas App remitente automático</span><br><br><br><br>
+            Equipo de Apollo<br><br>
+            <span class="greenText">Apollo App remitente automático</span><br><br><br><br>
         </p>
         <p class="note">Este es un mensaje electrónico. Este mensaje le ha sido enviado a usted como usuario o ha sido referido por un usuario de soporte existente.</p>
     </div>

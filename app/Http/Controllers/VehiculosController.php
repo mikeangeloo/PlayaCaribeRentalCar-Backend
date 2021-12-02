@@ -3,24 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Models\User;
+use App\Models\Vehiculos;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
-class UsersController extends Controller
+class VehiculosController extends Controller
 {
-    /**
+   /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $usuarios = User::where('activo', true)->orderBy('id', 'DESC')->get();
+        $vehiculos = Vehiculos::where('activo', true)->orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
-            'usuarios' => $usuarios
+            'vehiculos' => $vehiculos
         ], JsonResponse::OK);
     }
 
@@ -45,7 +44,7 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = User::validateBeforeSave($request->all());
+        $validateData = Vehiculos::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -54,30 +53,27 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $user = new User();
+        $vehiculo = new Vehiculos();
+        $vehiculo->marca_id = $request->marca_id;
+        $vehiculo->modelo_id = $request->modelo_id;
+        $vehiculo->color_id = $request->color_id;
+        $vehiculo->no_placas = $request->no_placas;
+        $vehiculo->activo = true;
+        $vehiculo->nombre = $request->nombre;
+        $vehiculo->version = $request->version;
+        $vehiculo->precio_venta = $request->precio_venta;
+        $vehiculo->cap_tanque = $request->cap_tanque;
 
-        $user->area_trabajo_id = $request->area_trabajo_id;
-        $user->role_id = $request->role_id;
-        $user->nombre = $request->nombre;
-        $user->apellidos = $request->apellidos;
-        $user->email = $request->email;
-        $user->telefono = $request->telefono;
-        $user->password = Hash::make($request->password);
-        $user->username = $request->username;
-        $user->sucursal_id = $request->sucursal_id;
-        //$user->empresa_id = $request->empresa_id;
-
-
-        if ($user->save()) {
+        if ($vehiculo->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Usuario registrado correctamente'
+                'message' => 'Véhiculo registrado correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
                 'ok' => false,
-                'errors' => ['Algo salio mal al registrar el usuario, intente nuevamente']
-            ], JsonResponse::OK);
+                'errors' => ['Algo salio mal, intente nuevamente']
+            ], JsonResponse::BAD_REQUEST);
         }
     }
 
@@ -89,9 +85,9 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $usuario = User::where('id', $id)->first();
+        $vehiculo = Vehiculos::where('id', $id)->first();
 
-        if (!$usuario) {
+        if (!$vehiculo) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
@@ -100,7 +96,7 @@ class UsersController extends Controller
 
         return response()->json([
             'ok' => true,
-            'usuario' => $usuario
+            'vehiculo' => $vehiculo
         ], JsonResponse::OK);
     }
 
@@ -127,7 +123,7 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = User::validateBeforeSave($request->all(), true);
+        $validateData = Vehiculos::validateBeforeSave($request->all(), true);
 
         if ($validateData !== true) {
             return response()->json([
@@ -136,41 +132,33 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $user = User::where('id', $id)->first();
-        if (!$user) {
+        $vehiculo = Vehiculos::where('id', $id)->first();
+        if (!$vehiculo) {
             return response()->json([
                 'ok' => false,
-                'errors' => ['No se pudo encontrar el usuario']
+                'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
+        $vehiculo->marca_id = $request->marca_id;
+        $vehiculo->modelo_id = $request->modelo_id;
+        $vehiculo->color_id = $request->color_id;
+        $vehiculo->no_placas = $request->no_placas;
+        $vehiculo->activo = true;
+        $vehiculo->nombre = $request->nombre;
+        $vehiculo->version = $request->version;
+        $vehiculo->precio_venta = $request->precio_venta;
+        $vehiculo->cap_tanque = $request->cap_tanque;
 
-        $user->area_trabajo_id = $request->area_trabajo_id;
-        $user->role_id = $request->role_id;
-        $user->nombre = $request->nombre;
-        $user->apellidos = $request->apellidos;
-        $user->email = $request->email;
-        $user->telefono = $request->telefono;
-        if ($request->has('password')) {
-            $user->password = Hash::make($request->password);
-        }
-        if ($request->has('username')) {
-            $user->username = $request->username;
-        }
-
-        $user->sucursal_id = $request->sucursal_id;
-        //$user->empresa_id = $request->empresa_id;
-
-
-        if ($user->save()) {
+        if ($vehiculo->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Usuario actualizado correctamente'
+                'message' => 'Véhiculo actualizado correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
                 'ok' => false,
-                'errors' => ['Algo salio mal al registrar el usuario, intente nuevamente']
-            ], JsonResponse::OK);
+                'errors' => ['Algo salio mal, intente nuevamente']
+            ], JsonResponse::BAD_REQUEST);
         }
     }
 
@@ -189,21 +177,21 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $usuario = User::where('id', $id)->first();
+        $vehiculo = Vehiculos::where('id', $id)->first();
 
-        if (!$usuario) {
+        if (!$vehiculo) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $usuario->activo = false;
+        $vehiculo->activo = false;
 
-        if ($usuario->save()) {
+        if ($vehiculo->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Usuario dado de baja correctamente'
+                'message' => 'Véhiculo dado de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -214,35 +202,34 @@ class UsersController extends Controller
     }
 
     public function getAll(Request $request) {
-        $user = $request->user;
-        $users = User::orderBy('id', 'DESC')->where('id', '!=', $user->id)->get();
-        $users->load('area_trabajo', 'rol', 'sucursal');
+        $vehiculos = Vehiculos::orderBy('id', 'DESC')->get();
+        $vehiculos->load('modelo', 'marca', 'color');
 
         return response()->json([
             'ok' => true,
-            'usuarios' => $users
+            'vehiculos' => $vehiculos
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $data = User::where('id', $id)->first();
-        if (!$data) {
+        $vehiculo = Vehiculos::where('id', $id)->first();
+        if (!$vehiculo) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No hay registros']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        if ($data->activo === 1 || $data->activo == true) {
+        if ($vehiculo->activo === 1 || $vehiculo->activo == true) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['El registro ya fue activado']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $data->activo = true;
+        $vehiculo->activo = true;
 
-        if ($data->save()) {
+        if ($vehiculo->save()) {
             return response()->json([
                 'ok' => true,
                 'message' => 'Registro habilitado correctamente'

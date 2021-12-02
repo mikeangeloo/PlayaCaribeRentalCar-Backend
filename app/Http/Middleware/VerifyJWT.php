@@ -54,7 +54,7 @@ class VerifyJWT
         switch($jwtVal->aud) {
             case AudienceEnum::DASH:
             case AudienceEnum::AGENTS:
-                $userData = User::where('id', '=', $jwtVal->sub)->where('active', '=', true)->first();
+                $userData = User::where('id', '=', $jwtVal->sub)->where('activo', '=', true)->first();
                 $audience = 1;
             break;
             case AudienceEnum::CLIENTS:

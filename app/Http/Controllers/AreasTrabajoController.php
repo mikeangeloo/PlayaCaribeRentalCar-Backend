@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Models\User;
+use App\Models\AreasTrabajo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
-class UsersController extends Controller
+class AreasTrabajoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,11 +15,11 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $usuarios = User::where('activo', true)->orderBy('id', 'DESC')->get();
+        $areasTrabajo = AreasTrabajo::where('activo', true)->orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
-            'usuarios' => $usuarios
+            'areas_trabajo' => $areasTrabajo
         ], JsonResponse::OK);
     }
 
@@ -45,7 +44,7 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = User::validateBeforeSave($request->all());
+        $validateData = AreasTrabajo::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -54,30 +53,20 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $user = new User();
+        $areaTrabajo = new AreasTrabajo();
+        $areaTrabajo->nombre = $request->nombre;
+        $areaTrabajo->activo = true;
 
-        $user->area_trabajo_id = $request->area_trabajo_id;
-        $user->role_id = $request->role_id;
-        $user->nombre = $request->nombre;
-        $user->apellidos = $request->apellidos;
-        $user->email = $request->email;
-        $user->telefono = $request->telefono;
-        $user->password = Hash::make($request->password);
-        $user->username = $request->username;
-        $user->sucursal_id = $request->sucursal_id;
-        //$user->empresa_id = $request->empresa_id;
-
-
-        if ($user->save()) {
+        if ($areaTrabajo->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Usuario registrado correctamente'
+                'message' => 'Área de Trabajo registrada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
                 'ok' => false,
-                'errors' => ['Algo salio mal al registrar el usuario, intente nuevamente']
-            ], JsonResponse::OK);
+                'errors' => ['Algo salio mal, intente nuevamente']
+            ], JsonResponse::BAD_REQUEST);
         }
     }
 
@@ -89,9 +78,9 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $usuario = User::where('id', $id)->first();
+        $areaTrabajo = AreasTrabajo::where('id', $id)->first();
 
-        if (!$usuario) {
+        if (!$areaTrabajo) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
@@ -100,7 +89,7 @@ class UsersController extends Controller
 
         return response()->json([
             'ok' => true,
-            'usuario' => $usuario
+            'area_trabajo' => $areaTrabajo
         ], JsonResponse::OK);
     }
 
@@ -127,7 +116,7 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = User::validateBeforeSave($request->all(), true);
+        $validateData = AreasTrabajo::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -136,41 +125,25 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $user = User::where('id', $id)->first();
-        if (!$user) {
+        $areaTrabajo = AreasTrabajo::where('id', $id)->first();
+        if (!$areaTrabajo) {
             return response()->json([
                 'ok' => false,
-                'errors' => ['No se pudo encontrar el usuario']
+                'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
+        $areaTrabajo->nombre = $request->nombre;
 
-        $user->area_trabajo_id = $request->area_trabajo_id;
-        $user->role_id = $request->role_id;
-        $user->nombre = $request->nombre;
-        $user->apellidos = $request->apellidos;
-        $user->email = $request->email;
-        $user->telefono = $request->telefono;
-        if ($request->has('password')) {
-            $user->password = Hash::make($request->password);
-        }
-        if ($request->has('username')) {
-            $user->username = $request->username;
-        }
-
-        $user->sucursal_id = $request->sucursal_id;
-        //$user->empresa_id = $request->empresa_id;
-
-
-        if ($user->save()) {
+        if ($areaTrabajo->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Usuario actualizado correctamente'
+                'message' => 'Área de Trabajo actualizada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
                 'ok' => false,
-                'errors' => ['Algo salio mal al registrar el usuario, intente nuevamente']
-            ], JsonResponse::OK);
+                'errors' => ['Algo salio mal, intente nuevamente']
+            ], JsonResponse::BAD_REQUEST);
         }
     }
 
@@ -189,21 +162,21 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $usuario = User::where('id', $id)->first();
+        $areaTrabajo = AreasTrabajo::where('id', $id)->first();
 
-        if (!$usuario) {
+        if (!$areaTrabajo) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $usuario->activo = false;
+        $areaTrabajo->activo = false;
 
-        if ($usuario->save()) {
+        if ($areaTrabajo->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Usuario dado de baja correctamente'
+                'message' => 'Área de Trabajo dada de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -214,18 +187,16 @@ class UsersController extends Controller
     }
 
     public function getAll(Request $request) {
-        $user = $request->user;
-        $users = User::orderBy('id', 'DESC')->where('id', '!=', $user->id)->get();
-        $users->load('area_trabajo', 'rol', 'sucursal');
+        $areasTrabajo = AreasTrabajo::orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
-            'usuarios' => $users
+            'areas_trabajo' => $areasTrabajo
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $data = User::where('id', $id)->first();
+        $data = AreasTrabajo::where('id', $id)->first();
         if (!$data) {
             return response()->json([
                 'ok' => false,

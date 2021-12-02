@@ -46,7 +46,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public static function validateBeforeSave($request) {
+    public function rol() {
+        return $this->belongsTo(Roles::class, 'role_id', 'id')->select('id', 'rol');
+    }
+
+    public function area_trabajo() {
+        return $this->belongsTo(AreasTrabajo::class, 'area_trabajo_id', 'id')->select('id', 'nombre as area');
+    }
+
+    public function sucursal() {
+        return $this->belongsTo(Sucursales::class, 'sucursal_id', 'id')->select('id', 'nombre');
+    }
+
+    public static function validateBeforeSave($request, $isUpdate = null) {
         $validate = Validator::make($request, [
             'area_trabajo_id' => 'required|exists:areas_trabajo,id',
             'role_id' => 'required|exists:roles,id',
@@ -54,11 +66,18 @@ class User extends Authenticatable
             'apellidos' => 'required|string',
             'email' => 'required|email',
             'telefono' => 'required|string',
-            'username' => 'required|unique:usuarios,username',
-            'password' => 'required|string',
+            'username' => 'nullable',
+            'password' => 'nullable|string',
             'sucursal_id' => 'required|exists:sucursales,id',
-            'empresa_id' => 'required|exists:empresas,id'
+            //'empresa_id' => 'required|exists:empresas,id'
         ]);
+
+        if (is_null($isUpdate)) {
+            $user = User::where('username', $request['username'])->first();
+            if ($user) {
+                return ['El username debe ser único'];
+            }
+        }
 
         if ($validate->fails()) {
             return $validate->errors()->all();
@@ -66,4 +85,6 @@ class User extends Authenticatable
 
         return true;
     }
+
+
 }

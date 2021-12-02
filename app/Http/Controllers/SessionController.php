@@ -111,14 +111,22 @@ class SessionController extends Controller
                 ], JsonResponse::BAD_REQUEST);
             }
 
-            $message = 'Bienvenido nuevamente ';
-            $message .= ($audience ===  'admin' || $audience ===  'operators') ? $user->login :  $user->name;
+            $message = 'Bienvenido nuevamente '. $user->name;
+            //$message .= ($audience ===  AudienceEnum::DASH || $audience ===  AudienceEnum::AGENTS) ? $user->name . ' ' . $user->apellidos :  $user->name;
+            $data = null;
+
+            if ($audience === AudienceEnum::DASH) {
+                $user->load('rol');
+                $user->load('area_trabajo');
+                $user->makeHidden('id', 'username', 'created_at', 'updated_at', 'role_id', 'area_trabajo_id', 'sucursal_id');
+            }
 
             return response()->json(
                 [
                     'ok' => true,
                     'token' => $jwt,
-                    'message' => $message
+                    'message' => $message,
+                    'data' => $user
                 ],
                 JsonResponse::OK
             );
@@ -403,7 +411,7 @@ class SessionController extends Controller
         if ($tokenData->data->audience === AudienceEnum::DASH) {
             $userData = User::where('id', '=', $userId)
             ->where('email', '=', $request->verifyEmail)
-            ->where('active', '=', true)
+            ->where('activo', '=', true)
             ->first();
         } else if ($tokenData->data->audience === AudienceEnum::AGENTS) {
             return response()->json([
