@@ -6,15 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
-class Colores extends Model
+class CategoriasVehiculos extends Model
 {
     use HasFactory;
-    protected $table = 'colores';
+    protected $table = 'categorias_vehiculos';
     protected $primaryKey = 'id';
+
 
     public static function validateBeforeSave($request) {
         $validateData = Validator::make($request, [
-            'color' => 'required|string|max:100'
+            'categoria' => 'required|string|max:100',
         ]);
 
         if ($validateData->fails()) {

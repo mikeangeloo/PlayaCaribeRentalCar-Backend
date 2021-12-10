@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Models\Marcas;
+use App\Models\MarcasVehiculos;
 use Illuminate\Http\Request;
 
-class MarcasController extends Controller
+class MarcasVehiculosController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,7 @@ class MarcasController extends Controller
      */
     public function index()
     {
-        $marcas = Marcas::where('activo', true)->orderBy('id', 'DESC')->get();
+        $marcas = MarcasVehiculos::where('activo', true)->orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
@@ -44,7 +44,7 @@ class MarcasController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = Marcas::validateBeforeSave($request->all());
+        $validateData = MarcasVehiculos::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -53,7 +53,7 @@ class MarcasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $marca = new Marcas();
+        $marca = new MarcasVehiculos();
         $marca->marca = $request->marca;
         $marca->tipo = $request->tipo;
         $marca->activo = true;
@@ -79,7 +79,7 @@ class MarcasController extends Controller
      */
     public function show($id)
     {
-        $marca = Marcas::where('id', $id)->first();
+        $marca = MarcasVehiculos::where('id', $id)->first();
 
         if (!$marca) {
             return response()->json([
@@ -117,7 +117,7 @@ class MarcasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = Marcas::validateBeforeSave($request->all(), true);
+        $validateData = MarcasVehiculos::validateBeforeSave($request->all(), true);
 
         if ($validateData !== true) {
             return response()->json([
@@ -126,7 +126,7 @@ class MarcasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $marca = Marcas::where('id', $id)->first();
+        $marca = MarcasVehiculos::where('id', $id)->first();
         if (!$marca) {
             return response()->json([
                 'ok' => false,
@@ -164,7 +164,7 @@ class MarcasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $marca = Marcas::where('id', $id)->first();
+        $marca = MarcasVehiculos::where('id', $id)->first();
 
         if (!$marca) {
             return response()->json([
@@ -189,7 +189,7 @@ class MarcasController extends Controller
     }
 
     public function getAll(Request $request) {
-        $marcas = Marcas::orderBy('id', 'DESC')->get();
+        $marcas = MarcasVehiculos::orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
@@ -198,7 +198,7 @@ class MarcasController extends Controller
     }
 
     public function enable($id) {
-        $data = Marcas::where('id', $id)->first();
+        $data = MarcasVehiculos::where('id', $id)->first();
         if (!$data) {
             return response()->json([
                 'ok' => false,

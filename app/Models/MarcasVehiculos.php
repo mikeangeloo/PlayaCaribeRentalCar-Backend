@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
-class Marcas extends Model
+class MarcasVehiculos extends Model
 {
     use HasFactory;
-    protected $table = 'marcas';
+    protected $table = 'marcas_vehiculos';
     protected $primaryKey = 'id';
 
 

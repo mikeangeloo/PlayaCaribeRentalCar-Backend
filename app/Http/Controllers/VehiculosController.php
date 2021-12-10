@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
+use App\Enums\VehiculoStatusEnum;
 use App\Models\Vehiculos;
 use Illuminate\Http\Request;
 
@@ -54,15 +55,30 @@ class VehiculosController extends Controller
         }
 
         $vehiculo = new Vehiculos();
+        $vehiculo->modelo = $request->modelo;
+        $vehiculo->modelo_ano = $request->modelo_ano;
         $vehiculo->marca_id = $request->marca_id;
-        $vehiculo->modelo_id = $request->modelo_id;
-        $vehiculo->color_id = $request->color_id;
-        $vehiculo->no_placas = $request->no_placas;
-        $vehiculo->activo = true;
-        $vehiculo->nombre = $request->nombre;
+        $vehiculo->placas = $request->placas;
+        $vehiculo->num_poliza_seg = $request->num_poliza_seg;
+        $vehiculo->km_recorridos = $request->km_recorridos;
+        $vehiculo->categoria_vehiculo_id = $request->categoria_vehiculo_id;
+        $vehiculo->color = $request->color;
         $vehiculo->version = $request->version;
-        $vehiculo->precio_venta = $request->precio_venta;
-        $vehiculo->cap_tanque = $request->cap_tanque;
+        $vehiculo->activo = 1;
+        $vehiculo->estatus = VehiculoStatusEnum::DISPONIBLE;
+
+        if ($request->has('prox_servicio')) {
+            $vehiculo->prox_servicio = $request->prox_servicio;
+        }
+        if ($request->has('cant_combustible')) {
+            $vehiculo->cant_combustible = $request->cant_combustible;
+        }
+        if($request->has('cap_tanque')) {
+            $vehiculo->cap_tanque = $request->cap_tanque;
+        }
+        if ($request->has('precio_renta')) {
+            $vehiculo->precio_renta = $request->precio_renta;
+        }
 
         if ($vehiculo->save()) {
             return response()->json([
@@ -139,15 +155,28 @@ class VehiculosController extends Controller
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
+        $vehiculo->modelo = $request->modelo;
+        $vehiculo->modelo_ano = $request->modelo_ano;
         $vehiculo->marca_id = $request->marca_id;
-        $vehiculo->modelo_id = $request->modelo_id;
-        $vehiculo->color_id = $request->color_id;
-        $vehiculo->no_placas = $request->no_placas;
-        $vehiculo->activo = true;
-        $vehiculo->nombre = $request->nombre;
+        $vehiculo->placas = $request->placas;
+        $vehiculo->num_poliza_seg = $request->num_poliza_seg;
+        $vehiculo->km_recorridos = $request->km_recorridos;
+        $vehiculo->categoria_vehiculo_id = $request->categoria_vehiculo_id;
+        $vehiculo->color = $request->color;
         $vehiculo->version = $request->version;
-        $vehiculo->precio_venta = $request->precio_venta;
-        $vehiculo->cap_tanque = $request->cap_tanque;
+
+        if ($request->has('prox_servicio')) {
+            $vehiculo->prox_servicio = $request->prox_servicio;
+        }
+        if ($request->has('cant_combustible')) {
+            $vehiculo->cant_combustible = $request->cant_combustible;
+        }
+        if($request->has('cap_tanque')) {
+            $vehiculo->cap_tanque = $request->cap_tanque;
+        }
+        if ($request->has('precio_renta')) {
+            $vehiculo->precio_renta = $request->precio_renta;
+        }
 
         if ($vehiculo->save()) {
             return response()->json([
@@ -203,7 +232,7 @@ class VehiculosController extends Controller
 
     public function getAll(Request $request) {
         $vehiculos = Vehiculos::orderBy('id', 'DESC')->get();
-        $vehiculos->load('modelo', 'marca', 'color');
+        $vehiculos->load('marca', 'categoria');
 
         return response()->json([
             'ok' => true,

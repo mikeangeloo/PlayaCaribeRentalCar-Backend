@@ -35,17 +35,9 @@ Route::prefix('dash')->group(function () {
         Route::get('sucursales/enable/{id}', 'SucursalesController@enable');
         Route::resource('sucursales', 'SucursalesController');
 
-        Route::get('colores/all', 'ColoresController@getAll');
-        Route::get('colores/enable/{id}', 'ColoresController@enable');
-        Route::resource('colores', 'ColoresController');
 
-        Route::get('marcas/all', 'MarcasController@getAll');
-        Route::get('marcas/enable/{id}', 'MarcasController@enable');
-        Route::resource('marcas', 'MarcasController');
 
-        Route::get('modelos/all', 'ModelosController@getAll');
-        Route::get('modelos/enable/{id}', 'ModelosController@enable');
-        Route::resource('modelos', 'ModelosController');
+
 
         Route::get('usuarios/all', 'UsersController@getAll');
         Route::get('usuarios/enable/{id}', 'UsersController@enable');
@@ -60,9 +52,21 @@ Route::prefix('dash')->group(function () {
         Route::resource('roles', 'RolesController');
 
 
+        //region Catálogo de vehículos
+
+        Route::get('marcas-vehiculos/all', 'MarcasVehiculosController@getAll');
+        Route::get('marcas-vehiculos/enable/{id}', 'MarcasVehiculosController@enable');
+        Route::resource('marcas-vehiculos', 'MarcasVehiculosController');
+
+        Route::get('categorias-vehiculos/all', 'CategoriasVehiculosController@getAll');
+        Route::get('categorias-vehiculos/enable/{id}', 'CategoriasVehiculosController@enable');
+        Route::resource('categorias-vehiculos', 'CategoriasVehiculosController');
+
         Route::get('vehiculos/all', 'VehiculosController@getAll');
         Route::get('vehiculos/enable/{id}', 'VehiculosController@enable');
         Route::resource('vehiculos', 'VehiculosController');
+
+        //endregion
     });
 });
 

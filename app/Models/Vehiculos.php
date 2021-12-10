@@ -14,38 +14,42 @@ class Vehiculos extends Model
     protected $primaryKey = 'id';
 
     public function marca() {
-        return $this->belongsTo(Marcas::class, 'marca_id', 'id')->select('id', 'marca');
+        return $this->belongsTo(MarcasVehiculos::class, 'marca_id', 'id')->select('id', 'marca');
     }
 
-    public function modelo() {
-        return $this->belongsTo(Modelos::class, 'modelo_id', 'id')->select('id', 'modelo');
-    }
-
-    public function color() {
-        return $this->belongsTo(Colores::class, 'color_id', 'id')->select('id', 'color');
+    public function categoria() {
+        return $this->belongsTo(CategoriasVehiculos::class, 'categoria_vehiculo_id', 'id')->select('id', 'categoria');
     }
 
     public static function validateBeforeSave($request, $isUpdate = null) {
         $validate = Validator::make($request, [
-            'marca_id' => 'required|exists:marcas,id',
-            'modelo_id' => 'required|exists:modelos,id',
-            'color_id' => 'required|exists:colores,id',
-            'no_placas' => 'required|string',
-            'cap_tanque' => 'required|string',
-            'nombre' => 'required|string',
-            'version' => 'required|string',
-            'precio_venta' => 'required|numeric'
+            'modelo' => 'required|string|max:100',
+            'modelo_ano' => 'required|numeric',
+            'marca_id' => 'required|exists:marcas_vehiculos,id',
+            'estatus' => 'nullable|string',
+            'placas' => 'required|string|max:100',
+            'num_poliza_seg' => 'required|string|max:100',
+            'km_recorridos' => 'required|numeric',
+            'prox_servicio' => 'nullable',
+            'categoria_vehiculo_id' => 'required|exists:categorias_vehiculos,id',
+            'cant_combustible' => 'nullable|string',
+            'color' => 'required|string|max:100',
+            'cap_tanque' => 'nullable|string|max:100',
+            'version' => 'required|numeric',
+            'precio_renta' => 'nullable|numeric'
         ]);
 
-        if (is_null($isUpdate)) {
-            $vehiculo = Vehiculos::where('no_placas', $request['no_placas'])->first();
-            if ($vehiculo) {
-                return ['Este número de placa ya fue registrado previamente.'];
-            }
-        }
+
 
         if ($validate->fails()) {
             return $validate->errors()->all();
+        }
+
+        if (is_null($isUpdate)) {
+            $vehiculo = Vehiculos::where('placas', $request['placas'])->first();
+            if ($vehiculo) {
+                return ['Este número de placa ya fue registrado previamente.'];
+            }
         }
 
         return true;
