@@ -61,7 +61,7 @@ class MarcasVehiculosController extends Controller
         if ($marca->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Mraca registrada correctamente'
+                'message' => 'Marca registrada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
