@@ -27,29 +27,6 @@ Route::prefix('dash')->group(function () {
     Route::post('login', 'SessionController@login');
 
     Route::middleware('verify.jwt')->group(function () {
-        Route::get('empresas/all', 'EmpresasController@getAll');
-        Route::get('empresas/enable/{id}', 'EmpresasController@enable');
-        Route::resource('empresas', 'EmpresasController');
-
-        Route::get('sucursales/all', 'SucursalesController@getAll');
-        Route::get('sucursales/enable/{id}', 'SucursalesController@enable');
-        Route::resource('sucursales', 'SucursalesController');
-
-
-
-
-
-        Route::get('usuarios/all', 'UsersController@getAll');
-        Route::get('usuarios/enable/{id}', 'UsersController@enable');
-        Route::resource('usuarios', 'UsersController');
-
-        Route::get('areas-trabajo/all', 'AreasTrabajoController@getAll');
-        Route::get('areas-trabajo/enable/{id}', 'AreasTrabajoController@enable');
-        Route::resource('areas-trabajo', 'AreasTrabajoController');
-
-        Route::get('roles/all', 'RolesController@getAll');
-        Route::get('roles/enable/{id}', 'RolesController@enable');
-        Route::resource('roles', 'RolesController');
 
 
         //region Catálogo de vehículos
@@ -67,6 +44,35 @@ Route::prefix('dash')->group(function () {
         Route::resource('vehiculos', 'VehiculosController');
 
         //endregion
+
+        //region CONTROL ACCESO
+        Route::get('usuarios/all', 'UsersController@getAll');
+        Route::get('usuarios/enable/{id}', 'UsersController@enable');
+        Route::resource('usuarios', 'UsersController');
+
+        Route::get('areas-trabajo/all', 'AreasTrabajoController@getAll');
+        Route::get('areas-trabajo/enable/{id}', 'AreasTrabajoController@enable');
+        Route::resource('areas-trabajo', 'AreasTrabajoController');
+
+        Route::get('roles/all', 'RolesController@getAll');
+        Route::get('roles/enable/{id}', 'RolesController@enable');
+        Route::resource('roles', 'RolesController');
+
+        Route::get('sucursales/all', 'SucursalesController@getAll');
+        Route::get('sucursales/enable/{id}', 'SucursalesController@enable');
+        Route::resource('sucursales', 'SucursalesController');
+        //endregion
+
+        //region LISTADO EMPRESAS
+        Route::get('empresas/all', 'EmpresasController@getAll');
+        Route::get('empresas/enable/{id}', 'EmpresasController@enable');
+        Route::resource('empresas', 'EmpresasController');
+
+        Route::get('comisionistas/all', 'ComisionistasController@getAll');
+        Route::get('comisionistas/enable/{id}', 'ComisionistasController@enable');
+        Route::resource('comisionistas', 'ComisionistasController');
+        //endregion
+
     });
 });
 

@@ -3,25 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Models\Empresas;
+use App\Models\Comisionistas;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 
-class EmpresasController extends Controller
+class ComisionistasController extends Controller
 {
-    /**
+     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $empresas = Empresas::where('activo', true)->orderBy('id', 'DESC')->get();
-        $empresas->load('comisionistas');
+        $comisionistas = Comisionistas::where('activo', true)->orderBy('id', 'DESC')->get();
+        $comisionistas->load('comisionista');
 
         return response()->json([
             'ok' => true,
-            'empresas' => $empresas
+            'comisionistas' => $comisionistas
         ], JsonResponse::OK);
     }
 
@@ -46,7 +45,7 @@ class EmpresasController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = Empresas::validateBeforeSave($request->all());
+        $validateData = Comisionistas::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -55,18 +54,18 @@ class EmpresasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $empresa = new Empresas();
-        $empresa->nombre = $request->nombre;
-        $empresa->rfc = $request->rfc;
-        $empresa->direccion = $request->direccion;
-        $empresa->tel_contacto = $request->tel_contacto;
-        $empresa->activo = true;
-        $empresa->paga_cupon = $request->paga_cupon;
+        $comisionista = new Comisionistas();
+        $comisionista->nombre_empresa = $request->nombre_empresa;
+        $comisionista->empresa_id = $request->empresa_id;
+        $comisionista->tel_contacto = $request->tel_contacto;
+        $comisionista->email_contacto = $request->email_contacto;
+        $comisionista->activo = true;
+        $comisionista->comisiones_pactadas = $request->comisiones_pactadas;
 
-        if ($empresa->save()) {
+        if ($comisionista->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Empresa registrada correctamente'
+                'message' => 'Comisionista registrado correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -84,10 +83,10 @@ class EmpresasController extends Controller
      */
     public function show($id)
     {
-        $empresa = Empresas::where('id', $id)->first();
-        $empresa->load('comisionistas');
+        $comisionista = Comisionistas::where('id', $id)->first();
+        $comisionista->load('empresa');
 
-        if (!$empresa) {
+        if (!$comisionista) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
@@ -96,7 +95,7 @@ class EmpresasController extends Controller
 
         return response()->json([
             'ok' => true,
-            'empresa' => $empresa
+            'comisionista' => $comisionista
         ], JsonResponse::OK);
     }
 
@@ -123,7 +122,7 @@ class EmpresasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = Empresas::validateBeforeSave($request->all(), true);
+        $validateData = Comisionistas::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -132,24 +131,24 @@ class EmpresasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $empresa = Empresas::where('id', $id)->first();
-        if (!$empresa) {
+        $comisionista = Comisionistas::where('id', $id)->first();
+        if (!$comisionista) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $empresa->nombre = $request->nombre;
-        $empresa->rfc = $request->rfc;
-        $empresa->direccion = $request->direccion;
-        $empresa->tel_contacto = $request->tel_contacto;
-        $empresa->activo = true;
-        $empresa->paga_cupon = $request->paga_cupon;
+        $comisionista->nombre_empresa = $request->nombre_empresa;
+        $comisionista->empresa_id = $request->empresa_id;
+        $comisionista->tel_contacto = $request->tel_contacto;
+        $comisionista->email_contacto = $request->email_contacto;
+        //$comisionista->activo = true;
+        $comisionista->comisiones_pactadas = $request->comisiones_pactadas;
 
-        if ($empresa->save()) {
+        if ($comisionista->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Empresa actualizada correctamente'
+                'message' => 'Comisionista actualizado correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -174,21 +173,21 @@ class EmpresasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $empresa = Empresas::where('id', $id)->first();
+        $comisionista = Comisionistas::where('id', $id)->first();
 
-        if (!$empresa) {
+        if (!$comisionista) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $empresa->activo = false;
+        $comisionista->activo = false;
 
-        if ($empresa->save()) {
+        if ($comisionista->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Empresa dada de baja correctamente'
+                'message' => 'Comisionista dado de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -199,34 +198,34 @@ class EmpresasController extends Controller
     }
 
     public function getAll(Request $request) {
-        $empresas = Empresas::orderBy('id', 'DESC')->get();
-        $empresas->load('comisionistas');
+        $comisionistas = Comisionistas::orderBy('id', 'DESC')->get();
+        $comisionistas->load('empresa');
 
         return response()->json([
             'ok' => true,
-            'empresas' => $empresas
+            'comisionistas' => $comisionistas
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $empresa = Empresas::where('id', $id)->first();
-        if (!$empresa) {
+        $comisionista = Comisionistas::where('id', $id)->first();
+        if (!$comisionista) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No hay registros']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        if ($empresa->activo === 1 || $empresa->activo == true) {
+        if ($comisionista->activo === 1 || $comisionista->activo == true) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['El registro ya fue activado']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $empresa->activo = true;
+        $comisionista->activo = true;
 
-        if ($empresa->save()) {
+        if ($comisionista->save()) {
             return response()->json([
                 'ok' => true,
                 'message' => 'Registro habilitado correctamente'
