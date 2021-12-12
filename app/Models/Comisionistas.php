@@ -22,6 +22,8 @@ class Comisionistas extends Model
 
     public static function validateBeforeSave($request) {
         $validateData = Validator::make($request, [
+            'nombre' => 'required|string',
+            'apellidos' => 'required|string',
             'nombre_empresa' => 'required|string',
             'empresa_id' => 'required|exists:empresas,id',
             'tel_contacto' => 'required|string',

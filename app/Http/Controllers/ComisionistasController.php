@@ -55,6 +55,8 @@ class ComisionistasController extends Controller
         }
 
         $comisionista = new Comisionistas();
+        $comisionista->nombre = $request->nombre;
+        $comisionista->apellidos = $request->apellidos;
         $comisionista->nombre_empresa = $request->nombre_empresa;
         $comisionista->empresa_id = $request->empresa_id;
         $comisionista->tel_contacto = $request->tel_contacto;
@@ -138,6 +140,8 @@ class ComisionistasController extends Controller
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
+        $comisionista->nombre = $request->nombre;
+        $comisionista->apellidos = $request->apellidos;
         $comisionista->nombre_empresa = $request->nombre_empresa;
         $comisionista->empresa_id = $request->empresa_id;
         $comisionista->tel_contacto = $request->tel_contacto;
