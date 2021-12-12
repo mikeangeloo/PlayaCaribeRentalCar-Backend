@@ -71,6 +71,10 @@ Route::prefix('dash')->group(function () {
         Route::get('comisionistas/all', 'ComisionistasController@getAll');
         Route::get('comisionistas/enable/{id}', 'ComisionistasController@enable');
         Route::resource('comisionistas', 'ComisionistasController');
+
+        Route::get('clientes/all', 'ClientesController@getAll');
+        Route::get('clientes/enable/{id}', 'ClientesController@enable');
+        Route::resource('clientes', 'ClientesController');
         //endregion
 
     });
