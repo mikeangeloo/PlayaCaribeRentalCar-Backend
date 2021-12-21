@@ -3,24 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Enums\VehiculoStatusEnum;
-use App\Models\Vehiculos;
+use App\Models\MarcasVehiculos;
 use Illuminate\Http\Request;
 
-class VehiculosController extends Controller
+class MarcasVehiculosController extends Controller
 {
-   /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $vehiculos = Vehiculos::where('activo', true)->orderBy('id', 'DESC')->get();
+        $marcas = MarcasVehiculos::where('activo', true)->orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
-            'vehiculos' => $vehiculos
+            'marcas' => $marcas
         ], JsonResponse::OK);
     }
 
@@ -45,7 +44,7 @@ class VehiculosController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = Vehiculos::validateBeforeSave($request->all());
+        $validateData = MarcasVehiculos::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -54,36 +53,15 @@ class VehiculosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $vehiculo = new Vehiculos();
-        $vehiculo->modelo = $request->modelo;
-        $vehiculo->modelo_ano = $request->modelo_ano;
-        $vehiculo->marca_id = $request->marca_id;
-        $vehiculo->placas = $request->placas;
-        $vehiculo->num_poliza_seg = $request->num_poliza_seg;
-        $vehiculo->km_recorridos = $request->km_recorridos;
-        $vehiculo->categoria_vehiculo_id = $request->categoria_vehiculo_id;
-        $vehiculo->color = $request->color;
-        $vehiculo->version = $request->version;
-        $vehiculo->activo = 1;
-        $vehiculo->estatus = VehiculoStatusEnum::DISPONIBLE;
+        $marca = new MarcasVehiculos();
+        $marca->marca = $request->marca;
+        $marca->tipo = $request->tipo;
+        $marca->activo = true;
 
-        if ($request->has('prox_servicio')) {
-            $vehiculo->prox_servicio = $request->prox_servicio;
-        }
-        if ($request->has('cant_combustible')) {
-            $vehiculo->cant_combustible = $request->cant_combustible;
-        }
-        if($request->has('cap_tanque')) {
-            $vehiculo->cap_tanque = $request->cap_tanque;
-        }
-        if ($request->has('precio_renta')) {
-            $vehiculo->precio_renta = $request->precio_renta;
-        }
-
-        if ($vehiculo->save()) {
+        if ($marca->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Véhiculo registrado correctamente'
+                'message' => 'Marca registrada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -101,9 +79,9 @@ class VehiculosController extends Controller
      */
     public function show($id)
     {
-        $vehiculo = Vehiculos::where('id', $id)->first();
+        $marca = MarcasVehiculos::where('id', $id)->first();
 
-        if (!$vehiculo) {
+        if (!$marca) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
@@ -112,7 +90,7 @@ class VehiculosController extends Controller
 
         return response()->json([
             'ok' => true,
-            'vehiculo' => $vehiculo
+            'marca' => $marca
         ], JsonResponse::OK);
     }
 
@@ -139,7 +117,7 @@ class VehiculosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = Vehiculos::validateBeforeSave($request->all(), true);
+        $validateData = MarcasVehiculos::validateBeforeSave($request->all(), true);
 
         if ($validateData !== true) {
             return response()->json([
@@ -148,40 +126,20 @@ class VehiculosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $vehiculo = Vehiculos::where('id', $id)->first();
-        if (!$vehiculo) {
+        $marca = MarcasVehiculos::where('id', $id)->first();
+        if (!$marca) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $vehiculo->modelo = $request->modelo;
-        $vehiculo->modelo_ano = $request->modelo_ano;
-        $vehiculo->marca_id = $request->marca_id;
-        $vehiculo->placas = $request->placas;
-        $vehiculo->num_poliza_seg = $request->num_poliza_seg;
-        $vehiculo->km_recorridos = $request->km_recorridos;
-        $vehiculo->categoria_vehiculo_id = $request->categoria_vehiculo_id;
-        $vehiculo->color = $request->color;
-        $vehiculo->version = $request->version;
+        $marca->marca = $request->marca;
+        $marca->tipo = $request->tipo;
 
-        if ($request->has('prox_servicio')) {
-            $vehiculo->prox_servicio = $request->prox_servicio;
-        }
-        if ($request->has('cant_combustible')) {
-            $vehiculo->cant_combustible = $request->cant_combustible;
-        }
-        if($request->has('cap_tanque')) {
-            $vehiculo->cap_tanque = $request->cap_tanque;
-        }
-        if ($request->has('precio_renta')) {
-            $vehiculo->precio_renta = $request->precio_renta;
-        }
-
-        if ($vehiculo->save()) {
+        if ($marca->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Véhiculo actualizado correctamente'
+                'message' => 'Marca actualizada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -206,21 +164,21 @@ class VehiculosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $vehiculo = Vehiculos::where('id', $id)->first();
+        $marca = MarcasVehiculos::where('id', $id)->first();
 
-        if (!$vehiculo) {
+        if (!$marca) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $vehiculo->activo = false;
+        $marca->activo = false;
 
-        if ($vehiculo->save()) {
+        if ($marca->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Véhiculo dado de baja correctamente'
+                'message' => 'Marca dada de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -231,34 +189,33 @@ class VehiculosController extends Controller
     }
 
     public function getAll(Request $request) {
-        $vehiculos = Vehiculos::orderBy('id', 'DESC')->get();
-        $vehiculos->load('marca', 'categoria');
+        $marcas = MarcasVehiculos::orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
-            'vehiculos' => $vehiculos
+            'marcas' => $marcas
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $vehiculo = Vehiculos::where('id', $id)->first();
-        if (!$vehiculo) {
+        $data = MarcasVehiculos::where('id', $id)->first();
+        if (!$data) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No hay registros']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        if ($vehiculo->activo === 1 || $vehiculo->activo == true) {
+        if ($data->activo === 1 || $data->activo == true) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['El registro ya fue activado']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $vehiculo->activo = true;
+        $data->activo = true;
 
-        if ($vehiculo->save()) {
+        if ($data->save()) {
             return response()->json([
                 'ok' => true,
                 'message' => 'Registro habilitado correctamente'

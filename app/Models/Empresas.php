@@ -12,16 +12,17 @@ class Empresas extends Model
     protected $table = 'empresas';
     protected $primaryKey = 'id';
 
-    // public function sucursales() {
-    //     return $this->hasMany(Sucursales::class, 'empresas_id', 'id');
-    // }
+    public function comisionistas() {
+        return $this->hasMany(Comisionistas::class, 'empresa_id', 'id');
+    }
 
     public static function validateBeforeSave($request, $isUpdate = null) {
         $validateData = Validator::make($request, [
             'nombre' => 'required|string',
             'rfc' => 'required',
             'direccion' => 'required|string',
-            'tel_contacto' => 'required|string'
+            'tel_contacto' => 'required|string',
+            'paga_cupon' => 'required'
         ]);
 
         if (is_null($isUpdate)) {

@@ -3,23 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Models\Colores;
+use App\Models\CategoriasVehiculos;
 use Illuminate\Http\Request;
 
-class ColoresController extends Controller
+class CategoriasVehiculosController extends Controller
 {
-    /**
+  /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $colores = Colores::where('activo', true)->orderBy('id', 'DESC')->get();
+        $categorias = CategoriasVehiculos::where('activo', true)->orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
-            'colores' => $colores
+            'categorias' => $categorias
         ], JsonResponse::OK);
     }
 
@@ -44,7 +44,7 @@ class ColoresController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = Colores::validateBeforeSave($request->all());
+        $validateData = CategoriasVehiculos::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -53,14 +53,14 @@ class ColoresController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $color = new Colores();
-        $color->color = $request->color;
-        $color->activo = true;
+        $categoria = new CategoriasVehiculos();
+        $categoria->categoria = $request->categoria;
+        $categoria->activo = true;
 
-        if ($color->save()) {
+        if ($categoria->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Color registrado correctamente'
+                'message' => 'Categoría registrada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -78,9 +78,9 @@ class ColoresController extends Controller
      */
     public function show($id)
     {
-        $color = Colores::where('id', $id)->first();
+        $categoria = CategoriasVehiculos::where('id', $id)->first();
 
-        if (!$color) {
+        if (!$categoria) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
@@ -89,7 +89,7 @@ class ColoresController extends Controller
 
         return response()->json([
             'ok' => true,
-            'color' => $color
+            'categoria' => $categoria
         ], JsonResponse::OK);
     }
 
@@ -116,7 +116,7 @@ class ColoresController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = Colores::validateBeforeSave($request->all(), true);
+        $validateData = CategoriasVehiculos::validateBeforeSave($request->all(), true);
 
         if ($validateData !== true) {
             return response()->json([
@@ -125,19 +125,19 @@ class ColoresController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $color = Colores::where('id', $id)->first();
-        if (!$color) {
+        $categoria = CategoriasVehiculos::where('id', $id)->first();
+        if (!$categoria) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $color->color = $request->color;
+        $categoria->categoria = $request->categoria;
 
-        if ($color->save()) {
+        if ($categoria->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Color actualizado correctamente'
+                'message' => 'Categoría actualizada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -162,21 +162,21 @@ class ColoresController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $color = Colores::where('id', $id)->first();
+        $categoria = CategoriasVehiculos::where('id', $id)->first();
 
-        if (!$color) {
+        if (!$categoria) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $color->activo = false;
+        $categoria->activo = false;
 
-        if ($color->save()) {
+        if ($categoria->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Color dado de baja correctamente'
+                'message' => 'Categoría dada de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -187,16 +187,16 @@ class ColoresController extends Controller
     }
 
     public function getAll(Request $request) {
-        $colores = Colores::orderBy('id', 'DESC')->get();
+        $categorias = CategoriasVehiculos::orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
-            'colores' => $colores
+            'categorias' => $categorias
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $data = Colores::where('id', $id)->first();
+        $data = CategoriasVehiculos::where('id', $id)->first();
         if (!$data) {
             return response()->json([
                 'ok' => false,

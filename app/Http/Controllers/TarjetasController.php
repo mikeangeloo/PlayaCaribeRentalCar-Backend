@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Models\Marcas;
+use App\Models\Tarjetas;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class MarcasController extends Controller
+class TarjetasController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,11 +16,11 @@ class MarcasController extends Controller
      */
     public function index()
     {
-        $marcas = Marcas::where('activo', true)->orderBy('id', 'DESC')->get();
+        $tarjetas = Tarjetas::where('activo', true)->orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
-            'marcas' => $marcas
+            'tarjetas' => $tarjetas
         ], JsonResponse::OK);
     }
 
@@ -44,7 +45,7 @@ class MarcasController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = Marcas::validateBeforeSave($request->all());
+        $validateData = Tarjetas::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -53,20 +54,32 @@ class MarcasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $marca = new Marcas();
-        $marca->marca = $request->marca;
-        $marca->tipo = $request->tipo;
-        $marca->activo = true;
+        $card = new Tarjetas();
+        $card->cliente_id = $request->cliente_id;
+        $card->c_name = $request->c_name;
+        $card->c_cn1 = $request->c_cn1;
+        $card->c_cn2 = $request->c_cn2;
+        $card->c_cn3 = $request->c_cn3;
+        $card->c_cn4 = $request->c_cn4;
+        $card->c_month = $request->c_month;
+        $card->c_year = $request->c_year;
+        $card->c_code = $request->c_code;
+        $card->c_type = $request->c_type;
+        $card->c_method = $request->c_method;
+        $card->date_reg = Carbon::now();
 
-        if ($marca->save()) {
+        if ($card->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Mraca registrada correctamente'
+                'message' => 'La tarjeta fue registrada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
                 'ok' => false,
-                'errors' => ['Algo salio mal, intente nuevamente']
+                'errors' => $validateData
+            ], JsonResponse::BAD_REQUEST); return response()->json([
+                'ok' => false,
+                'errors' => ['Hubo un error al momento de guardar el registro, intente nuevamente']
             ], JsonResponse::BAD_REQUEST);
         }
     }
@@ -79,9 +92,10 @@ class MarcasController extends Controller
      */
     public function show($id)
     {
-        $marca = Marcas::where('id', $id)->first();
+        $tarjeta = Tarjetas::where('id', $id)->first();
 
-        if (!$marca) {
+
+        if (!$tarjeta) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
@@ -90,7 +104,7 @@ class MarcasController extends Controller
 
         return response()->json([
             'ok' => true,
-            'marca' => $marca
+            'tarjeta' => $tarjeta
         ], JsonResponse::OK);
     }
 
@@ -117,7 +131,7 @@ class MarcasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = Marcas::validateBeforeSave($request->all(), true);
+        $validateData = Tarjetas::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -126,20 +140,30 @@ class MarcasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $marca = Marcas::where('id', $id)->first();
-        if (!$marca) {
+        $card = Tarjetas::where('id', $id)->first();
+        if (!$card) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $marca->marca = $request->marca;
-        $marca->tipo = $request->tipo;
+        $card->cliente_id = $request->cliente_id;
+        $card->c_name = $request->c_name;
+        $card->c_cn1 = $request->c_cn1;
+        $card->c_cn2 = $request->c_cn2;
+        $card->c_cn3 = $request->c_cn3;
+        $card->c_cn4 = $request->c_cn4;
+        $card->c_month = $request->c_month;
+        $card->c_year = $request->c_year;
+        $card->c_code = $request->c_code;
+        $card->c_type = $request->c_type;
+        $card->c_method = $request->c_method;
 
-        if ($marca->save()) {
+
+        if ($card->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Marca actualizada correctamente'
+                'message' => 'Tarjeta actualizada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -164,21 +188,21 @@ class MarcasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $marca = Marcas::where('id', $id)->first();
+        $tarjeta = Tarjetas::where('id', $id)->first();
 
-        if (!$marca) {
+        if (!$tarjeta) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $marca->activo = false;
+        $tarjeta->activo = false;
 
-        if ($marca->save()) {
+        if ($tarjeta->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Marca dada de baja correctamente'
+                'message' => 'Tarjeta dada de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -189,33 +213,33 @@ class MarcasController extends Controller
     }
 
     public function getAll(Request $request) {
-        $marcas = Marcas::orderBy('id', 'DESC')->get();
+        $tarjetas = Tarjetas::orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
-            'marcas' => $marcas
+            'tarjetas' => $tarjetas
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $data = Marcas::where('id', $id)->first();
-        if (!$data) {
+        $tarjeta = Tarjetas::where('id', $id)->first();
+        if (!$tarjeta) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No hay registros']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        if ($data->activo === 1 || $data->activo == true) {
+        if ($tarjeta->activo === 1 || $tarjeta->activo == true) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['El registro ya fue activado']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $data->activo = true;
+        $tarjeta->activo = true;
 
-        if ($data->save()) {
+        if ($tarjeta->save()) {
             return response()->json([
                 'ok' => true,
                 'message' => 'Registro habilitado correctamente'

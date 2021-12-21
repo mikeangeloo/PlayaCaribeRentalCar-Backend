@@ -3,24 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Models\Modelos;
+use App\Models\Clientes;
 use Illuminate\Http\Request;
 
-class ModelosController extends Controller
+class ClientesController extends Controller
 {
-  /**
+   /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $modelos = Modelos::where('activo', true)->orderBy('id', 'DESC')->get();
-        $modelos->load('marca');
+        $clientes = Clientes::where('activo', true)->orderBy('id', 'DESC')->get();
+        $clientes->load('tarjetas');
 
         return response()->json([
             'ok' => true,
-            'modelos' => $modelos
+            'clientes' => $clientes
         ], JsonResponse::OK);
     }
 
@@ -45,7 +45,7 @@ class ModelosController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = Modelos::validateBeforeSave($request->all());
+        $validateData = Clientes::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -54,15 +54,21 @@ class ModelosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $modelo = new Modelos();
-        $modelo->modelo = $request->modelo;
-        $modelo->marca_id = $request->marca_id;
-        $modelo->activo = true;
+        $cliente = new Clientes();
+        $cliente->nombre = $request->nombre;
+        $cliente->apellidos = $request->apellidos;
+        $cliente->telefono = $request->telefono;
+        $cliente->email = $request->email;
+        $cliente->num_licencia = $request->num_licencia;
+        $cliente->licencia_mes = $request->licencia_mes;
+        $cliente->licencia_ano = $request->licencia_ano;
+        $cliente->activo = true;
 
-        if ($modelo->save()) {
+
+        if ($cliente->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Modelo registrado correctamente'
+                'message' => 'Cliente registrado correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -80,19 +86,19 @@ class ModelosController extends Controller
      */
     public function show($id)
     {
-        $modelo = Modelos::where('id', $id)->first();
-        $modelo->load('marca');
+        $cliente = Clientes::where('id', $id)->first();
 
-        if (!$modelo) {
+
+        if (!$cliente) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-
+        $cliente->load('tarjetas');
         return response()->json([
             'ok' => true,
-            'modelo' => $modelo
+            'cliente' => $cliente
         ], JsonResponse::OK);
     }
 
@@ -119,7 +125,7 @@ class ModelosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = Modelos::validateBeforeSave($request->all(), true);
+        $validateData = Clientes::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -128,20 +134,26 @@ class ModelosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $modelo = Modelos::where('id', $id)->first();
-        if (!$modelo) {
+        $cliente = Clientes::where('id', $id)->first();
+        if (!$cliente) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $modelo->modelo = $request->modelo;
-        $modelo->marca_id = $request->marca_id;
+        $cliente->nombre = $request->nombre;
+        $cliente->apellidos = $request->apellidos;
+        $cliente->telefono = $request->telefono;
+        $cliente->email = $request->email;
+        $cliente->num_licencia = $request->num_licencia;
+        $cliente->licencia_mes = $request->licencia_mes;
+        $cliente->licencia_ano = $request->licencia_ano;
 
-        if ($modelo->save()) {
+
+        if ($cliente->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Modelo actualizado correctamente'
+                'message' => 'Cliente actualizado correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -166,21 +178,21 @@ class ModelosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $modelo = Modelos::where('id', $id)->first();
+        $cliente = Clientes::where('id', $id)->first();
 
-        if (!$modelo) {
+        if (!$cliente) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $modelo->activo = false;
+        $cliente->activo = false;
 
-        if ($modelo->save()) {
+        if ($cliente->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Modelo dado de baja correctamente'
+                'message' => 'Cliente dado de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -191,34 +203,34 @@ class ModelosController extends Controller
     }
 
     public function getAll(Request $request) {
-        $modelos = Modelos::orderBy('id', 'DESC')->get();
-        $modelos->load('marca');
+        $clientes = Clientes::orderBy('id', 'DESC')->get();
+        $clientes->load('tarjetas');
 
         return response()->json([
             'ok' => true,
-            'modelos' => $modelos
+            'clientes' => $clientes
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $data = Modelos::where('id', $id)->first();
-        if (!$data) {
+        $cliente = Clientes::where('id', $id)->first();
+        if (!$cliente) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No hay registros']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        if ($data->activo === 1 || $data->activo == true) {
+        if ($cliente->activo === 1 || $cliente->activo == true) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['El registro ya fue activado']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $data->activo = true;
+        $cliente->activo = true;
 
-        if ($data->save()) {
+        if ($cliente->save()) {
             return response()->json([
                 'ok' => true,
                 'message' => 'Registro habilitado correctamente'

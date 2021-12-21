@@ -17,6 +17,7 @@ class EmpresasController extends Controller
     public function index()
     {
         $empresas = Empresas::where('activo', true)->orderBy('id', 'DESC')->get();
+        $empresas->load('comisionistas');
 
         return response()->json([
             'ok' => true,
@@ -60,6 +61,7 @@ class EmpresasController extends Controller
         $empresa->direccion = $request->direccion;
         $empresa->tel_contacto = $request->tel_contacto;
         $empresa->activo = true;
+        $empresa->paga_cupon = $request->paga_cupon;
 
         if ($empresa->save()) {
             return response()->json([
@@ -83,6 +85,7 @@ class EmpresasController extends Controller
     public function show($id)
     {
         $empresa = Empresas::where('id', $id)->first();
+        $empresa->load('comisionistas');
 
         if (!$empresa) {
             return response()->json([
@@ -141,6 +144,7 @@ class EmpresasController extends Controller
         $empresa->direccion = $request->direccion;
         $empresa->tel_contacto = $request->tel_contacto;
         $empresa->activo = true;
+        $empresa->paga_cupon = $request->paga_cupon;
 
         if ($empresa->save()) {
             return response()->json([
@@ -196,6 +200,7 @@ class EmpresasController extends Controller
 
     public function getAll(Request $request) {
         $empresas = Empresas::orderBy('id', 'DESC')->get();
+        $empresas->load('comisionistas');
 
         return response()->json([
             'ok' => true,

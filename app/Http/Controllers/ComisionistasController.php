@@ -3,24 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Enums\VehiculoStatusEnum;
-use App\Models\Vehiculos;
+use App\Models\Comisionistas;
 use Illuminate\Http\Request;
 
-class VehiculosController extends Controller
+class ComisionistasController extends Controller
 {
-   /**
+     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $vehiculos = Vehiculos::where('activo', true)->orderBy('id', 'DESC')->get();
+        $comisionistas = Comisionistas::where('activo', true)->orderBy('id', 'DESC')->get();
+        $comisionistas->load('comisionista');
 
         return response()->json([
             'ok' => true,
-            'vehiculos' => $vehiculos
+            'comisionistas' => $comisionistas
         ], JsonResponse::OK);
     }
 
@@ -45,7 +45,7 @@ class VehiculosController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = Vehiculos::validateBeforeSave($request->all());
+        $validateData = Comisionistas::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -54,36 +54,20 @@ class VehiculosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $vehiculo = new Vehiculos();
-        $vehiculo->modelo = $request->modelo;
-        $vehiculo->modelo_ano = $request->modelo_ano;
-        $vehiculo->marca_id = $request->marca_id;
-        $vehiculo->placas = $request->placas;
-        $vehiculo->num_poliza_seg = $request->num_poliza_seg;
-        $vehiculo->km_recorridos = $request->km_recorridos;
-        $vehiculo->categoria_vehiculo_id = $request->categoria_vehiculo_id;
-        $vehiculo->color = $request->color;
-        $vehiculo->version = $request->version;
-        $vehiculo->activo = 1;
-        $vehiculo->estatus = VehiculoStatusEnum::DISPONIBLE;
+        $comisionista = new Comisionistas();
+        $comisionista->nombre = $request->nombre;
+        $comisionista->apellidos = $request->apellidos;
+        $comisionista->nombre_empresa = $request->nombre_empresa;
+        $comisionista->empresa_id = $request->empresa_id;
+        $comisionista->tel_contacto = $request->tel_contacto;
+        $comisionista->email_contacto = $request->email_contacto;
+        $comisionista->activo = true;
+        $comisionista->comisiones_pactadas = $request->comisiones_pactadas;
 
-        if ($request->has('prox_servicio')) {
-            $vehiculo->prox_servicio = $request->prox_servicio;
-        }
-        if ($request->has('cant_combustible')) {
-            $vehiculo->cant_combustible = $request->cant_combustible;
-        }
-        if($request->has('cap_tanque')) {
-            $vehiculo->cap_tanque = $request->cap_tanque;
-        }
-        if ($request->has('precio_renta')) {
-            $vehiculo->precio_renta = $request->precio_renta;
-        }
-
-        if ($vehiculo->save()) {
+        if ($comisionista->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Véhiculo registrado correctamente'
+                'message' => 'Comisionista registrado correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -101,9 +85,10 @@ class VehiculosController extends Controller
      */
     public function show($id)
     {
-        $vehiculo = Vehiculos::where('id', $id)->first();
+        $comisionista = Comisionistas::where('id', $id)->first();
+        $comisionista->load('empresa');
 
-        if (!$vehiculo) {
+        if (!$comisionista) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
@@ -112,7 +97,7 @@ class VehiculosController extends Controller
 
         return response()->json([
             'ok' => true,
-            'vehiculo' => $vehiculo
+            'comisionista' => $comisionista
         ], JsonResponse::OK);
     }
 
@@ -139,7 +124,7 @@ class VehiculosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = Vehiculos::validateBeforeSave($request->all(), true);
+        $validateData = Comisionistas::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -148,40 +133,26 @@ class VehiculosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $vehiculo = Vehiculos::where('id', $id)->first();
-        if (!$vehiculo) {
+        $comisionista = Comisionistas::where('id', $id)->first();
+        if (!$comisionista) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $vehiculo->modelo = $request->modelo;
-        $vehiculo->modelo_ano = $request->modelo_ano;
-        $vehiculo->marca_id = $request->marca_id;
-        $vehiculo->placas = $request->placas;
-        $vehiculo->num_poliza_seg = $request->num_poliza_seg;
-        $vehiculo->km_recorridos = $request->km_recorridos;
-        $vehiculo->categoria_vehiculo_id = $request->categoria_vehiculo_id;
-        $vehiculo->color = $request->color;
-        $vehiculo->version = $request->version;
+        $comisionista->nombre = $request->nombre;
+        $comisionista->apellidos = $request->apellidos;
+        $comisionista->nombre_empresa = $request->nombre_empresa;
+        $comisionista->empresa_id = $request->empresa_id;
+        $comisionista->tel_contacto = $request->tel_contacto;
+        $comisionista->email_contacto = $request->email_contacto;
+        //$comisionista->activo = true;
+        $comisionista->comisiones_pactadas = $request->comisiones_pactadas;
 
-        if ($request->has('prox_servicio')) {
-            $vehiculo->prox_servicio = $request->prox_servicio;
-        }
-        if ($request->has('cant_combustible')) {
-            $vehiculo->cant_combustible = $request->cant_combustible;
-        }
-        if($request->has('cap_tanque')) {
-            $vehiculo->cap_tanque = $request->cap_tanque;
-        }
-        if ($request->has('precio_renta')) {
-            $vehiculo->precio_renta = $request->precio_renta;
-        }
-
-        if ($vehiculo->save()) {
+        if ($comisionista->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Véhiculo actualizado correctamente'
+                'message' => 'Comisionista actualizado correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -206,21 +177,21 @@ class VehiculosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $vehiculo = Vehiculos::where('id', $id)->first();
+        $comisionista = Comisionistas::where('id', $id)->first();
 
-        if (!$vehiculo) {
+        if (!$comisionista) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $vehiculo->activo = false;
+        $comisionista->activo = false;
 
-        if ($vehiculo->save()) {
+        if ($comisionista->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Véhiculo dado de baja correctamente'
+                'message' => 'Comisionista dado de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -231,34 +202,34 @@ class VehiculosController extends Controller
     }
 
     public function getAll(Request $request) {
-        $vehiculos = Vehiculos::orderBy('id', 'DESC')->get();
-        $vehiculos->load('marca', 'categoria');
+        $comisionistas = Comisionistas::orderBy('id', 'DESC')->get();
+        $comisionistas->load('empresa');
 
         return response()->json([
             'ok' => true,
-            'vehiculos' => $vehiculos
+            'comisionistas' => $comisionistas
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $vehiculo = Vehiculos::where('id', $id)->first();
-        if (!$vehiculo) {
+        $comisionista = Comisionistas::where('id', $id)->first();
+        if (!$comisionista) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No hay registros']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        if ($vehiculo->activo === 1 || $vehiculo->activo == true) {
+        if ($comisionista->activo === 1 || $comisionista->activo == true) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['El registro ya fue activado']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $vehiculo->activo = true;
+        $comisionista->activo = true;
 
-        if ($vehiculo->save()) {
+        if ($comisionista->save()) {
             return response()->json([
                 'ok' => true,
                 'message' => 'Registro habilitado correctamente'
