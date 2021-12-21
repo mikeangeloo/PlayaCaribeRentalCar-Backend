@@ -483,9 +483,58 @@ class SessionController extends Controller
         ], JsonResponse::OK);
     }
 
+    public function changePwdAdmin(Request $request) {
+        $user = $request->user;
+        $role = $user->rol;
+
+        $validRoles = ['ADMINISTRADOR', 'GERENTE'];
+
+        if (in_array(Str::upper($role->rol), $validRoles) === false) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['No tiene privilegios para cambiar la contraseña '. Str::upper($role->rol)]
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $validateData = Validator::make($request->all(), [
+            'password' => 'required|string|min:6|max:12',
+            'user_id' => 'required|numeric|exists:usuarios,id'
+        ]);
+
+        if ($validateData->fails()) {
+            return response()->json([
+                'ok' => false,
+                'errors' => $validateData->errors()->all()
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $findUser = User::where('id', $request->user_id)->first();
+
+        if (!$findUser) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['El usuario no fue encontrado']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $findUser->password = Hash::make($request->password);
+
+        if ($findUser->save()) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Se ha cambiado la contraseña correctamente'
+            ], JsonResponse::OK);
+        } else {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Algo salio mal, intente nuevamente']
+            ], JsonResponse::BAD_REQUEST);
+        }
+    }
+
     //region PRIVATE FUNCTIONS
     private function checkRecoveryToken($token) {
-        $validate = UserVerificationToken::select('token', 'type', 'foreign_id', 'audience')->where('token', '=', $token)->where('active', '=', true)->orderBy('id', 'DESC')->first();
+        $validate = UserVerificationToken::select('token', 'type', 'foreign_id', 'audience')->where('token', '=', $token)->where('active', '=', true)->orderBy('id', 'ASC')->first();
 
         if (!$validate) {
             return (object) ['ok' => false, 'errors' => ['Token inválido']];

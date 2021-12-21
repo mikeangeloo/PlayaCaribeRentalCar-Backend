@@ -16,7 +16,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $usuarios = User::where('activo', true)->orderBy('id', 'DESC')->get();
+        $usuarios = User::where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
@@ -215,7 +215,7 @@ class UsersController extends Controller
 
     public function getAll(Request $request) {
         $user = $request->user;
-        $users = User::orderBy('id', 'DESC')->where('id', '!=', $user->id)->get();
+        $users = User::orderBy('id', 'ASC')->where('id', '!=', $user->id)->get();
         $users->load('area_trabajo', 'rol', 'sucursal');
 
         return response()->json([

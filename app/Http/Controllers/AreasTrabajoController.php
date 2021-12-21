@@ -15,7 +15,7 @@ class AreasTrabajoController extends Controller
      */
     public function index()
     {
-        $areasTrabajo = AreasTrabajo::where('activo', true)->orderBy('id', 'DESC')->get();
+        $areasTrabajo = AreasTrabajo::where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
@@ -187,7 +187,7 @@ class AreasTrabajoController extends Controller
     }
 
     public function getAll(Request $request) {
-        $areasTrabajo = AreasTrabajo::orderBy('id', 'DESC')->get();
+        $areasTrabajo = AreasTrabajo::orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,

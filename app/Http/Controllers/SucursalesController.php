@@ -16,7 +16,7 @@ class SucursalesController extends Controller
      */
     public function index()
     {
-        $sucursales = Sucursales::where('activo', true)->orderBy('id', 'DESC')->get();
+        $sucursales = Sucursales::where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
@@ -194,7 +194,7 @@ class SucursalesController extends Controller
     }
 
     public function getAll(Request $request) {
-        $sucursales = Sucursales::orderBy('id', 'DESC')->get();
+        $sucursales = Sucursales::orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,

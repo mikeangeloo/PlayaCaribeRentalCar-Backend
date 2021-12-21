@@ -15,7 +15,7 @@ class MarcasVehiculosController extends Controller
      */
     public function index()
     {
-        $marcas = MarcasVehiculos::where('activo', true)->orderBy('id', 'DESC')->get();
+        $marcas = MarcasVehiculos::where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
@@ -189,7 +189,7 @@ class MarcasVehiculosController extends Controller
     }
 
     public function getAll(Request $request) {
-        $marcas = MarcasVehiculos::orderBy('id', 'DESC')->get();
+        $marcas = MarcasVehiculos::orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
