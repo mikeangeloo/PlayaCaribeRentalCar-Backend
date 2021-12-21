@@ -15,7 +15,7 @@ class ClientesController extends Controller
      */
     public function index()
     {
-        $clientes = Clientes::where('activo', true)->orderBy('id', 'DESC')->get();
+        $clientes = Clientes::where('activo', true)->orderBy('id', 'ASC')->get();
         $clientes->load('tarjetas');
 
         return response()->json([
@@ -203,7 +203,7 @@ class ClientesController extends Controller
     }
 
     public function getAll(Request $request) {
-        $clientes = Clientes::orderBy('id', 'DESC')->get();
+        $clientes = Clientes::orderBy('id', 'ASC')->get();
         $clientes->load('tarjetas');
 
         return response()->json([

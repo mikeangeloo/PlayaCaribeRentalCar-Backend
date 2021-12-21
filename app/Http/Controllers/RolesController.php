@@ -15,7 +15,7 @@ class RolesController extends Controller
      */
     public function index()
     {
-        $roles = Roles::where('activo', true)->orderBy('id', 'DESC')->get();
+        $roles = Roles::where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
@@ -187,7 +187,7 @@ class RolesController extends Controller
     }
 
     public function getAll(Request $request) {
-        $roles = Roles::orderBy('id', 'DESC')->get();
+        $roles = Roles::orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,

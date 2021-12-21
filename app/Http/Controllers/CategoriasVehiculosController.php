@@ -15,7 +15,7 @@ class CategoriasVehiculosController extends Controller
      */
     public function index()
     {
-        $categorias = CategoriasVehiculos::where('activo', true)->orderBy('id', 'DESC')->get();
+        $categorias = CategoriasVehiculos::where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
@@ -187,7 +187,7 @@ class CategoriasVehiculosController extends Controller
     }
 
     public function getAll(Request $request) {
-        $categorias = CategoriasVehiculos::orderBy('id', 'DESC')->get();
+        $categorias = CategoriasVehiculos::orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,

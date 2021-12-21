@@ -16,7 +16,7 @@ class EmpresasController extends Controller
      */
     public function index()
     {
-        $empresas = Empresas::where('activo', true)->orderBy('id', 'DESC')->get();
+        $empresas = Empresas::where('activo', true)->orderBy('id', 'ASC')->get();
         $empresas->load('comisionistas');
 
         return response()->json([
@@ -199,7 +199,7 @@ class EmpresasController extends Controller
     }
 
     public function getAll(Request $request) {
-        $empresas = Empresas::orderBy('id', 'DESC')->get();
+        $empresas = Empresas::orderBy('id', 'ASC')->get();
         $empresas->load('comisionistas');
 
         return response()->json([

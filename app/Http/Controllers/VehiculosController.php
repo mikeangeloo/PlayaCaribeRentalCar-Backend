@@ -16,7 +16,7 @@ class VehiculosController extends Controller
      */
     public function index()
     {
-        $vehiculos = Vehiculos::where('activo', true)->orderBy('id', 'DESC')->get();
+        $vehiculos = Vehiculos::where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
@@ -67,6 +67,7 @@ class VehiculosController extends Controller
         $vehiculo->activo = 1;
         $vehiculo->estatus = VehiculoStatusEnum::DISPONIBLE;
 
+
         if ($request->has('prox_servicio')) {
             $vehiculo->prox_servicio = $request->prox_servicio;
         }
@@ -78,6 +79,10 @@ class VehiculosController extends Controller
         }
         if ($request->has('precio_renta')) {
             $vehiculo->precio_renta = $request->precio_renta;
+        }
+
+        if ($request->has('codigo')) {
+            $vehiculo->codigo = $request->codigo;
         }
 
         if ($vehiculo->save()) {
@@ -178,6 +183,10 @@ class VehiculosController extends Controller
             $vehiculo->precio_renta = $request->precio_renta;
         }
 
+        if ($request->has('codigo')) {
+            $vehiculo->codigo = $request->codigo;
+        }
+
         if ($vehiculo->save()) {
             return response()->json([
                 'ok' => true,
@@ -231,7 +240,7 @@ class VehiculosController extends Controller
     }
 
     public function getAll(Request $request) {
-        $vehiculos = Vehiculos::orderBy('id', 'DESC')->get();
+        $vehiculos = Vehiculos::orderBy('id', 'ASC')->get();
         $vehiculos->load('marca', 'categoria');
 
         return response()->json([

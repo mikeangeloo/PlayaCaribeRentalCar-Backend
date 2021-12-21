@@ -16,7 +16,7 @@ class TarjetasController extends Controller
      */
     public function index()
     {
-        $tarjetas = Tarjetas::where('activo', true)->orderBy('id', 'DESC')->get();
+        $tarjetas = Tarjetas::where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
@@ -213,7 +213,7 @@ class TarjetasController extends Controller
     }
 
     public function getAll(Request $request) {
-        $tarjetas = Tarjetas::orderBy('id', 'DESC')->get();
+        $tarjetas = Tarjetas::orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,

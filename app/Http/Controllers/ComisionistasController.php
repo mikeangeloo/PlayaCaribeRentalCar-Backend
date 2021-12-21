@@ -15,7 +15,7 @@ class ComisionistasController extends Controller
      */
     public function index()
     {
-        $comisionistas = Comisionistas::where('activo', true)->orderBy('id', 'DESC')->get();
+        $comisionistas = Comisionistas::where('activo', true)->orderBy('id', 'ASC')->get();
         $comisionistas->load('comisionista');
 
         return response()->json([
@@ -202,7 +202,7 @@ class ComisionistasController extends Controller
     }
 
     public function getAll(Request $request) {
-        $comisionistas = Comisionistas::orderBy('id', 'DESC')->get();
+        $comisionistas = Comisionistas::orderBy('id', 'ASC')->get();
         $comisionistas->load('empresa');
 
         return response()->json([
