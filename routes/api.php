@@ -28,6 +28,10 @@ Route::prefix('dash')->group(function () {
 
     Route::middleware('verify.jwt')->group(function () {
 
+        //region CONTRATOS
+        Route::post('contratos/save-progress', 'ContratoController@saveProcess');
+        //endregion
+
 
         //region Catálogo de vehículos
 
@@ -61,6 +65,7 @@ Route::prefix('dash')->group(function () {
 
         Route::get('sucursales/all', 'SucursalesController@getAll');
         Route::get('sucursales/enable/{id}', 'SucursalesController@enable');
+        Route::get('sucursales/list', 'SucursalesController@getList');
         Route::resource('sucursales', 'SucursalesController');
         //endregion
 
