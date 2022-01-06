@@ -81,6 +81,7 @@ Route::prefix('dash')->group(function () {
 
         Route::get('clientes/all', 'ClientesController@getAll');
         Route::get('clientes/enable/{id}', 'ClientesController@enable');
+        Route::get('clientes/list', 'ClientesController@getList');
         Route::resource('clientes', 'ClientesController');
 
         Route::get('tarjetas/all', 'TarjetasController@getAll');

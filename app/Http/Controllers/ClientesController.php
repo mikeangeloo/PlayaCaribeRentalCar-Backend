@@ -212,6 +212,15 @@ class ClientesController extends Controller
         ], JsonResponse::OK);
     }
 
+    public function getList(Request $request) {
+        $clientes = Clientes::orderBy('id', 'ASC')->where('activo', true)->get();
+        $clientes->makeHidden(['created_at', 'updated_at', 'activo']);
+        return response()->json([
+            'ok' => true,
+            'data' => $clientes
+        ], JsonResponse::OK);
+    }
+
     public function enable($id) {
         $cliente = Clientes::where('id', $id)->first();
         if (!$cliente) {

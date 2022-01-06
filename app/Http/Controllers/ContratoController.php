@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
+use App\Models\Clientes;
 use App\Models\Contrato;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,18 +13,20 @@ use PHPUnit\Framework\Constraint\JsonMatches;
 class ContratoController extends Controller
 {
     public function saveProcess(Request $request) {
+
+        $validateInit = Contrato::validateBeforeSaveProgress($request->all());
+        if ($validateInit !== true) {
+            return response()->json([
+                'ok' => false,
+                'errors' => $validateInit
+            ], JsonResponse::BAD_REQUEST);
+        }
+
         $contractInitials = 'AP';
         //dd($contractInitials.sprintf('%03d', '33333'));
         $message = 'Avance guardado correctamente';
         $user = $request->user;
-        $validate = Contrato::validateBeforeSave($request->all());
 
-        if ($validate !== true) {
-            return response()->json([
-                'ok' => false,
-                'errors' => $validate
-            ], JsonResponse::BAD_REQUEST);
-        }
 
         $contrato = new Contrato();
 
@@ -33,18 +36,64 @@ class ContratoController extends Controller
         }
 
         DB::beginTransaction();
+        switch ($request->seccion) {
+            case 'datos_generales':
+                $validate = Contrato::validateDatosGeneralesBeforeSave($request->all());
 
-        $contrato->renta_of_id = $request->renta_of_id;
-        $contrato->renta_of_codigo = $request->renta_of_codigo;
-        $contrato->renta_of_dir = $request->renta_of_dir;
-        $contrato->renta_of_fecha = $request->renta_of_fecha;
-        $contrato->renta_of_hora = $request->renta_of_hora;
-        $contrato->retorno_of_id = $request->retorno_of_id;
-        $contrato->retorno_of_codigo = $request->retorno_of_codigo;
-        $contrato->retorno_of_dir = $request->retorno_of_dir;
-        $contrato->retorno_of_fecha = $request->retorno_of_fecha;
-        $contrato->retorno_of_hora = $request->retorno_of_hora;
-        $contrato->user_create_id = $user->id;
+                if ($validate !== true) {
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => $validate
+                    ], JsonResponse::BAD_REQUEST);
+                }
+                $contrato->renta_of_id = $request->renta_of_id;
+                $contrato->renta_of_codigo = $request->renta_of_codigo;
+                $contrato->renta_of_dir = $request->renta_of_dir;
+                $contrato->renta_of_fecha = $request->renta_of_fecha;
+                $contrato->renta_of_hora = $request->renta_of_hora;
+                $contrato->retorno_of_id = $request->retorno_of_id;
+                $contrato->retorno_of_codigo = $request->retorno_of_codigo;
+                $contrato->retorno_of_dir = $request->retorno_of_dir;
+                $contrato->retorno_of_fecha = $request->retorno_of_fecha;
+                $contrato->retorno_of_hora = $request->retorno_of_hora;
+                $contrato->user_create_id = $user->id;
+                break;
+            case 'datos_cliente':
+                $validate = Clientes::validateBeforeSave($request->all());
+                if ($validate !== true) {
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => $validate
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+                $cliente = new Clientes();
+                if ($request->has('cliente_id')) {
+                    $cliente = Clientes::where('id', $request->cliente_id)->first();
+                }
+                $cliente->nombre = $request->nombre;
+                $cliente->apellidos = $request->apellidos;
+                $cliente->telefono = $request->telefono;
+                $cliente->email = $request->email;
+                $cliente->num_licencia = $request->num_licencia;
+                $cliente->licencia_mes = $request->licencia_mes;
+                $cliente->licencia_ano = $request->licencia_ano;
+                $cliente->direccion = (isset($request->direccion)) ? $request->direccion : null;
+                $cliente->activo = true;
+
+                if ($cliente->save() === false) {
+                    DB::rollBack();
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+                $contrato->cliente_id = $cliente->id;
+
+                break;
+        }
+
         $contrato->estatus = ContratoStatusEnum::BORRADOR;
 
         if ($contrato->save()) {

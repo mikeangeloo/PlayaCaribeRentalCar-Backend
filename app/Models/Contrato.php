@@ -16,7 +16,24 @@ class Contrato extends Model
         'etapas_guardadas' => 'array'
     ];
 
-    public static function validateBeforeSave($request) {
+    public function cliente() {
+        return $this->hasOne(Clientes::class, 'id', 'cliente_id');
+    }
+
+    public static function validateBeforeSaveProgress($request) {
+        $validateData = Validator::make($request, [
+            'seccion' => 'required|string',
+            'num_contrato' => 'nullable|exists:contratos,num_contrato'
+        ]);
+
+        if ($validateData->fails()) {
+            return $validateData->errors()->all();
+        } else {
+            return true;
+        }
+    }
+
+    public static function validateDatosGeneralesBeforeSave($request) {
         $validateData = Validator::make($request, [
             'renta_of_id' => 'required|exists:sucursales,id',
             'renta_of_codigo' => 'required|string',
@@ -58,9 +75,15 @@ class Contrato extends Model
             }
         }
 
+        if ($contract->cliente_id) {
+            array_push($etapa, 'datos_cliente');
+        }
+
 
         $contract->etapas_guardadas = $etapa;
         $contract->save();
+
+        $contract->load('cliente');
 
         return (object) ['ok' => true, 'data' => $contract];
     }
