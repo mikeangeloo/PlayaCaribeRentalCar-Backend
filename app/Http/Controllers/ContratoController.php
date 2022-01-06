@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
 use App\Models\Contrato;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class ContratoController extends Controller
     public function saveProcess(Request $request) {
         $contractInitials = 'AP';
         //dd($contractInitials.sprintf('%03d', '33333'));
-
+        $message = 'Avance guardado correctamente';
         $user = $request->user;
         $validate = Contrato::validateBeforeSave($request->all());
 
@@ -27,6 +28,7 @@ class ContratoController extends Controller
         $contrato = new Contrato();
 
         if ($request->has('num_contrato')) {
+            $message = 'Avance actualizado correctamente';
             $contrato = Contrato::where('num_contrato', $request->num_contrato)->first();
         }
 
@@ -43,15 +45,18 @@ class ContratoController extends Controller
         $contrato->retorno_of_fecha = $request->retorno_of_fecha;
         $contrato->retorno_of_hora = $request->retorno_of_hora;
         $contrato->user_create_id = $user->id;
+        $contrato->estatus = ContratoStatusEnum::BORRADOR;
 
         if ($contrato->save()) {
             DB::commit();
+            Contrato::setEtapasGuardadas($contrato->id);
+
             $contrato->num_contrato = $contractInitials.sprintf('%03d', $contrato->id);
             $contrato->save();
 
             return response()->json([
                 'ok' => true,
-                'message' => 'Avance guardado correctamente',
+                'message' => $message,
                 'contract_number' => $contrato->num_contrato,
                 'id' => $contrato->id
             ], JsonResponse::OK);
@@ -62,5 +67,19 @@ class ContratoController extends Controller
                 'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
             ], JsonResponse::BAD_REQUEST);
         }
+    }
+
+    public function getContract(Request $request, $num_contrato) {
+
+        $getData = Contrato::setEtapasGuardadas($num_contrato);
+
+        if ($getData->ok === false) {
+            return response()->json($getData, JsonResponse::BAD_REQUEST);
+        }
+
+        return response()->json([
+            'ok' => true,
+            'data' => $getData->data
+        ], JsonResponse::OK);
     }
 }

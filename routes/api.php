@@ -30,6 +30,7 @@ Route::prefix('dash')->group(function () {
 
         //region CONTRATOS
         Route::post('contratos/save-progress', 'ContratoController@saveProcess');
+        Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
         //endregion
 
 
