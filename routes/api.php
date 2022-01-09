@@ -33,6 +33,8 @@ Route::prefix('dash')->group(function () {
         Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
         //endregion
 
+        Route::post('files/store-docs', 'DocsController@storeFiles');
+        Route::post('files/get-docs', 'DocsController@getActiveFiles');
 
         //region Catálogo de vehículos
 
