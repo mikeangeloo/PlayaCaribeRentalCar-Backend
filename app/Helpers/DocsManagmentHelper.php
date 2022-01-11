@@ -232,6 +232,13 @@ class DocsManagmentHelper
 
             $dir = $request->model_id_value.'/'.$request->tipo;
             $rand = rand(2, 100);
+
+            dd($request->file('files')[$i]->getClientMimeType() == "image/jpeg");
+            $validImageMimeTypes = ['image/png','image/jpg','image/jpeg'];
+
+            // if (in_array($request->file('files')[$i]->getClientMimeType(), $validImageMimeTypes)) {
+            //     $img = Image::make()
+            // }
             $fileName = Carbon::now()->unix().$rand.'.'.$request->file('files')[$i]->getClientOriginalExtension();
             $savedStorage = Storage::disk($request->model)->putFileAs($dir, $request->file('files')[$i], $fileName);
 
