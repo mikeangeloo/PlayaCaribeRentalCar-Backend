@@ -103,7 +103,7 @@ class DocsManagmentHelper
             }
         }
 
-        return (object) ['ok' => true, 'data' => $response];
+        return (object) ['ok' => true, 'total' => count($files), 'data' => $response];
     }
 
     public function replaceFile(Request $request) {
@@ -233,14 +233,16 @@ class DocsManagmentHelper
             $dir = $request->model_id_value.'/'.$request->tipo;
             $rand = rand(2, 100);
 
-            dd($request->file('files')[$i]->getClientMimeType() == "image/jpeg");
             $validImageMimeTypes = ['image/png','image/jpg','image/jpeg'];
 
-            // if (in_array($request->file('files')[$i]->getClientMimeType(), $validImageMimeTypes)) {
-            //     $img = Image::make()
-            // }
-            $fileName = Carbon::now()->unix().$rand.'.'.$request->file('files')[$i]->getClientOriginalExtension();
-            $savedStorage = Storage::disk($request->model)->putFileAs($dir, $request->file('files')[$i], $fileName);
+            if (in_array($request->file('files')[$i]->getClientMimeType(), $validImageMimeTypes)) {
+                $fileName = Carbon::now()->unix().$rand.'.png';
+                $img = \Image::make($request->file('files')[$i])->resize(900, null, function ($constraint) { $constraint->aspectRatio(); } );
+                $savedStorage = Storage::disk($request->model)->put($dir.'/'.$fileName, (string) $img->encode('png'));
+            } else {
+                $fileName = Carbon::now()->unix().$rand.'.'.$request->file('files')[$i]->getClientOriginalExtension();
+                $savedStorage = Storage::disk($request->model)->putFileAs($dir, $request->file('files')[$i], $fileName);
+            }
 
             if ($savedStorage === false ) {
                 $errorsDisk ++;
@@ -291,50 +293,6 @@ class DocsManagmentHelper
         }
 
         return (object) ['ok' => true, 'message' => 'Archivos almacenados correctamente', 'payload' => $_response];
-
-    }
-
-    private static function storeFile(Request $request) {
-        $dir = null;
-        $savedStorage = null;
-        $fileName = null;
-
-        $errors = 0;
-        $success = 0;
-        // Guardamos archivo
-        for ($i = 0; $i < count($request->allFiles()); $i++) {
-
-            $dir = $request->tipo;
-            $fileName = Carbon::now()->unix().'.'.$request->file('files')[$i]->getClientOriginalExtension();
-
-            $savedStorage = Storage::disk($request->model)->putFileAs($dir, $request->file('files')[$i], $fileName);
-
-            if ($savedStorage === false ) {
-                return (object) ['ok' => false, 'errors' => ['Algo salio mal al guardar el archivo en disco']];
-            }
-
-            DB::beginTransaction();
-            $message = 'Archivo almacenado correctamente';
-            $payload = [
-                'tipo' => $request->tipo,
-                'nombre_archivo' => $fileName,
-                'estatus' => DocsStatusEnuM::ACTIVO,
-                $request->model_id => $request->model_id_value,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ];
-            $saved = DB::table($request['model'])->insert(
-                $payload
-            );
-
-            if ($saved === true) {
-                DB::commit();
-                return (object) ['ok' => true, 'message' => $message];
-            } else {
-                DB::rollBack();
-                return (object) ['ok' => false, 'errors' => ['Algo salio mal al guardar el archivo']];
-            }
-        }
 
     }
 
