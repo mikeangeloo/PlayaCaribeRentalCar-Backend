@@ -40,15 +40,13 @@ class DocsManagmentHelper
             return (object) ['ok' => false, 'errors' => ['Debe existir un archivo para procesar']];
         }
 
-        if (count($getFiles['files']) > 1) {
-            $validate = self::validateFiles($request);
+        $validate = self::validateFiles($request);
 
-            if ($validate->ok === false) {
-                return $validate;
-            }
-
-            return self::storeFiles($request);
+        if ($validate->ok === false) {
+            return $validate;
         }
+
+        return self::storeFiles($request);
     }
 
     public static function getAllDocs(Request $request) {
@@ -265,7 +263,7 @@ class DocsManagmentHelper
                 DB::commit();
                 array_push($_response, [
                     'position' => $i,
-                    'error' => false,
+                    'success' => true,
                     'file_id' => $savedId,
                     'tipo' => $request->tipo,
                     'model' => $request->model,
@@ -277,7 +275,7 @@ class DocsManagmentHelper
                 $errorsDB ++;
                 array_push($_response, [
                     'position' => $i,
-                    'error' => true,
+                    'success' => false,
                     'file_id' => $savedId,
                     'model' => $request->model,
                     'model_id' => $request->model_id,
