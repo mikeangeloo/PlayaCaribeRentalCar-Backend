@@ -35,6 +35,7 @@ Route::prefix('dash')->group(function () {
 
         Route::post('files/store-docs', 'DocsController@storeFiles');
         Route::post('files/get-docs', 'DocsController@getActiveFiles');
+        Route::post('files/delete', 'DocsController@deleteFile');
 
         //region Catálogo de vehículos
 

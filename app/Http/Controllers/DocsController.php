@@ -26,4 +26,14 @@ class DocsController extends Controller
             return response()->json($files, JsonResponse::OK);
         }
     }
+
+    public function deleteFile(Request $request) {
+        $files = DocsManagmentHelper::deleteFile($request);
+        //return $files;
+        if ($files->ok === false) {
+            return response()->json($files, JsonResponse::BAD_REQUEST);
+        } else {
+            return response()->json($files, JsonResponse::OK);
+        }
+    }
 }
