@@ -207,7 +207,8 @@ class SucursalesController extends Controller
 
         return response()->json([
             'ok' => true,
-            'data' => $sucursales
+            'data' => $sucursales,
+            'fullData' => $sucursales
         ], JsonResponse::OK);
     }
 

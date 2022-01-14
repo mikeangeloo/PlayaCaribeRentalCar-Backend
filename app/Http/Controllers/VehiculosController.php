@@ -85,6 +85,10 @@ class VehiculosController extends Controller
             $vehiculo->codigo = $request->codigo;
         }
 
+        if ($request->has('num_serie')) {
+            $vehiculo->num_serie = $request->num_serie;
+        }
+
         if ($vehiculo->save()) {
             return response()->json([
                 'ok' => true,
@@ -187,6 +191,10 @@ class VehiculosController extends Controller
             $vehiculo->codigo = $request->codigo;
         }
 
+        if ($request->has('num_serie')) {
+            $vehiculo->num_serie = $request->num_serie;
+        }
+
         if ($vehiculo->save()) {
             return response()->json([
                 'ok' => true,
@@ -273,5 +281,31 @@ class VehiculosController extends Controller
                 'message' => 'Registro habilitado correctamente'
             ], JsonResponse::OK);
         }
+    }
+
+    public function getList(Request $request) {
+        $vehiculos = Vehiculos::orderBy('id', 'ASC')->where('activo', true)->get();
+        $vehiculos->load('marca', 'categoria');
+
+        $_vehiculos = [];
+
+        for ($i = 0; $i < count($vehiculos); $i++) {
+            array_push($_vehiculos, [
+                'id' => $vehiculos[$i]->id,
+                'codigo' => $vehiculos[$i]->codigo,
+                'modelo' => $vehiculos[$i]->modelo,
+                'modelo_ano' => $vehiculos[$i]->modelo_ano,
+                'marca' => $vehiculos[$i]->marca->marca,
+                'color' => $vehiculos[$i]->color,
+                'placas' => $vehiculos[$i]->placas,
+                'num_serie' => $vehiculos[$i]->num_serie
+            ]);
+        }
+
+        return response()->json([
+            'ok' => true,
+            'data' => $_vehiculos,
+            'fullData' => $vehiculos
+        ], JsonResponse::OK);
     }
 }

@@ -217,7 +217,8 @@ class ClientesController extends Controller
         $clientes->makeHidden(['created_at', 'updated_at', 'activo']);
         return response()->json([
             'ok' => true,
-            'data' => $clientes
+            'data' => $clientes,
+            'fullData' => $clientes
         ], JsonResponse::OK);
     }
 
