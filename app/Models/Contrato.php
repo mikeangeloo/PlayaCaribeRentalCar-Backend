@@ -20,6 +20,10 @@ class Contrato extends Model
         return $this->hasOne(Clientes::class, 'id', 'cliente_id');
     }
 
+    public function vehiculo() {
+        return $this->hasOne(Vehiculos::class, 'id', 'vehiculo_id');
+    }
+
     public static function validateBeforeSaveProgress($request) {
         $validateData = Validator::make($request, [
             'seccion' => 'required|string',
@@ -55,6 +59,23 @@ class Contrato extends Model
         }
     }
 
+    public static function validateDatosVehiculo($request) {
+        $validateData = Validator::make($request, [
+            'vehiculo_id' => 'required|exists:vehiculos,id',
+            'km_salida' => 'nullable|numeric',
+            'km_llegada' => 'nullable|numeric',
+            'km_recorrido' => 'nullable|numeric',
+            'gas_salida' => 'nullable|string|max:100',
+            'gas_llegada' => 'nullable|string|max:100'
+        ]);
+
+        if ($validateData->fails()) {
+            return $validateData->errors()->all();
+        } else {
+            return true;
+        }
+    }
+
     public static function setEtapasGuardadas($num_contrato) {
         $contract = Contrato::where('num_contrato', $num_contrato)->first();
 
@@ -79,11 +100,21 @@ class Contrato extends Model
             array_push($etapa, 'datos_cliente');
         }
 
+        $vehiculoVerifyColumns = [
+            'vehiculo_id', 'km_salida', 'km_llegada', 'km_recorrido', 'gas_salida', 'gas_llegada'
+        ];
+        for ($i = 0; $i < count($vehiculoVerifyColumns); $i ++) {
+            if (!is_null($contract->{$vehiculoVerifyColumns[$i]})) {
+                array_push($etapa, 'datos_vehiculo');
+                break;
+            }
+        }
 
         $contract->etapas_guardadas = $etapa;
         $contract->save();
 
         $contract->load('cliente');
+        $contract->load('vehiculo.marca');
 
         return (object) ['ok' => true, 'data' => $contract];
     }
