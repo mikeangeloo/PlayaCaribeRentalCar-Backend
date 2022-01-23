@@ -47,6 +47,10 @@ Route::prefix('dash')->group(function () {
         Route::get('categorias-vehiculos/enable/{id}', 'CategoriasVehiculosController@enable');
         Route::resource('categorias-vehiculos', 'CategoriasVehiculosController');
 
+        Route::get('clases-vehiculos/all', 'ClasesVehiculosController@getAll');
+        Route::get('clases-vehiculos/enable/{id}', 'ClasesVehiculosController@enable');
+        Route::resource('clases-vehiculos', 'ClasesVehiculosController');
+
         Route::get('vehiculos/all', 'VehiculosController@getAll');
         Route::get('vehiculos/enable/{id}', 'VehiculosController@enable');
         Route::get('vehiculos/list', 'VehiculosController@getList');
