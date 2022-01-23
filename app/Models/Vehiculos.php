@@ -37,7 +37,8 @@ class Vehiculos extends Model
             'cap_tanque' => 'nullable|string|max:100',
             'version' => 'required|numeric',
             'precio_renta' => 'nullable|numeric',
-            'codigo' => 'nullable|string|max:200'
+            'codigo' => 'nullable|string|max:200',
+            'num_serie' => 'required|string|max:100'
         ]);
 
 

@@ -202,6 +202,16 @@ class SucursalesController extends Controller
         ], JsonResponse::OK);
     }
 
+    public function getList(Request $request) {
+        $sucursales = Sucursales::orderBy('id', 'ASC')->select('id', 'codigo', 'nombre', 'direccion', 'cp')->where('activo', true)->get();
+
+        return response()->json([
+            'ok' => true,
+            'data' => $sucursales,
+            'fullData' => $sucursales
+        ], JsonResponse::OK);
+    }
+
     public function enable($id) {
         $data = Sucursales::where('id', $id)->first();
         if (!$data) {

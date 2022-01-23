@@ -28,6 +28,14 @@ Route::prefix('dash')->group(function () {
 
     Route::middleware('verify.jwt')->group(function () {
 
+        //region CONTRATOS
+        Route::post('contratos/save-progress', 'ContratoController@saveProcess');
+        Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
+        //endregion
+
+        Route::post('files/store-docs', 'DocsController@storeFiles');
+        Route::post('files/get-docs', 'DocsController@getActiveFiles');
+        Route::post('files/delete', 'DocsController@deleteFile');
 
         //region Catálogo de vehículos
 
@@ -41,6 +49,7 @@ Route::prefix('dash')->group(function () {
 
         Route::get('vehiculos/all', 'VehiculosController@getAll');
         Route::get('vehiculos/enable/{id}', 'VehiculosController@enable');
+        Route::get('vehiculos/list', 'VehiculosController@getList');
         Route::resource('vehiculos', 'VehiculosController');
 
         //endregion
@@ -61,6 +70,7 @@ Route::prefix('dash')->group(function () {
 
         Route::get('sucursales/all', 'SucursalesController@getAll');
         Route::get('sucursales/enable/{id}', 'SucursalesController@enable');
+        Route::get('sucursales/list', 'SucursalesController@getList');
         Route::resource('sucursales', 'SucursalesController');
         //endregion
 
@@ -75,6 +85,7 @@ Route::prefix('dash')->group(function () {
 
         Route::get('clientes/all', 'ClientesController@getAll');
         Route::get('clientes/enable/{id}', 'ClientesController@enable');
+        Route::get('clientes/list', 'ClientesController@getList');
         Route::resource('clientes', 'ClientesController');
 
         Route::get('tarjetas/all', 'TarjetasController@getAll');

@@ -23,6 +23,7 @@ class Clientes extends Model
             'num_licencia' => 'required|string',
             'licencia_mes' => 'required',
             'licencia_ano' => 'required',
+            'direccion' => 'nullable|string|max:100'
         ]);
 
         if ($validateData->fails()) {

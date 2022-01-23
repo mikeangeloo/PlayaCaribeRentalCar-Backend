@@ -55,7 +55,7 @@ class User extends Authenticatable
     }
 
     public function sucursal() {
-        return $this->belongsTo(Sucursales::class, 'sucursal_id', 'id')->select('id', 'nombre');
+        return $this->belongsTo(Sucursales::class, 'sucursal_id', 'id')->select('id', 'codigo', 'nombre', 'direccion', 'cp');
     }
 
     public static function validateBeforeSave($request, $isUpdate = null) {
