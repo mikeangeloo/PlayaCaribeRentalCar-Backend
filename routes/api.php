@@ -97,6 +97,15 @@ Route::prefix('dash')->group(function () {
         Route::resource('tarjetas', 'TarjetasController');
         //endregion
 
+        //region CONFIGURACIÓN APP
+        Route::resource('tipos-tarifas', 'TiposTarifasController');
+
+        Route::get('tarifas-extras/all', 'TarifasExtrasController@getAll');
+        Route::get('tarifas-extras/enable/{id}', 'TarifasExtrasController@enable');
+        Route::get('tarifas-extras/list', 'TarifasExtrasController@getList');
+        Route::resource('tarifas-extras', 'TarifasExtrasController');
+        //endregion
+
     });
 });
 
