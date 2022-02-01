@@ -39,17 +39,18 @@ class Contrato extends Model
 
     public static function validateDatosGeneralesBeforeSave($request) {
         $validateData = Validator::make($request, [
-            'renta_of_id' => 'required|exists:sucursales,id',
-            'renta_of_codigo' => 'required|string',
-            'renta_of_dir' => 'required|string',
-            'renta_of_fecha' => 'required|date',
-            'renta_of_hora' => 'required',
-
-            'retorno_of_id' => 'required|exists:sucursales,id',
-            'retorno_of_codigo' => 'required|string',
-            'retorno_of_dir' => 'required|string',
-            'retorno_of_fecha' => 'required|date',
-            'retorno_of_hora' => 'required',
+            'vehiculo_id' => 'required|exists:vehiculos,id',
+            'tipo_tarifa_id' => 'required|exists:tipos_tarifas,id',
+            'tipo_tarifa' => 'required|string',
+            'precio_unitario_inicial' => 'required|numeric',
+            'precio_unitario_final' => 'required|numeric',
+            'rango_fechas' => 'required',
+            'rango_fechas.fecha_salida' => 'required',
+            'rango_fechas.fecha_retorno' => 'required',
+            'total_dias' => 'required|numeric',
+            'ub_salida_id' => 'required',
+            'ub_retorno_id' => 'required',
+            'hora_elaboracion' => 'required',
         ]);
 
         if ($validateData->fails()) {
@@ -85,9 +86,17 @@ class Contrato extends Model
         $etapa = [];
 
         $datosGeneralesColumns = [
-            'renta_of_id','renta_of_codigo','renta_of_dir','renta_of_fecha',
-            'renta_of_hora','retorno_of_id','retorno_of_codigo','retorno_of_dir',
-            'retorno_of_fecha','retorno_of_hora'
+            'vehiculo_id',
+            'tipo_tarifa_id',
+            'tipo_tarifa',
+            'precio_unitario_inicial',
+            'precio_unitario_final',
+            'total_dias',
+            'ub_salida_id',
+            'ub_retorno_id',
+            'hora_elaboracion',
+            'fecha_salida',
+            'fecha_retorno'
         ];
         for ($i = 0; $i < count($datosGeneralesColumns); $i ++) {
             if (!is_null($contract->{$datosGeneralesColumns[$i]})) {
@@ -115,7 +124,8 @@ class Contrato extends Model
 
         $contract->load('cliente');
         $contract->load('vehiculo.marca');
-        $contract->load('vehiculo.tarifas');
+        //$contract->load('vehiculo.tarifas');
+        $contract->vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $contract->vehiculo->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
 
         return (object) ['ok' => true, 'data' => $contract];
     }

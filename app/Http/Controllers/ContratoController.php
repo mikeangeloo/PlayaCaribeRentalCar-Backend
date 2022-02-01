@@ -46,16 +46,19 @@ class ContratoController extends Controller
                         'errors' => $validate
                     ], JsonResponse::BAD_REQUEST);
                 }
-                $contrato->renta_of_id = $request->renta_of_id;
-                $contrato->renta_of_codigo = $request->renta_of_codigo;
-                $contrato->renta_of_dir = $request->renta_of_dir;
-                $contrato->renta_of_fecha = $request->renta_of_fecha;
-                $contrato->renta_of_hora = $request->renta_of_hora;
-                $contrato->retorno_of_id = $request->retorno_of_id;
-                $contrato->retorno_of_codigo = $request->retorno_of_codigo;
-                $contrato->retorno_of_dir = $request->retorno_of_dir;
-                $contrato->retorno_of_fecha = $request->retorno_of_fecha;
-                $contrato->retorno_of_hora = $request->retorno_of_hora;
+                $contrato->vehiculo_id = $request->vehiculo_id;
+                $contrato->tipo_tarifa_id = $request->tipo_tarifa_id;
+                $contrato->tipo_tarifa = $request->tipo_tarifa;
+                $contrato->precio_unitario_inicial = $request->precio_unitario_inicial;
+                $contrato->precio_unitario_final = $request->precio_unitario_final;
+                $contrato->total_dias = $request->total_dias;
+                $contrato->ub_salida_id = $request->ub_salida_id;
+                $contrato->ub_retorno_id = $request->ub_retorno_id;
+                $contrato->hora_elaboracion = $request->hora_elaboracion;
+
+                $contrato->fecha_salida = $request->rango_fechas['fecha_salida'];
+                $contrato->fecha_retorno = $request->rango_fechas['fecha_retorno'];
+
                 $contrato->user_create_id = $user->id;
                 break;
             case 'datos_cliente':
@@ -113,10 +116,12 @@ class ContratoController extends Controller
 
         if ($contrato->save()) {
             DB::commit();
-            Contrato::setEtapasGuardadas($contrato->id);
+
 
             $contrato->num_contrato = $contractInitials.sprintf('%03d', $contrato->id);
             $contrato->save();
+
+            Contrato::setEtapasGuardadas($contrato->num_contrato);
 
             return response()->json([
                 'ok' => true,
