@@ -56,7 +56,6 @@ class TarifasExtrasController extends Controller
         $data = new TarifasExtras();
         $data->nombre = $request->nombre;
         $data->precio = $request->precio;
-        $data->iva = $request->iva;
         $data->activo = true;
 
         if ($data->save()) {
@@ -136,7 +135,6 @@ class TarifasExtrasController extends Controller
         }
         $data->nombre = $request->nombre;
         $data->precio = $request->precio;
-        $data->iva = $request->iva;
 
         if ($data->save()) {
             return response()->json([

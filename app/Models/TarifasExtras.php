@@ -15,8 +15,7 @@ class TarifasExtras extends Model
     public static function validateBeforeSave($request) {
         $validate = Validator::make($request, [
             'nombre' => 'required|string',
-            'precio' => 'required|numeric',
-            'iva' => 'required|numeric',
+            'precio' => 'required|numeric'
         ]);
         if ($validate->fails()) {
             return $validate->errors()->all();

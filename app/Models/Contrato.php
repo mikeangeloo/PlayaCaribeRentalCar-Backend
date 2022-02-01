@@ -115,6 +115,7 @@ class Contrato extends Model
 
         $contract->load('cliente');
         $contract->load('vehiculo.marca');
+        $contract->load('vehiculo.tarifas');
 
         return (object) ['ok' => true, 'data' => $contract];
     }

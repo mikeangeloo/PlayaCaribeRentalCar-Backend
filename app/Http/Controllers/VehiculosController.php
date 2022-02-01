@@ -354,10 +354,26 @@ class VehiculosController extends Controller
     }
 
     public function getList(Request $request) {
-        $vehiculos = Vehiculos::orderBy('id', 'ASC')->where('activo', true)->get();
+        $vehiculos = Vehiculos::orderBy('id', 'ASC')->where('activo', true)
+        ->with(['tarifas' => function($q) {
+            $q->orderBy('id', 'DESC')->limit(4);
+         }])
+        ->get();
         $vehiculos->load('marca', 'categoria');
 
+
         $_vehiculos = [];
+
+        // for ($i = 0; $i < count($vehiculos); $i++) {
+        //     for ($j = 0; $j < count($vehiculos[$i]['tarifas']); $j++) {
+        //         if ($j > 3) {
+        //             $vehiculos[$i]['tarifas'][$j] = null;
+        //             continue;
+        //         }
+        //         $vehiculos[$i]['tarifas'][$j] = $vehiculos[$i]['tarifas'][$j];
+
+        //     }
+        // }
 
         for ($i = 0; $i < count($vehiculos); $i++) {
             array_push($_vehiculos, [

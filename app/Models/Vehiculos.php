@@ -22,7 +22,7 @@ class Vehiculos extends Model
     }
 
     public function tarifas() {
-        return $this->hasMany(TarifasApollo::class, 'modelo_id', 'id')->latest()->limit(4)->orderBy('id', 'ASC');
+        return $this->hasMany(TarifasApollo::class, 'modelo_id', 'id');
     }
 
     public static function validateBeforeSave($request, $isUpdate = null) {
