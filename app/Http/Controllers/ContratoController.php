@@ -81,7 +81,7 @@ class ContratoController extends Controller
                 }
 
                 $cliente = new Clientes();
-                if ($request->has('cliente_id')) {
+                if ($request->has('cliente_id') && isset($request->cliente_id)) {
                     $cliente = Clientes::where('id', $request->cliente_id)->first();
                 }
                 $cliente->nombre = $request->nombre;
