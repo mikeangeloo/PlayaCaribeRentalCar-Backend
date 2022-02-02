@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\EmpresasController;
+use App\Http\Controllers\hotelesController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -78,10 +78,10 @@ Route::prefix('dash')->group(function () {
         Route::resource('sucursales', 'SucursalesController');
         //endregion
 
-        //region LISTADO EMPRESAS
-        Route::get('empresas/all', 'EmpresasController@getAll');
-        Route::get('empresas/enable/{id}', 'EmpresasController@enable');
-        Route::resource('empresas', 'EmpresasController');
+        //region LISTADO HOTELES
+        Route::get('hoteles/all', 'HotelesController@getAll');
+        Route::get('hoteles/enable/{id}', 'HotelesController@enable');
+        Route::resource('hoteles', 'HotelesController');
 
         Route::get('comisionistas/all', 'ComisionistasController@getAll');
         Route::get('comisionistas/enable/{id}', 'ComisionistasController@enable');

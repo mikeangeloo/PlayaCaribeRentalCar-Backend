@@ -123,6 +123,10 @@ class VehiculosController extends Controller
                  } catch (\Exception $e) {
                      Log::debug($e);
                      DB::rollBack();
+                     return response()->json([
+                        'ok' => false,
+                        'errors' => ['Algo salio mal, intente nuevamente']
+                    ], JsonResponse::BAD_REQUEST);
                  }
 
              }
@@ -265,6 +269,10 @@ class VehiculosController extends Controller
                 } catch (\Exception $e) {
                     Log::debug($e);
                     DB::rollBack();
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => ['Algo salio mal, intente nuevamente']
+                    ], JsonResponse::BAD_REQUEST);
                 }
 
             }
