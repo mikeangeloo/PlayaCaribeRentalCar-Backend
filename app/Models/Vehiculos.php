@@ -25,6 +25,10 @@ class Vehiculos extends Model
         return $this->hasMany(TarifasApollo::class, 'modelo_id', 'id');
     }
 
+    public function clase() {
+        return $this->belongsTo(ClasesVehiculos::class, 'clase_id', 'id');
+    }
+
     public static function validateBeforeSave($request, $isUpdate = null) {
         $validate = Validator::make($request, [
             'modelo' => 'required|string|max:100',

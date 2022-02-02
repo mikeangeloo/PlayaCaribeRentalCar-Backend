@@ -49,6 +49,14 @@ class ContratoController extends Controller
                 $contrato->vehiculo_id = $request->vehiculo_id;
                 $contrato->tipo_tarifa_id = $request->tipo_tarifa_id;
                 $contrato->tipo_tarifa = $request->tipo_tarifa;
+
+                $contrato->tarifa_modelo_id = $request->tarifa_modelo_id;
+                $contrato->tarifa_modelo = $request->tarifa_modelo;
+                $contrato->vehiculo_clase_id = $request->vehiculo_clase_id;
+                $contrato->vehiculo_clase = $request->vehiculo_clase;
+                $contrato->vehiculo_clase_precio = $request->vehiculo_clase_precio;
+                $contrato->comision = $request->comision;
+
                 $contrato->precio_unitario_inicial = $request->precio_unitario_inicial;
                 $contrato->precio_unitario_final = $request->precio_unitario_final;
                 $contrato->total_dias = $request->total_dias;
@@ -67,6 +75,10 @@ class ContratoController extends Controller
                 $contrato->iva = $request->iva;
                 $contrato->iva_monto = $request->iva_monto;
                 $contrato->total = $request->total;
+
+                $contrato->folio_cupon = $request->folio_cupon;
+                $contrato->valor_cupon = $request->valor_cupon;
+
                 $contrato->cobranza_calc = $request->cobranza_calc;
 
                 $contrato->user_create_id = $user->id;

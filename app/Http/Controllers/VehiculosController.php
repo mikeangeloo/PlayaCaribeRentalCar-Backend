@@ -20,6 +20,7 @@ class VehiculosController extends Controller
     public function index()
     {
         $vehiculos = Vehiculos::where('activo', true)->orderBy('id', 'ASC')->get();
+        $vehiculos->load('clase');
 
         return response()->json([
             'ok' => true,
@@ -151,7 +152,7 @@ class VehiculosController extends Controller
     public function show($id)
     {
         $vehiculo = Vehiculos::where('id', $id)->first();
-        //$vehiculo->load('tarifas');
+        $vehiculo->load('clase');
 
         $vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $vehiculo->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
 
@@ -329,7 +330,7 @@ class VehiculosController extends Controller
 
     public function getAll(Request $request) {
         $vehiculos = Vehiculos::orderBy('id', 'ASC')->get();
-        $vehiculos->load('marca', 'categoria');
+        $vehiculos->load('marca', 'categoria', 'clase');
 
         return response()->json([
             'ok' => true,
@@ -365,7 +366,7 @@ class VehiculosController extends Controller
 
     public function getList(Request $request) {
         $vehiculos = Vehiculos::orderBy('id', 'ASC')->get();
-        $vehiculos->load('marca', 'categoria');
+        $vehiculos->load('marca', 'categoria', 'clase');
 
 
         $_vehiculos = [];

@@ -45,6 +45,14 @@ class Contrato extends Model
             'vehiculo_id' => 'required|exists:vehiculos,id',
             'tipo_tarifa_id' => 'required|exists:tipos_tarifas,id',
             'tipo_tarifa' => 'required|string',
+
+            'tarifa_modelo_id' => 'nullable|numeric',
+            'tarifa_modelo' => 'nullable|string',
+            'vehiculo_clase_id' => 'nullable|numeric',
+            'vehiculo_clase' => 'nullable|string',
+            'vehiculo_clase_precio' => 'nullable|numeric',
+            'comision' => 'nullable|numeric',
+
             'precio_unitario_inicial' => 'required|numeric',
             'precio_unitario_final' => 'required|numeric',
             'rango_fechas' => 'required',
@@ -58,6 +66,10 @@ class Contrato extends Model
             'iva' => 'nullable',
             'iva_monto' => 'nullable',
             'total' => 'required',
+
+            'folio_cupon' => 'nullable|string',
+            'valor_cupon' => 'nullable|numeric',
+
             'cobranza_calc' => 'required',
             'total_dias' => 'required|numeric',
             'ub_salida_id' => 'required',
@@ -143,8 +155,8 @@ class Contrato extends Model
         $contract->save();
 
         $contract->load('cliente');
-        $contract->load('vehiculo.marca');
-        //$contract->load('vehiculo.tarifas');
+        $contract->load('vehiculo.marca', 'vehiculo.clase');
+        //$contract->load('vehiculo.clase');
         $contract->vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $contract->vehiculo->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
 
         return (object) ['ok' => true, 'data' => $contract];
