@@ -30,7 +30,7 @@ class ContratoController extends Controller
 
         $contrato = new Contrato();
 
-        if ($request->has('num_contrato')) {
+        if ($request->has('num_contrato') && isset($request->num_contrato)) {
             $message = 'Avance actualizado correctamente';
             $contrato = Contrato::where('num_contrato', $request->num_contrato)->first();
         }
@@ -58,6 +58,16 @@ class ContratoController extends Controller
 
                 $contrato->fecha_salida = $request->rango_fechas['fecha_salida'];
                 $contrato->fecha_retorno = $request->rango_fechas['fecha_retorno'];
+
+                $contrato->cobros_extras = $request->cobros_extras;
+                $contrato->cobros_extras_ids = $request->cobros_extras_ids;
+                $contrato->subtotal = $request->subtotal;
+                $contrato->descuento = $request->descuento;
+                $contrato->con_iva = $request->con_iva;
+                $contrato->iva = $request->iva;
+                $contrato->iva_monto = $request->iva_monto;
+                $contrato->total = $request->total;
+                $contrato->cobranza_calc = $request->cobranza_calc;
 
                 $contrato->user_create_id = $user->id;
                 break;

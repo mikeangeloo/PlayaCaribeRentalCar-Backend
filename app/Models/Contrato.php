@@ -13,7 +13,10 @@ class Contrato extends Model
     protected $primaryKey = 'id';
 
     protected $casts = [
-        'etapas_guardadas' => 'array'
+        'etapas_guardadas' => 'array',
+        'cobros_extras_ids' => 'array',
+        'cobros_extras' => 'array',
+        'cobranza_calc' => 'array'
     ];
 
     public function cliente() {
@@ -47,6 +50,15 @@ class Contrato extends Model
             'rango_fechas' => 'required',
             'rango_fechas.fecha_salida' => 'required',
             'rango_fechas.fecha_retorno' => 'required',
+            'cobros_extras' => 'nullable',
+            'cobros_extras_ids' => 'nullable',
+            'subtotal' => 'required|numeric',
+            'descuento' => 'nullable|numeric',
+            'con_iva' => 'nullable',
+            'iva' => 'nullable',
+            'iva_monto' => 'nullable',
+            'total' => 'required',
+            'cobranza_calc' => 'required',
             'total_dias' => 'required|numeric',
             'ub_salida_id' => 'required',
             'ub_retorno_id' => 'required',
@@ -96,7 +108,15 @@ class Contrato extends Model
             'ub_retorno_id',
             'hora_elaboracion',
             'fecha_salida',
-            'fecha_retorno'
+            'fecha_retorno',
+            'cobros_extras',
+            'subtotal',
+            'descuento',
+            'con_iva',
+            'iva',
+            'iva_monto',
+            'total',
+            'obranza_calc'
         ];
         for ($i = 0; $i < count($datosGeneralesColumns); $i ++) {
             if (!is_null($contract->{$datosGeneralesColumns[$i]})) {
