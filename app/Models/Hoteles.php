@@ -6,15 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
-class Empresas extends Model
+class Hoteles extends Model
 {
     use HasFactory;
-    protected $table = 'empresas';
+    protected $table = 'hoteles';
     protected $primaryKey = 'id';
 
-    public function comisionistas() {
-        return $this->hasMany(Comisionistas::class, 'empresa_id', 'id');
-    }
 
     public static function validateBeforeSave($request, $isUpdate = null) {
         $validateData = Validator::make($request, [
@@ -22,11 +19,18 @@ class Empresas extends Model
             'rfc' => 'required',
             'direccion' => 'required|string',
             'tel_contacto' => 'required|string',
-            'paga_cupon' => 'required'
+            'paga_cupon' => 'required',
+            'tarifas_hotel.*.hotel_id' => 'required',
+            'tarifas_hotel.*.activo' => 'required',
+            'tarifas_hotel.*.clase_id' => 'required',
+            'tarifas_hotel.*.clase' => 'required',
+            'tarifas_hotel.*.precio' => 'required',
+            'tarifas_hotel.*.hotel_id' => 'required',
+            'tarifas_hotel.*.hotel_id' => 'nullable',
         ]);
 
         if (is_null($isUpdate)) {
-            $empresa = Empresas::where('rfc', $request['rfc'])->first();
+            $empresa = Hoteles::where('rfc', $request['rfc'])->first();
             if ($empresa) {
                 return ['Este RFC ya fue registrado previamente.'];
             }

@@ -16,16 +16,11 @@ class Comisionistas extends Model
         'comisiones_pactadas' => 'array'
     ];
 
-    public function empresa() {
-        return $this->belongsTo(Empresas::class, 'empresa_id', 'id');
-    }
 
     public static function validateBeforeSave($request) {
         $validateData = Validator::make($request, [
             'nombre' => 'required|string',
             'apellidos' => 'required|string',
-            'nombre_empresa' => 'required|string',
-            'empresa_id' => 'required|exists:empresas,id',
             'tel_contacto' => 'required|string',
             'email_contacto' => 'required|email',
             'comisiones_pactadas' => 'required'

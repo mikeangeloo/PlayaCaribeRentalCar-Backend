@@ -8,7 +8,6 @@ use App\Models\Clientes;
 use App\Models\Contrato;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PHPUnit\Framework\Constraint\JsonMatches;
 
 class ContratoController extends Controller
 {
@@ -30,7 +29,7 @@ class ContratoController extends Controller
 
         $contrato = new Contrato();
 
-        if ($request->has('num_contrato')) {
+        if ($request->has('num_contrato') && isset($request->num_contrato)) {
             $message = 'Avance actualizado correctamente';
             $contrato = Contrato::where('num_contrato', $request->num_contrato)->first();
         }
@@ -46,16 +45,41 @@ class ContratoController extends Controller
                         'errors' => $validate
                     ], JsonResponse::BAD_REQUEST);
                 }
-                $contrato->renta_of_id = $request->renta_of_id;
-                $contrato->renta_of_codigo = $request->renta_of_codigo;
-                $contrato->renta_of_dir = $request->renta_of_dir;
-                $contrato->renta_of_fecha = $request->renta_of_fecha;
-                $contrato->renta_of_hora = $request->renta_of_hora;
-                $contrato->retorno_of_id = $request->retorno_of_id;
-                $contrato->retorno_of_codigo = $request->retorno_of_codigo;
-                $contrato->retorno_of_dir = $request->retorno_of_dir;
-                $contrato->retorno_of_fecha = $request->retorno_of_fecha;
-                $contrato->retorno_of_hora = $request->retorno_of_hora;
+                $contrato->vehiculo_id = $request->vehiculo_id;
+                $contrato->tipo_tarifa_id = $request->tipo_tarifa_id;
+                $contrato->tipo_tarifa = $request->tipo_tarifa;
+
+                $contrato->tarifa_modelo_id = $request->tarifa_modelo_id;
+                $contrato->tarifa_modelo = $request->tarifa_modelo;
+                $contrato->vehiculo_clase_id = $request->vehiculo_clase_id;
+                $contrato->vehiculo_clase = $request->vehiculo_clase;
+                $contrato->vehiculo_clase_precio = $request->vehiculo_clase_precio;
+                $contrato->comision = $request->comision;
+
+                $contrato->precio_unitario_inicial = $request->precio_unitario_inicial;
+                $contrato->precio_unitario_final = $request->precio_unitario_final;
+                $contrato->total_dias = $request->total_dias;
+                $contrato->ub_salida_id = $request->ub_salida_id;
+                $contrato->ub_retorno_id = $request->ub_retorno_id;
+                $contrato->hora_elaboracion = $request->hora_elaboracion;
+
+                $contrato->fecha_salida = $request->rango_fechas['fecha_salida'];
+                $contrato->fecha_retorno = $request->rango_fechas['fecha_retorno'];
+
+                $contrato->cobros_extras = $request->cobros_extras;
+                $contrato->cobros_extras_ids = $request->cobros_extras_ids;
+                $contrato->subtotal = $request->subtotal;
+                $contrato->descuento = $request->descuento;
+                $contrato->con_iva = $request->con_iva;
+                $contrato->iva = $request->iva;
+                $contrato->iva_monto = $request->iva_monto;
+                $contrato->total = $request->total;
+
+                $contrato->folio_cupon = $request->folio_cupon;
+                $contrato->valor_cupon = $request->valor_cupon;
+
+                $contrato->cobranza_calc = $request->cobranza_calc;
+
                 $contrato->user_create_id = $user->id;
                 break;
             case 'datos_cliente':
@@ -68,7 +92,7 @@ class ContratoController extends Controller
                 }
 
                 $cliente = new Clientes();
-                if ($request->has('cliente_id')) {
+                if ($request->has('cliente_id') && isset($request->cliente_id)) {
                     $cliente = Clientes::where('id', $request->cliente_id)->first();
                 }
                 $cliente->nombre = $request->nombre;
@@ -91,32 +115,19 @@ class ContratoController extends Controller
 
                 $contrato->cliente_id = $cliente->id;
                 break;
-            case 'datos_vehiculo':
-                $validate = Contrato::validateDatosVehiculo($request->all());
 
-                if ($validate !== true) {
-                    return response()->json([
-                        'ok' => false,
-                        'errors' => $validate
-                    ], JsonResponse::BAD_REQUEST);
-                }
-                $contrato->vehiculo_id = $request->vehiculo_id;
-                $contrato->km_salida = ($request->has('km_salida') ? $request->km_salida : null);
-                $contrato->km_llegada = ($request->has('km_llegada') ? $request->km_llegada : null);
-                $contrato->km_recorrido = ($request->has('km_recorrido') ? $request->km_recorrido : null);
-                $contrato->gas_salida = ($request->has('gas_salida') ? $request->gas_salida : null);
-                $contrato->gas_llegada = ($request->has('gas_llegada') ? $request->gas_llegada : null);
-                break;
         }
 
         $contrato->estatus = ContratoStatusEnum::BORRADOR;
 
         if ($contrato->save()) {
             DB::commit();
-            Contrato::setEtapasGuardadas($contrato->id);
+
 
             $contrato->num_contrato = $contractInitials.sprintf('%03d', $contrato->id);
             $contrato->save();
+
+            Contrato::setEtapasGuardadas($contrato->num_contrato);
 
             return response()->json([
                 'ok' => true,

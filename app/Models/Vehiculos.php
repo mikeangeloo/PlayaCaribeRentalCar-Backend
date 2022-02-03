@@ -21,6 +21,14 @@ class Vehiculos extends Model
         return $this->belongsTo(CategoriasVehiculos::class, 'categoria_vehiculo_id', 'id')->select('id', 'categoria');
     }
 
+    public function tarifas() {
+        return $this->hasMany(TarifasApollo::class, 'modelo_id', 'id');
+    }
+
+    public function clase() {
+        return $this->belongsTo(ClasesVehiculos::class, 'clase_id', 'id');
+    }
+
     public static function validateBeforeSave($request, $isUpdate = null) {
         $validate = Validator::make($request, [
             'modelo' => 'required|string|max:100',
@@ -38,7 +46,21 @@ class Vehiculos extends Model
             'version' => 'required|numeric',
             'precio_renta' => 'nullable|numeric',
             'codigo' => 'nullable|string|max:200',
-            'num_serie' => 'required|string|max:100'
+            'num_serie' => 'required|string|max:100',
+            'clase_id' => 'required|numeric',
+            'tarifas_apollo' => 'required',
+            'tarifas_apollo.*.frecuencia' => 'required|string',
+            'tarifas_apollo.*.frecuencia_ref' => 'required|string',
+            'tarifas_apollo.*.activo' => 'nullable|boolean',
+            'tarifas_apollo.*.modelo' => 'required|string',
+            'tarifas_apollo.*.modelo_id' => 'nullable|numeric',
+            'tarifas_apollo.*.precio_base' => 'required|numeric',
+            'tarifas_apollo.*.precio_final_editable' => 'required|boolean',
+            'tarifas_apollo.*.ap_descuento' => 'required|boolean',
+            'tarifas_apollo.*.valor_descuento' => 'nullable|numeric',
+            'tarifas_apollo.*.descuento' => 'nullable|numeric',
+            'tarifas_apollo.*.precio_final' => 'required|numeric',
+            'tarifas_apollo.*.required' => 'required|boolean',
         ]);
 
 

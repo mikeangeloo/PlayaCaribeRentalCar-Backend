@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Models\Empresas;
+use App\Models\ClasesVehiculos;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 
-class EmpresasController extends Controller
+class ClasesVehiculosController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,12 +15,11 @@ class EmpresasController extends Controller
      */
     public function index()
     {
-        $empresas = Empresas::where('activo', true)->orderBy('id', 'ASC')->get();
-        $empresas->load('comisionistas');
+        $data = ClasesVehiculos::where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
-            'empresas' => $empresas
+            'datas' => $data
         ], JsonResponse::OK);
     }
 
@@ -46,7 +44,7 @@ class EmpresasController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = Empresas::validateBeforeSave($request->all());
+        $validateData = ClasesVehiculos::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -55,18 +53,14 @@ class EmpresasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $empresa = new Empresas();
-        $empresa->nombre = $request->nombre;
-        $empresa->rfc = $request->rfc;
-        $empresa->direccion = $request->direccion;
-        $empresa->tel_contacto = $request->tel_contacto;
-        $empresa->activo = true;
-        $empresa->paga_cupon = $request->paga_cupon;
+        $data = new ClasesVehiculos();
+        $data->clase = $request->clase;
+        $data->activo = true;
 
-        if ($empresa->save()) {
+        if ($data->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Empresa registrada correctamente'
+                'message' => 'Clase registrada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -84,10 +78,9 @@ class EmpresasController extends Controller
      */
     public function show($id)
     {
-        $empresa = Empresas::where('id', $id)->first();
-        $empresa->load('comisionistas');
+        $data = ClasesVehiculos::where('id', $id)->first();
 
-        if (!$empresa) {
+        if (!$data) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
@@ -96,7 +89,7 @@ class EmpresasController extends Controller
 
         return response()->json([
             'ok' => true,
-            'empresa' => $empresa
+            'data' => $data
         ], JsonResponse::OK);
     }
 
@@ -123,7 +116,7 @@ class EmpresasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = Empresas::validateBeforeSave($request->all(), true);
+        $validateData = ClasesVehiculos::validateBeforeSave($request->all(), true);
 
         if ($validateData !== true) {
             return response()->json([
@@ -132,24 +125,19 @@ class EmpresasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $empresa = Empresas::where('id', $id)->first();
-        if (!$empresa) {
+        $data = ClasesVehiculos::where('id', $id)->first();
+        if (!$data) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $empresa->nombre = $request->nombre;
-        $empresa->rfc = $request->rfc;
-        $empresa->direccion = $request->direccion;
-        $empresa->tel_contacto = $request->tel_contacto;
-        $empresa->activo = true;
-        $empresa->paga_cupon = $request->paga_cupon;
+        $data->clase = $request->clase;
 
-        if ($empresa->save()) {
+        if ($data->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Empresa actualizada correctamente'
+                'message' => 'Clase actualizada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -174,21 +162,21 @@ class EmpresasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $empresa = Empresas::where('id', $id)->first();
+        $data = ClasesVehiculos::where('id', $id)->first();
 
-        if (!$empresa) {
+        if (!$data) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $empresa->activo = false;
+        $data->activo = false;
 
-        if ($empresa->save()) {
+        if ($data->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Empresa dada de baja correctamente'
+                'message' => 'Clase dada de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -199,34 +187,33 @@ class EmpresasController extends Controller
     }
 
     public function getAll(Request $request) {
-        $empresas = Empresas::orderBy('id', 'ASC')->get();
-        $empresas->load('comisionistas');
+        $datas = ClasesVehiculos::orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
-            'empresas' => $empresas
+            'datas' => $datas
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $empresa = Empresas::where('id', $id)->first();
-        if (!$empresa) {
+        $data = ClasesVehiculos::where('id', $id)->first();
+        if (!$data) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No hay registros']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        if ($empresa->activo === 1 || $empresa->activo == true) {
+        if ($data->activo === 1 || $data->activo == true) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['El registro ya fue activado']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $empresa->activo = true;
+        $data->activo = true;
 
-        if ($empresa->save()) {
+        if ($data->save()) {
             return response()->json([
                 'ok' => true,
                 'message' => 'Registro habilitado correctamente'

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\EmpresasController;
+use App\Http\Controllers\hotelesController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +47,10 @@ Route::prefix('dash')->group(function () {
         Route::get('categorias-vehiculos/enable/{id}', 'CategoriasVehiculosController@enable');
         Route::resource('categorias-vehiculos', 'CategoriasVehiculosController');
 
+        Route::get('clases-vehiculos/all', 'ClasesVehiculosController@getAll');
+        Route::get('clases-vehiculos/enable/{id}', 'ClasesVehiculosController@enable');
+        Route::resource('clases-vehiculos', 'ClasesVehiculosController');
+
         Route::get('vehiculos/all', 'VehiculosController@getAll');
         Route::get('vehiculos/enable/{id}', 'VehiculosController@enable');
         Route::get('vehiculos/list', 'VehiculosController@getList');
@@ -74,10 +78,10 @@ Route::prefix('dash')->group(function () {
         Route::resource('sucursales', 'SucursalesController');
         //endregion
 
-        //region LISTADO EMPRESAS
-        Route::get('empresas/all', 'EmpresasController@getAll');
-        Route::get('empresas/enable/{id}', 'EmpresasController@enable');
-        Route::resource('empresas', 'EmpresasController');
+        //region LISTADO HOTELES
+        Route::get('hoteles/all', 'HotelesController@getAll');
+        Route::get('hoteles/enable/{id}', 'HotelesController@enable');
+        Route::resource('hoteles', 'HotelesController');
 
         Route::get('comisionistas/all', 'ComisionistasController@getAll');
         Route::get('comisionistas/enable/{id}', 'ComisionistasController@enable');
@@ -91,6 +95,15 @@ Route::prefix('dash')->group(function () {
         Route::get('tarjetas/all', 'TarjetasController@getAll');
         Route::get('tarjetas/enable/{id}', 'TarjetasController@enable');
         Route::resource('tarjetas', 'TarjetasController');
+        //endregion
+
+        //region CONFIGURACIÓN APP
+        Route::resource('tipos-tarifas', 'TiposTarifasController');
+
+        Route::get('tarifas-extras/all', 'TarifasExtrasController@getAll');
+        Route::get('tarifas-extras/enable/{id}', 'TarifasExtrasController@enable');
+        Route::get('tarifas-extras/list', 'TarifasExtrasController@getList');
+        Route::resource('tarifas-extras', 'TarifasExtrasController');
         //endregion
 
     });

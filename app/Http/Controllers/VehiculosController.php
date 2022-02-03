@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
 use App\Enums\VehiculoStatusEnum;
+use App\Models\TarifasApollo;
 use App\Models\Vehiculos;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class VehiculosController extends Controller
 {
@@ -17,6 +20,7 @@ class VehiculosController extends Controller
     public function index()
     {
         $vehiculos = Vehiculos::where('activo', true)->orderBy('id', 'ASC')->get();
+        $vehiculos->load('clase');
 
         return response()->json([
             'ok' => true,
@@ -66,6 +70,7 @@ class VehiculosController extends Controller
         $vehiculo->version = $request->version;
         $vehiculo->activo = 1;
         $vehiculo->estatus = VehiculoStatusEnum::DISPONIBLE;
+        $vehiculo->clase_id = $request->clase_id;
 
 
         if ($request->has('prox_servicio')) {
@@ -90,6 +95,42 @@ class VehiculosController extends Controller
         }
 
         if ($vehiculo->save()) {
+             // Guardamos tarifas
+             DB::beginTransaction();
+             for ($i = 0; $i < count($request->tarifas_apollo); $i++) {
+                 try {
+                     $tarifa = new TarifasApollo();
+                     if (isset($request->tarifas_apollo[$i]->id) && $request->tarifas_apollo[$i]->id > 0) {
+                         $tarifa = TarifasApollo::where('id', $request->tarifas_apollo[$i]->id)->first();
+                     }
+
+                     $tarifa->frecuencia = $request->tarifas_apollo[$i]['frecuencia'];
+                     $tarifa->frecuencia_ref = $request->tarifas_apollo[$i]['frecuencia_ref'];
+                     $tarifa->activo = $request->tarifas_apollo[$i]['activo'];
+                     $tarifa->modelo = $request->tarifas_apollo[$i]['modelo'];
+                     $tarifa->modelo_id = isset($request->tarifas_apollo[$i]['modelo_id']) ? $request->tarifas_apollo[$i]['modelo_id'] : $vehiculo->id;
+                     $tarifa->precio_base = $request->tarifas_apollo[$i]['precio_base'];
+                     $tarifa->precio_final_editable = $request->tarifas_apollo[$i]['precio_final_editable'];
+                     $tarifa->ap_descuento = $request->tarifas_apollo[$i]['ap_descuento'];
+                     $tarifa->valor_descuento = $request->tarifas_apollo[$i]['valor_descuento'];
+                     $tarifa->descuento = $request->tarifas_apollo[$i]['descuento'];
+                     $tarifa->precio_final = $request->tarifas_apollo[$i]['precio_final'];
+                     $tarifa->required = $request->tarifas_apollo[$i]['required'];
+                     if ($tarifa->save()) {
+                         DB::commit();
+                     } else {
+                         DB::rollBack();
+                     }
+                 } catch (\Exception $e) {
+                     Log::debug($e);
+                     DB::rollBack();
+                     return response()->json([
+                        'ok' => false,
+                        'errors' => ['Algo salio mal, intente nuevamente']
+                    ], JsonResponse::BAD_REQUEST);
+                 }
+
+             }
             return response()->json([
                 'ok' => true,
                 'message' => 'Véhiculo registrado correctamente'
@@ -111,6 +152,9 @@ class VehiculosController extends Controller
     public function show($id)
     {
         $vehiculo = Vehiculos::where('id', $id)->first();
+        $vehiculo->load('clase');
+
+        $vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $vehiculo->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
 
         if (!$vehiculo) {
             return response()->json([
@@ -173,6 +217,7 @@ class VehiculosController extends Controller
         $vehiculo->categoria_vehiculo_id = $request->categoria_vehiculo_id;
         $vehiculo->color = $request->color;
         $vehiculo->version = $request->version;
+        $vehiculo->clase_id = $request->clase_id;
 
         if ($request->has('prox_servicio')) {
             $vehiculo->prox_servicio = $request->prox_servicio;
@@ -196,6 +241,42 @@ class VehiculosController extends Controller
         }
 
         if ($vehiculo->save()) {
+            // Guardamos tarifas
+            DB::beginTransaction();
+            for ($i = 0; $i < count($request->tarifas_apollo); $i++) {
+                try {
+                    $tarifa = new TarifasApollo();
+                    if (isset($request->tarifas_apollo[$i]->id) && $request->tarifas_apollo[$i]->id > 0) {
+                        $tarifa = TarifasApollo::where('id', $request->tarifas_apollo[$i]->id)->first();
+                    }
+
+                    $tarifa->frecuencia = $request->tarifas_apollo[$i]['frecuencia'];
+                    $tarifa->frecuencia_ref = $request->tarifas_apollo[$i]['frecuencia_ref'];
+                    $tarifa->activo = $request->tarifas_apollo[$i]['activo'];
+                    $tarifa->modelo = $request->tarifas_apollo[$i]['modelo'];
+                    $tarifa->modelo_id = isset($request->tarifas_apollo[$i]['modelo_id']) ? $request->tarifas_apollo[$i]['modelo_id'] : $vehiculo->id;
+                    $tarifa->precio_base = $request->tarifas_apollo[$i]['precio_base'];
+                    $tarifa->precio_final_editable = $request->tarifas_apollo[$i]['precio_final_editable'];
+                    $tarifa->ap_descuento = $request->tarifas_apollo[$i]['ap_descuento'];
+                    $tarifa->valor_descuento = $request->tarifas_apollo[$i]['valor_descuento'];
+                    $tarifa->descuento = $request->tarifas_apollo[$i]['descuento'];
+                    $tarifa->precio_final = $request->tarifas_apollo[$i]['precio_final'];
+                    $tarifa->required = $request->tarifas_apollo[$i]['required'];
+                    if ($tarifa->save()) {
+                        DB::commit();
+                    } else {
+                        DB::rollBack();
+                    }
+                } catch (\Exception $e) {
+                    Log::debug($e);
+                    DB::rollBack();
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => ['Algo salio mal, intente nuevamente']
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+            }
             return response()->json([
                 'ok' => true,
                 'message' => 'Véhiculo actualizado correctamente'
@@ -249,7 +330,7 @@ class VehiculosController extends Controller
 
     public function getAll(Request $request) {
         $vehiculos = Vehiculos::orderBy('id', 'ASC')->get();
-        $vehiculos->load('marca', 'categoria');
+        $vehiculos->load('marca', 'categoria', 'clase');
 
         return response()->json([
             'ok' => true,
@@ -284,10 +365,15 @@ class VehiculosController extends Controller
     }
 
     public function getList(Request $request) {
-        $vehiculos = Vehiculos::orderBy('id', 'ASC')->where('activo', true)->get();
-        $vehiculos->load('marca', 'categoria');
+        $vehiculos = Vehiculos::orderBy('id', 'ASC')->get();
+        $vehiculos->load('marca', 'categoria', 'clase');
+
 
         $_vehiculos = [];
+
+        for ($i = 0; $i < count($vehiculos); $i++) {
+           $vehiculos[$i]->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $vehiculos[$i]->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
+        }
 
         for ($i = 0; $i < count($vehiculos); $i++) {
             array_push($_vehiculos, [

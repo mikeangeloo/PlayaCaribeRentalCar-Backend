@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Models\Comisionistas;
+use App\Models\TarifasExtras;
 use Illuminate\Http\Request;
 
-class ComisionistasController extends Controller
+class TarifasExtrasController extends Controller
 {
      /**
      * Display a listing of the resource.
@@ -15,11 +15,11 @@ class ComisionistasController extends Controller
      */
     public function index()
     {
-        $comisionistas = Comisionistas::where('activo', true)->orderBy('id', 'ASC')->get();
+        $data = TarifasExtras::where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
-            'comisionistas' => $comisionistas
+            'datas' => $data
         ], JsonResponse::OK);
     }
 
@@ -44,7 +44,7 @@ class ComisionistasController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = Comisionistas::validateBeforeSave($request->all());
+        $validateData = TarifasExtras::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -53,18 +53,15 @@ class ComisionistasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $comisionista = new Comisionistas();
-        $comisionista->nombre = $request->nombre;
-        $comisionista->apellidos = $request->apellidos;
-        $comisionista->tel_contacto = $request->tel_contacto;
-        $comisionista->email_contacto = $request->email_contacto;
-        $comisionista->activo = true;
-        $comisionista->comisiones_pactadas = $request->comisiones_pactadas;
+        $data = new TarifasExtras();
+        $data->nombre = $request->nombre;
+        $data->precio = $request->precio;
+        $data->activo = true;
 
-        if ($comisionista->save()) {
+        if ($data->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Comisionista registrado correctamente'
+                'message' => 'Tarifa extra registrada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -82,9 +79,9 @@ class ComisionistasController extends Controller
      */
     public function show($id)
     {
-        $comisionista = Comisionistas::where('id', $id)->first();
+        $data = TarifasExtras::where('id', $id)->first();
 
-        if (!$comisionista) {
+        if (!$data) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
@@ -93,7 +90,7 @@ class ComisionistasController extends Controller
 
         return response()->json([
             'ok' => true,
-            'comisionista' => $comisionista
+            'data' => $data
         ], JsonResponse::OK);
     }
 
@@ -120,7 +117,7 @@ class ComisionistasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = Comisionistas::validateBeforeSave($request->all());
+        $validateData = TarifasExtras::validateBeforeSave($request->all(), true);
 
         if ($validateData !== true) {
             return response()->json([
@@ -129,24 +126,20 @@ class ComisionistasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $comisionista = Comisionistas::where('id', $id)->first();
-        if (!$comisionista) {
+        $data = TarifasExtras::where('id', $id)->first();
+        if (!$data) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $comisionista->nombre = $request->nombre;
-        $comisionista->apellidos = $request->apellidos;
-        $comisionista->tel_contacto = $request->tel_contacto;
-        $comisionista->email_contacto = $request->email_contacto;
-        //$comisionista->activo = true;
-        $comisionista->comisiones_pactadas = $request->comisiones_pactadas;
+        $data->nombre = $request->nombre;
+        $data->precio = $request->precio;
 
-        if ($comisionista->save()) {
+        if ($data->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Comisionista actualizado correctamente'
+                'message' => 'Tarifa extra actualizada correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -171,21 +164,21 @@ class ComisionistasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $comisionista = Comisionistas::where('id', $id)->first();
+        $data = TarifasExtras::where('id', $id)->first();
 
-        if (!$comisionista) {
+        if (!$data) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $comisionista->activo = false;
+        $data->activo = false;
 
-        if ($comisionista->save()) {
+        if ($data->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Comisionista dado de baja correctamente'
+                'message' => 'Tarifa extra dada de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -196,32 +189,33 @@ class ComisionistasController extends Controller
     }
 
     public function getAll(Request $request) {
-        $comisionistas = Comisionistas::orderBy('id', 'ASC')->get();
+        $datas = TarifasExtras::orderBy('id', 'ASC')->get();
+
         return response()->json([
             'ok' => true,
-            'comisionistas' => $comisionistas
+            'datas' => $datas
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $comisionista = Comisionistas::where('id', $id)->first();
-        if (!$comisionista) {
+        $data = TarifasExtras::where('id', $id)->first();
+        if (!$data) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No hay registros']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        if ($comisionista->activo === 1 || $comisionista->activo == true) {
+        if ($data->activo === 1 || $data->activo == true) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['El registro ya fue activado']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $comisionista->activo = true;
+        $data->activo = true;
 
-        if ($comisionista->save()) {
+        if ($data->save()) {
             return response()->json([
                 'ok' => true,
                 'message' => 'Registro habilitado correctamente'
