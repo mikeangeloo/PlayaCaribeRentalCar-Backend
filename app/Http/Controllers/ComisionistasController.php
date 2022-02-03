@@ -16,7 +16,6 @@ class ComisionistasController extends Controller
     public function index()
     {
         $comisionistas = Comisionistas::where('activo', true)->orderBy('id', 'ASC')->get();
-        $comisionistas->load('comisionista');
 
         return response()->json([
             'ok' => true,
@@ -57,8 +56,6 @@ class ComisionistasController extends Controller
         $comisionista = new Comisionistas();
         $comisionista->nombre = $request->nombre;
         $comisionista->apellidos = $request->apellidos;
-        $comisionista->nombre_empresa = $request->nombre_empresa;
-        $comisionista->empresa_id = $request->empresa_id;
         $comisionista->tel_contacto = $request->tel_contacto;
         $comisionista->email_contacto = $request->email_contacto;
         $comisionista->activo = true;
@@ -86,7 +83,6 @@ class ComisionistasController extends Controller
     public function show($id)
     {
         $comisionista = Comisionistas::where('id', $id)->first();
-        $comisionista->load('empresa');
 
         if (!$comisionista) {
             return response()->json([
@@ -142,8 +138,6 @@ class ComisionistasController extends Controller
         }
         $comisionista->nombre = $request->nombre;
         $comisionista->apellidos = $request->apellidos;
-        $comisionista->nombre_empresa = $request->nombre_empresa;
-        $comisionista->empresa_id = $request->empresa_id;
         $comisionista->tel_contacto = $request->tel_contacto;
         $comisionista->email_contacto = $request->email_contacto;
         //$comisionista->activo = true;
@@ -203,8 +197,6 @@ class ComisionistasController extends Controller
 
     public function getAll(Request $request) {
         $comisionistas = Comisionistas::orderBy('id', 'ASC')->get();
-        $comisionistas->load('empresa');
-
         return response()->json([
             'ok' => true,
             'comisionistas' => $comisionistas
