@@ -8,7 +8,6 @@ use App\Models\Clientes;
 use App\Models\Contrato;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PHPUnit\Framework\Constraint\JsonMatches;
 
 class ContratoController extends Controller
 {
@@ -116,22 +115,7 @@ class ContratoController extends Controller
 
                 $contrato->cliente_id = $cliente->id;
                 break;
-            case 'datos_vehiculo':
-                $validate = Contrato::validateDatosVehiculo($request->all());
 
-                if ($validate !== true) {
-                    return response()->json([
-                        'ok' => false,
-                        'errors' => $validate
-                    ], JsonResponse::BAD_REQUEST);
-                }
-                $contrato->vehiculo_id = $request->vehiculo_id;
-                $contrato->km_salida = ($request->has('km_salida') ? $request->km_salida : null);
-                $contrato->km_llegada = ($request->has('km_llegada') ? $request->km_llegada : null);
-                $contrato->km_recorrido = ($request->has('km_recorrido') ? $request->km_recorrido : null);
-                $contrato->gas_salida = ($request->has('gas_salida') ? $request->gas_salida : null);
-                $contrato->gas_llegada = ($request->has('gas_llegada') ? $request->gas_llegada : null);
-                break;
         }
 
         $contrato->estatus = ContratoStatusEnum::BORRADOR;

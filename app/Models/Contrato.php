@@ -84,6 +84,9 @@ class Contrato extends Model
         }
     }
 
+    /**
+     * @deprecated
+     */
     public static function validateDatosVehiculo($request) {
         $validateData = Validator::make($request, [
             'vehiculo_id' => 'required|exists:vehiculos,id',
@@ -128,7 +131,7 @@ class Contrato extends Model
             'iva',
             'iva_monto',
             'total',
-            'obranza_calc'
+            'cobranza_calc'
         ];
         for ($i = 0; $i < count($datosGeneralesColumns); $i ++) {
             if (!is_null($contract->{$datosGeneralesColumns[$i]})) {
@@ -139,16 +142,6 @@ class Contrato extends Model
 
         if ($contract->cliente_id) {
             array_push($etapa, 'datos_cliente');
-        }
-
-        $vehiculoVerifyColumns = [
-            'vehiculo_id', 'km_salida', 'km_llegada', 'km_recorrido', 'gas_salida', 'gas_llegada'
-        ];
-        for ($i = 0; $i < count($vehiculoVerifyColumns); $i ++) {
-            if (!is_null($contract->{$vehiculoVerifyColumns[$i]})) {
-                array_push($etapa, 'datos_vehiculo');
-                break;
-            }
         }
 
         $contract->etapas_guardadas = $etapa;
