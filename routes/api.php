@@ -106,6 +106,12 @@ Route::prefix('dash')->group(function () {
         Route::resource('tarifas-extras', 'TarifasExtrasController');
         //endregion
 
+        //region UBICACIONES
+        Route::get('ubicaciones/all', 'UbicacionesController@getAll');
+        Route::get('ubicaciones/enable/{id}', 'UbicacionesController@enable');
+        Route::resource('ubicaciones', 'UbicacionesController');
+        //endregion
+
     });
 });
 
