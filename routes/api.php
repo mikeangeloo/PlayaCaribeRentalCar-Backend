@@ -109,6 +109,7 @@ Route::prefix('dash')->group(function () {
         //region UBICACIONES
         Route::get('ubicaciones/all', 'UbicacionesController@getAll');
         Route::get('ubicaciones/enable/{id}', 'UbicacionesController@enable');
+        Route::get('ubicaciones/list', 'UbicacionesController@getList');
         Route::resource('ubicaciones', 'UbicacionesController');
         //endregion
 

@@ -61,6 +61,7 @@ class UbicacionesController extends Controller
         $data->direccion = $request->direccion;
         $data->referencias = $request->referencias;
         $data->cp = $request->cp;
+        $data->alias = $request->alias;
 
         $data->activo = true;
 
@@ -146,6 +147,7 @@ class UbicacionesController extends Controller
         $data->direccion = $request->direccion;
         $data->referencias = $request->referencias;
         $data->cp = $request->cp;
+        $data->alias = $request->alias;
 
         if ($data->save()) {
             return response()->json([
@@ -232,5 +234,15 @@ class UbicacionesController extends Controller
                 'message' => 'Registro habilitado correctamente'
             ], JsonResponse::OK);
         }
+    }
+
+    public function getList(Request $request) {
+        $clientes = Ubicaciones::orderBy('id', 'ASC')->where('activo', true)->get();
+        $clientes->makeHidden(['created_at', 'updated_at', 'activo']);
+        return response()->json([
+            'ok' => true,
+            'data' => $clientes,
+            'fullData' => $clientes
+        ], JsonResponse::OK);
     }
 }

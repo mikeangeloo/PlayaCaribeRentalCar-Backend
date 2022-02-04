@@ -20,6 +20,7 @@ class Ubicaciones extends Model
             'colonia' => 'required|string',
             'direccion' => 'required|string',
             'cp' => 'required|numeric',
+            'alias' => 'required|string'
         ]);
 
         if ($validate->fails()) {
