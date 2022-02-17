@@ -6,6 +6,7 @@ use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
 use App\Models\Clientes;
 use App\Models\Contrato;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -61,7 +62,7 @@ class ContratoController extends Controller
                 $contrato->total_dias = $request->total_dias;
                 $contrato->ub_salida_id = $request->ub_salida_id;
                 $contrato->ub_retorno_id = $request->ub_retorno_id;
-                $contrato->hora_elaboracion = $request->hora_elaboracion;
+
 
                 $contrato->fecha_salida = $request->rango_fechas['fecha_salida'];
                 $contrato->fecha_retorno = $request->rango_fechas['fecha_retorno'];
@@ -119,6 +120,17 @@ class ContratoController extends Controller
         }
 
         $contrato->estatus = ContratoStatusEnum::BORRADOR;
+        if (!$contrato->hora_elaboracion) {
+            $contrato->hora_elaboracion = Carbon::now()->toTimeString();
+        }
+
+        if (!$contrato->hora_salida) {
+            $contrato->hora_salida = Carbon::now()->toTimeString();
+        }
+
+        if (!$contrato->hora_retorno) {
+            $contrato->hora_retorno = Carbon::now()->toTimeString();
+        }
 
         if ($contrato->save()) {
             DB::commit();
