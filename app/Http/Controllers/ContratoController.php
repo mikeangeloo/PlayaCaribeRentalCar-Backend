@@ -132,6 +132,7 @@ class ContratoController extends Controller
             return response()->json([
                 'ok' => true,
                 'message' => $message,
+                'id' => $contrato->id,
                 'contract_number' => $contrato->num_contrato,
                 'id' => $contrato->id
             ], JsonResponse::OK);
