@@ -74,7 +74,7 @@ class Contrato extends Model
             'total_dias' => 'required|numeric',
             'ub_salida_id' => 'required',
             'ub_retorno_id' => 'required',
-            'hora_elaboracion' => 'required',
+            'hora_elaboracion' => 'nullable',
         ]);
 
         if ($validateData->fails()) {
