@@ -61,6 +61,7 @@ class Contrato extends Model
             'cobros_extras' => 'nullable',
             'cobros_extras_ids' => 'nullable',
             'subtotal' => 'required|numeric',
+            'con_descuento' => 'nullable',
             'descuento' => 'nullable|numeric',
             'con_iva' => 'nullable',
             'iva' => 'nullable',

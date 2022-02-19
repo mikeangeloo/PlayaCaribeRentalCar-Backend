@@ -70,6 +70,7 @@ class ContratoController extends Controller
                 $contrato->cobros_extras = $request->cobros_extras;
                 $contrato->cobros_extras_ids = $request->cobros_extras_ids;
                 $contrato->subtotal = $request->subtotal;
+                $contrato->con_descuento = $request->con_descuento;
                 $contrato->descuento = $request->descuento;
                 $contrato->con_iva = $request->con_iva;
                 $contrato->iva = $request->iva;
