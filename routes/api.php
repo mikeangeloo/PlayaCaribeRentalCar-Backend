@@ -100,10 +100,19 @@ Route::prefix('dash')->group(function () {
         //region CONFIGURACIÓN APP
         Route::resource('tipos-tarifas', 'TiposTarifasController');
 
-        Route::get('tarifas-extras/all', 'TarifasExtrasController@getAll');
-        Route::get('tarifas-extras/enable/{id}', 'TarifasExtrasController@enable');
-        Route::get('tarifas-extras/list', 'TarifasExtrasController@getList');
-        Route::resource('tarifas-extras', 'TarifasExtrasController');
+            //region TARIFAS EXTRAS
+            Route::get('tarifas-extras/all', 'TarifasExtrasController@getAll');
+            Route::get('tarifas-extras/enable/{id}', 'TarifasExtrasController@enable');
+            Route::get('tarifas-extras/list', 'TarifasExtrasController@getList');
+            Route::resource('tarifas-extras', 'TarifasExtrasController');
+            //endregion
+
+              //region TARIFAS APOLLO CONF
+              Route::get('tarifas-apollo-conf/all', 'TarifasApolloConfController@getAll');
+              Route::get('tarifas-apollo-conf/enable/{id}', 'TarifasApolloConfController@enable');
+              Route::resource('tarifas-apollo-conf', 'TarifasApolloConfController');
+              //endregion
+
         //endregion
 
         //region UBICACIONES
