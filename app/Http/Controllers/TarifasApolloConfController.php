@@ -22,7 +22,7 @@ class TarifasApolloConfController extends Controller
 
         return response()->json([
             'ok' => true,
-            'tarifa$tarifaes' => $tarifaes
+            'data' => $tarifaes
         ], JsonResponse::OK);
     }
 
@@ -66,9 +66,16 @@ class TarifasApolloConfController extends Controller
         $tarifa->precio_final_editable = $request->precio_final_editable;
         $tarifa->required = $request->required;
 
-        $this->syncWithTarifasApollo($tarifa, true);
-
         if ($tarifa->save()) {
+            $res = $this->syncWithTarifasApollo($tarifa);
+
+            if ($res !== true) {
+                return response()->json([
+                    'ok' => false,
+                    'errors' => ['Algo salio mal, intente nuevamente']
+                ], JsonResponse::BAD_REQUEST);
+            }
+
             return response()->json([
                 'ok' => true,
                 'message' => 'Dato registrado correctamente'
@@ -154,7 +161,14 @@ class TarifasApolloConfController extends Controller
 
 
         if ($tarifa->save()) {
-            $this->syncWithTarifasApollo($tarifa, true);
+            $res = $this->syncWithTarifasApollo($tarifa);
+
+            if ($res !== true) {
+                return response()->json([
+                    'ok' => false,
+                    'errors' => ['Algo salio mal, intente nuevamente']
+                ], JsonResponse::BAD_REQUEST);
+            }
 
             return response()->json([
                 'ok' => true,
@@ -244,77 +258,65 @@ class TarifasApolloConfController extends Controller
 
 
     public function syncWithTarifasApollo($tarifa = null, $syncRestart = false) {
+        // preparamos para insertar en tarifas_apollo
+        $modelData = DB::table($tarifa->modelo)->get();
+        if (!$modelData) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['No hay: '. $tarifa->modelo. 'registrados']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
         if ($syncRestart === true) {
             TarifasApollo::where('modelo', $tarifa->modelo)->delete();
         }
         if (isset($tarifa) && $syncRestart === false) {
-            $result = $this->insertTarifasApollo($tarifa, $syncRestart);
-            if ($result !== true) {
-                return response()->json([
-                    'ok' => false,
-                    'errors' => ['Algo salio mal, intente nuevamente']
-                ], JsonResponse::BAD_REQUEST);
-            }
+            return $this->insertTarifasApollo($tarifa, $modelData);
         } else {
             $tarifas = TarifasApolloConf::where('activo', true)->get();
             for ($i = 0; $i < count($tarifas); $i++) {
-                $result = $this->insertTarifasApollo($tarifas[$i], $syncRestart);
+                $result = $this->insertTarifasApollo($tarifas[$i], $modelData);
                 if ($result !== true) {
-                    return response()->json([
-                        'ok' => false,
-                        'errors' => ['Algo salio mal, intente nuevamente']
-                    ], JsonResponse::BAD_REQUEST);
+                    return $result;
                     break;
                 }
             }
+            return true;
         }
     }
 
-    private function insertTarifasApollo($tarifa, $syncRestart = false) {
-         // preparamos para insertar en tarifas_apollo
-         $modelData = DB::table($tarifa->modelo)->get();
-         if (!$modelData) {
-             return response()->json([
-                 'ok' => false,
-                 'errors' => ['No hay: '. $tarifa->modelo. 'registrados']
-             ], JsonResponse::BAD_REQUEST);
-         }
+    private function insertTarifasApollo($tarifa, $modelData) {
+
+
          DB::beginTransaction();
          try {
 
-             for ($i = 0; $i < count($modelData); $i ++) {
-
-                 if ($syncRestart === true) {
-                    $tarifaApollo = new TarifasApollo();
-                 } else {
-                    $tarifaApollo = TarifasApollo::where('frecuencia_ref', $tarifa->frecuencia_ref)->where('modelo', $tarifa->modelo)->where('activo', true)->orderBy('id', 'DESC')->first();
-                    if (!$tarifaApollo) {
-                        $tarifaApollo = new TarifasApollo();
-                    }
-                 }
-
-
-                 $tarifaApollo->modelo = $tarifa->modelo;
-                 $tarifaApollo->modelo_id = $modelData[$i]->id;
-                 $tarifaApollo->frecuencia = $tarifa->frecuencia;
-                 $tarifaApollo->frecuencia_ref = $tarifa->frecuencia_ref;
-                 $tarifaApollo->precio_base = $modelData[$i]->precio_renta;
-                 $tarifaApollo->ap_descuento = $tarifa->ap_descuento;
-                 $tarifaApollo->valor_descuento = $tarifa->valor_descuento;
-
-                 $_valorDesc = (float) round(($tarifa->valor_descuento / 100), 4);
-                 $tarifaApollo->descuento = (float) round($tarifaApollo->precio_base * $_valorDesc, 4);
-
-                 if ($tarifaApollo->frecuencia_ref == 'hours') {
-                     $tarifaApollo->precio_final = round($tarifaApollo->precio_base / 7, 4);
-                 } else {
-                     $tarifaApollo->precio_final = round($tarifaApollo->precio_base - $tarifaApollo->descuento, 4);
-                 }
-
-                 $tarifaApollo->activo = $tarifa->activo;
-                 $tarifaApollo->precio_final_editable = $tarifa->precio_final_editable;
-                 $tarifaApollo->required = $tarifa->required;
-                 $tarifaApollo->save();
+             for ($i = 0; $i < count($modelData); $i++) {
+                //dd($modelData[$i]->id);
+                $_valorDesc = (float) round(($tarifa->valor_descuento / 100), 4);
+                //dd($_valorDesc);
+                 DB::table('tarifas_apollo')->updateOrInsert
+                 (
+                     [
+                     'frecuencia_ref' => $tarifa->frecuencia_ref,
+                     //'modelo' => $tarifa->modelo,
+                     'modelo_id' => $modelData[$i]->id
+                     ],
+                     [
+                        'modelo' => $tarifa->modelo,
+                        'modelo_id' => $modelData[$i]->id,
+                        'frecuencia' => $tarifa->frecuencia,
+                        'frecuencia_ref' => $tarifa->frecuencia_ref,
+                        'precio_base' => $modelData[$i]->precio_renta,
+                        'ap_descuento' => $tarifa->ap_descuento,
+                        'valor_descuento' => $tarifa->valor_descuento,
+                        'descuento' => (float) round($modelData[$i]->precio_renta * $_valorDesc, 4),
+                        'precio_final' => ($tarifa->frecuencia_ref == 'hours') ? round($modelData[$i]->precio_renta / 7, 4) : round($modelData[$i]->precio_renta - (float) round($modelData[$i]->precio_renta * $_valorDesc, 4), 4),
+                        'activo' => $tarifa->activo,
+                        'precio_final_editable' => $tarifa->precio_final_editable,
+                        'required' => $tarifa->required,
+                     ]
+                );
              }
 
          } catch (\Throwable $e) {

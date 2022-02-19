@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\JsonResponse;
 use App\Enums\VehiculoStatusEnum;
 use App\Models\TarifasApollo;
+use App\Models\TarifasApolloConf;
 use App\Models\Vehiculos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -153,8 +154,8 @@ class VehiculosController extends Controller
     {
         $vehiculo = Vehiculos::where('id', $id)->first();
         $vehiculo->load('clase');
-
-        $vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $vehiculo->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
+        $totalTarifasApolloConf = TarifasApolloConf::where('activo', true)->count();
+        $vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $vehiculo->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();
 
         if (!$vehiculo) {
             return response()->json([
@@ -246,8 +247,8 @@ class VehiculosController extends Controller
             for ($i = 0; $i < count($request->tarifas_apollo); $i++) {
                 try {
                     $tarifa = new TarifasApollo();
-                    if (isset($request->tarifas_apollo[$i]->id) && $request->tarifas_apollo[$i]->id > 0) {
-                        $tarifa = TarifasApollo::where('id', $request->tarifas_apollo[$i]->id)->first();
+                    if (isset($request->tarifas_apollo[$i]['id']) && $request->tarifas_apollo[$i]['id'] > 0) {
+                        $tarifa = TarifasApollo::where('id', $request->tarifas_apollo[$i]['id'])->first();
                     }
 
                     $tarifa->frecuencia = $request->tarifas_apollo[$i]['frecuencia'];
@@ -370,9 +371,9 @@ class VehiculosController extends Controller
 
 
         $_vehiculos = [];
-
+        $totalTarifasApolloConf = TarifasApolloConf::where('activo', true)->count();
         for ($i = 0; $i < count($vehiculos); $i++) {
-           $vehiculos[$i]->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $vehiculos[$i]->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
+           $vehiculos[$i]->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $vehiculos[$i]->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();
         }
 
         for ($i = 0; $i < count($vehiculos); $i++) {
