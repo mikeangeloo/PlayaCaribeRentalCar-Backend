@@ -61,6 +61,7 @@ class Contrato extends Model
             'cobros_extras' => 'nullable',
             'cobros_extras_ids' => 'nullable',
             'subtotal' => 'required|numeric',
+            'con_descuento' => 'nullable',
             'descuento' => 'nullable|numeric',
             'con_iva' => 'nullable',
             'iva' => 'nullable',
@@ -74,7 +75,7 @@ class Contrato extends Model
             'total_dias' => 'required|numeric',
             'ub_salida_id' => 'required',
             'ub_retorno_id' => 'required',
-            'hora_elaboracion' => 'required',
+            'hora_elaboracion' => 'nullable',
         ]);
 
         if ($validateData->fails()) {

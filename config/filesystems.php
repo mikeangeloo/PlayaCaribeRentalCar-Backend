@@ -56,6 +56,11 @@ return [
         'clientes_docs' => [
             'driver' => 'local',
             'root' => storage_path('app/clientes_docs'),
+        ],
+
+        'contratos_docs' => [
+            'driver' => 'local',
+            'root' => storage_path('app/contratos_docs'),
         ]
 
     ],
