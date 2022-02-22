@@ -67,7 +67,11 @@ class TarifasApolloConfController extends Controller
         $tarifa->required = $request->required;
 
         if ($tarifa->save()) {
-            $res = $this->syncWithTarifasApollo($tarifa);
+            if ($request->has('restartAll')) {
+                $res = $this->syncWithTarifasApollo($tarifa, $request->restartAll);
+            } else {
+                $res = $this->syncWithTarifasApollo($tarifa);
+            }
 
             if ($res !== true) {
                 return response()->json([
@@ -161,7 +165,12 @@ class TarifasApolloConfController extends Controller
 
 
         if ($tarifa->save()) {
-            $res = $this->syncWithTarifasApollo($tarifa);
+            if ($request->has('restartAll')) {
+                $res = $this->syncWithTarifasApollo($tarifa, $request->restartAll);
+            } else {
+                $res = $this->syncWithTarifasApollo($tarifa);
+            }
+
 
             if ($res !== true) {
                 return response()->json([
@@ -209,6 +218,8 @@ class TarifasApolloConfController extends Controller
         $tarifa->activo = false;
 
         if ($tarifa->save()) {
+            // colocamos como inactivo todas las tarifas apollo encontradas
+            TarifasApollo::where('tarifa_apollo_conf_id', $tarifa->id)->update(['activo' => false]);
             return response()->json([
                 'ok' => true,
                 'message' => 'Configuración dada de baja correctamente'
@@ -270,19 +281,16 @@ class TarifasApolloConfController extends Controller
         if ($syncRestart === true) {
             TarifasApollo::where('modelo', $tarifa->modelo)->delete();
         }
-        if (isset($tarifa) && $syncRestart === false) {
-            return $this->insertTarifasApollo($tarifa, $modelData);
-        } else {
-            $tarifas = TarifasApolloConf::where('activo', true)->get();
-            for ($i = 0; $i < count($tarifas); $i++) {
-                $result = $this->insertTarifasApollo($tarifas[$i], $modelData);
-                if ($result !== true) {
-                    return $result;
-                    break;
-                }
+
+        $tarifas = TarifasApolloConf::where('activo', true)->get();
+        for ($i = 0; $i < count($tarifas); $i++) {
+            $result = $this->insertTarifasApollo($tarifas[$i], $modelData);
+            if ($result !== true) {
+                return $result;
+                break;
             }
-            return true;
         }
+        return true;
     }
 
     private function insertTarifasApollo($tarifa, $modelData) {
@@ -298,11 +306,11 @@ class TarifasApolloConfController extends Controller
                  DB::table('tarifas_apollo')->updateOrInsert
                  (
                      [
-                     'frecuencia_ref' => $tarifa->frecuencia_ref,
-                     //'modelo' => $tarifa->modelo,
-                     'modelo_id' => $modelData[$i]->id
+                         'tarifa_apollo_conf_id' => $tarifa->id,
+                         'modelo_id' => $modelData[$i]->id,
                      ],
                      [
+                        'tarifa_apollo_conf_id' => $tarifa->id,
                         'modelo' => $tarifa->modelo,
                         'modelo_id' => $modelData[$i]->id,
                         'frecuencia' => $tarifa->frecuencia,
