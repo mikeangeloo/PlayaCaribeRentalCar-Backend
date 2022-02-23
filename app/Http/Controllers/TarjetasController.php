@@ -71,6 +71,7 @@ class TarjetasController extends Controller
         if ($card->save()) {
             return response()->json([
                 'ok' => true,
+                'card_id' => $card->id,
                 'message' => 'La tarjeta fue registrada correctamente'
             ], JsonResponse::OK);
         } else {
@@ -163,6 +164,7 @@ class TarjetasController extends Controller
         if ($card->save()) {
             return response()->json([
                 'ok' => true,
+                'card_id' => $card->id,
                 'message' => 'Tarjeta actualizada correctamente'
             ], JsonResponse::OK);
         } else {

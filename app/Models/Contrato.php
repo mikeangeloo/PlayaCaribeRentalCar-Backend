@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CobranzaStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
@@ -25,6 +26,10 @@ class Contrato extends Model
 
     public function vehiculo() {
         return $this->hasOne(Vehiculos::class, 'id', 'vehiculo_id');
+    }
+
+    public function cobranza() {
+        return $this->hasMany(Cobranza::class, 'id', 'contrato_id');
     }
 
     public static function validateBeforeSaveProgress($request) {
@@ -145,13 +150,20 @@ class Contrato extends Model
             array_push($etapa, 'datos_cliente');
         }
 
+        //buscamos si hay información en cobranza
+        $validCobranzaEstatus = [CobranzaStatusEnum::COBRADO, CobranzaStatusEnum::PROGRAMADO];
+        $totalCobranza = Cobranza::where('contrato_id', $contract->id)->whereIn('estatus', $validCobranzaEstatus)->count();
+        if ($totalCobranza > 0) {
+            array_push($etapa, 'cobranza');
+        }
+
         $contract->etapas_guardadas = $etapa;
         $contract->save();
 
         $contract->load('cliente');
         $contract->load('vehiculo.marca', 'vehiculo.clase');
-        //$contract->load('vehiculo.clase');
         $contract->vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $contract->vehiculo->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
+        $contract->load('cobranza');
 
         return (object) ['ok' => true, 'data' => $contract];
     }
