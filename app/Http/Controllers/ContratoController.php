@@ -128,12 +128,13 @@ class ContratoController extends Controller
                     ], JsonResponse::BAD_REQUEST);
                 }
                 $cobranza = new Cobranza();
-                if ($request->has('cobranza_id')) {
+                if ($request->has('cobranza_id') && isset($request->cobranza_id)) {
                     $cobranza = Cobranza::where('id', $request->cobranza_id)->first();
                 }
 
                 $cobranza->contrato_id = $request->contrato_id;
                 $cobranza->tarjeta_id = $request->tarjeta_id;
+                $cobranza->cliente_id = $request->cliente_id;
 
                 if(!$cobranza->fecha_cargo) {
                     $cobranza->fecha_cargo =  Carbon::now(); //TODO: por el momento en duro

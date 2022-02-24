@@ -103,6 +103,10 @@ Route::prefix('dash')->group(function () {
         Route::resource('tarjetas', 'TarjetasController');
         //endregion
 
+        //region COBRANZA
+        Route::post('cobranza/cancel', 'CobranzaController@cancel');
+        //endregion
+
 
         //region CONFIGURACIÓN APP
         Route::resource('tipos-tarifas', 'TiposTarifasController');

@@ -111,7 +111,15 @@ class Contrato extends Model
     }
 
     public static function setEtapasGuardadas($num_contrato) {
-        $contract = Contrato::where('num_contrato', $num_contrato)->first();
+        $contract = Contrato::where('num_contrato', $num_contrato)
+                    ->with(
+                        ['cobranza' => function($q) {
+                            $validCobranzaEstatus = [CobranzaStatusEnum::PROGRAMADO, CobranzaStatusEnum::COBRADO];
+                            $q->whereIn('estatus', $validCobranzaEstatus);
+                        },
+                        'cobranza.tarjeta'
+                        ])
+                    ->first();
 
         if (!$contract) {
             return (object) ['ok' => false, 'errors' => ['No se encontro la información solicitada']];
@@ -163,8 +171,8 @@ class Contrato extends Model
         $contract->load('cliente');
         $contract->load('vehiculo.marca', 'vehiculo.clase');
         $contract->vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $contract->vehiculo->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
-        $contract->load('cobranza');
-        $contract->load('cobranza.tarjeta');
+        //$contract->load('cobranza');
+        //$contract->load('cobranza.tarjeta');
 
         return (object) ['ok' => true, 'data' => $contract];
     }

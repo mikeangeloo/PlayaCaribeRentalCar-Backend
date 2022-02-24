@@ -21,10 +21,10 @@ class Cobranza extends Model
             'cliente_id' => 'required|exists:clientes,id',
             'tarjeta_id' => 'required|exists:tarjetas,id',
             'fecha_cargo' => 'nullable',
-            'monto' => 'required|numeric',
+            'monto' => 'nullable|numeric',
             'moneda' => 'required|string',
             'tipo' => 'required|numeric',
-            'cod_banco' => 'required',
+            'cod_banco' => 'nullable',
             'fecha_procesado' => 'nullable'
         ]);
 
