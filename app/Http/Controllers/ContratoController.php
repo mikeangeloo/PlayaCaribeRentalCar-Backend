@@ -134,15 +134,25 @@ class ContratoController extends Controller
 
                 $cobranza->contrato_id = $request->contrato_id;
                 $cobranza->tarjeta_id = $request->tarjeta_id;
-                $cobranza->fecha_cargo = $request->fecha_cargo;
+
+                if(!$cobranza->fecha_cargo) {
+                    $cobranza->fecha_cargo =  Carbon::now(); //TODO: por el momento en duro
+                }
+
                 $cobranza->monto = $request->monto;
                 $cobranza->moneda = $request->moneda;
                 $cobranza->tipo = $request->tipo;
                 $cobranza->estatus = CobranzaStatusEnum::COBRADO;
-                $cobranza->fecha_procesado = $request->fecha_procedado;
+                if (!$cobranza->fecha_procesado) {
+                    $cobranza->fecha_procesado = Carbon::now(); //TODO: por el momento en duro
+                }
+
                 $cobranza->cod_banco = $request->cod_banco;
                 $cobranza->res_banco = null; //TODO: agregar catálogo de respuestas
-                $cobranza->fecha_reg = Carbon::now();
+
+                if (!$cobranza->fecha_reg) {
+                    $cobranza->fecha_reg = Carbon::now();
+                }
 
                 if ($cobranza->save() === false) {
                     DB::rollBack();
@@ -182,7 +192,7 @@ class ContratoController extends Controller
                 'message' => $message,
                 'id' => $contrato->id,
                 'contract_number' => $contrato->num_contrato,
-                'id' => $contrato->id
+                'id' => $contrato->id,
             ], JsonResponse::OK);
         } else {
             DB::rollBack();

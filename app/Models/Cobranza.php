@@ -11,17 +11,21 @@ class Cobranza extends Model
     use HasFactory;
     protected $table = 'cobranza';
 
+    public function tarjeta() {
+        return $this->hasOne(Tarjetas::class, 'id', 'tarjeta_id')->select('id', 'c_type', 'c_method', 'c_cn1', 'c_cn4', 'c_month', 'c_year');
+    }
+
     public static function validateBeforeSave($request) {
         $validate = Validator::make($request, [
             'contrato_id' => 'required|exists:contratos,id',
             'cliente_id' => 'required|exists:clientes,id',
             'tarjeta_id' => 'required|exists:tarjetas,id',
-            'fecha_cargo' => 'required',
+            'fecha_cargo' => 'nullable',
             'monto' => 'required|numeric',
             'moneda' => 'required|string',
             'tipo' => 'required|numeric',
             'cod_banco' => 'required',
-            'fecha_procesado' => 'required'
+            'fecha_procesado' => 'nullable'
         ]);
 
         if ($validate->fails()) {
