@@ -16,9 +16,9 @@ class DocsTypeEnum
 
 class DocsValidParams
 {
-    const VALIDMODELS = ['clientes_docs', 'contratos_docs'];
-    const VALIDMODELIDS = ['cliente_id', 'contrato_id'];
-    const validDocTypes = ['licencia_conducir', 'ine', 'cupon'];
+    const VALIDMODELS = ['clientes', 'contratos', 'cobranza'];
+    //const VALIDMODELIDS = ['cliente_id', 'contrato_id', 'cobranza_id'];
+    const validDocTypes = ['licencia_conducir', 'ine', 'cupon', 'voucher'];
 }
 
 class DocsStatusEnum
@@ -59,7 +59,7 @@ class DocsManagmentHelper
         $response = [];
         //dd($validate);
         if ($request->has('id') && $request->id > 0 && $validate->data->id) {
-            $dirFile = $request->model_id_value.'/'.$request->doc_type.'/'.$validate->data->nombre_archivo;
+            $dirFile = $request->model_id.'/'.$request->doc_type.'/'.$validate->data->nombre_archivo;
 
             if (Storage::disk($request->model)->exists($dirFile) === false) {
                 return (object) ['ok' => false, 'errors' => ['El archivo ya no esta disponible']];
@@ -77,7 +77,7 @@ class DocsManagmentHelper
             return (object) ['ok' => true, 'data' => $response];
 
         } else {
-            $dir = $request->model_id_value.'/'.$request->doc_type;
+            $dir = $request->model_id.'/'.$request->doc_type;
         }
 
         if ($request->has('in_directory') && $request->in_directory === true) {
@@ -106,12 +106,12 @@ class DocsManagmentHelper
                         'doc_type' => $request->doc_type,
                         'model' => $request->model,
                         'model_id' => $request->model_id,
-                        'model_id_value' => $request->model_id_value,
+                        //'model_id_value' => $request->model_id_value,
                         'mime_type' => $mimeType,
                         'file' => 'data:'.$mimeType.';base64,'.$encodedFile
                     ]);
                 } else {
-                    $dirFile = $request->model_id_value.'/'.$request->doc_type.'/'.$files[$i]->nombre_archivo;
+                    $dirFile = $request->model_id.'/'.$request->doc_type.'/'.$files[$i]->nombre_archivo;
                     if (Storage::disk($request->model)->exists($dirFile) === false) {
                         continue;
                     }
@@ -127,7 +127,7 @@ class DocsManagmentHelper
                         'doc_type' => $request->doc_type,
                         'model' => $request->model,
                         'model_id' => $request->model_id,
-                        'model_id_value' => $request->model_id_value,
+                        //'model_id_value' => $request->model_id_value,
                         'mime_type' => $mimeType,
                         'file' => 'data:'.$mimeType.';base64,'.$encodedFile
                     ]);
@@ -148,7 +148,7 @@ class DocsManagmentHelper
             return $validate;
         }
 
-        $dirFile = $request->model_id_value.'/'.$request->doc_type.'/'.$validate->data->nombre_archivo;
+        $dirFile = $request->model_id.'/'.$request->doc_type.'/'.$validate->data->nombre_archivo;
 
         if (Storage::disk($request->model)->exists($dirFile) === false) {
             return (object) ['ok' => false, 'errors' => ['El archivo ya no esta disponible']];
@@ -160,7 +160,7 @@ class DocsManagmentHelper
             return (object) ['ok' => false, 'errors' => ['Se presento un error al elimiar el archivo']];
         }
 
-        $delete = DB::table($request->model)->where('id', '=', $request->id)->update([
+        $delete = DB::table('modelos_docs')->where('id', '=', $request->id)->update([
             'borrado' => true,
             'fecha_borrado' => Carbon::now(),
             'estatus' => DocsStatusEnum::BORRADO,
@@ -178,7 +178,7 @@ class DocsManagmentHelper
         $id = null;
 
         if ($request->has('id')) {
-            $data = DB::table($request->model)->where('id', '=', $request->id)->first();
+            $data = DB::table('modelos_docs')->where('id', '=', $request->id)->first();
             $id = $request->id;
 
             if ($data) {
@@ -198,28 +198,29 @@ class DocsManagmentHelper
         $validateData = Validator::make($request->all(), [
             'doc_type' => 'required|string',
             'model' => 'required|string',
-            'model_id' => 'required|string',
-            'model_id_value' => 'required|numeric',
+            'model_id' => 'required|numeric',
+            //'model_id_value' => 'required|numeric',
             'files.*' => 'required|mimes:png,jpg,jpeg,pdf|max:4096',
             'positions' => 'required|json',
             'etiquetas' => 'required|json'
         ]);
         //dd(json_decode($request->position));
         if ($validateData->fails()) {
+            //dd($validateData->errors());
             return (object) ['ok' => false, 'errors' => $validateData->errors()->all()];
         }
 
         $validModels = DocsValidParams::VALIDMODELS;
-        $validModelIds = DocsValidParams::VALIDMODELIDS;
+        //$validModelIds = DocsValidParams::VALIDMODELIDS;
         $validDocTypes = DocsValidParams::validDocTypes;
 
         if (in_array($request->model, $validModels) === false) {
             return (object) ['ok' => false, 'errors' => ['El modelo:'. $request->model. ' es invalido']];
         }
 
-        if (in_array($request->model_id, $validModelIds) === false) {
-            return (object) ['ok' => false, 'errors' => ['El modelo id: '. $request->model_id. ' es invalido']];
-        }
+        // if (in_array($request->model_id, $validModelIds) === false) {
+        //     return (object) ['ok' => false, 'errors' => ['El modelo id: '. $request->model_id. ' es invalido']];
+        // }
 
         if (in_array($request->doc_type, $validDocTypes) === false) {
             return (object) ['ok' => false, 'errors' => ['El tipo de documento es invalido', ['Tipos válidos' => $validDocTypes]]];
@@ -233,8 +234,8 @@ class DocsManagmentHelper
         $validateData = Validator::make($request->all(), [
             'doc_type' => 'required|string',
             'model' => 'required|string',
-            'model_id' => 'required|string',
-            'model_id_value' => 'required|numeric',
+            'model_id' => 'required|numeric',
+            //'model_id_value' => 'required|numeric',
             'id' => 'nullable|numeric'
         ]);
 
@@ -243,28 +244,29 @@ class DocsManagmentHelper
         }
 
         $validModels = DocsValidParams::VALIDMODELS;
-        $validModelIds = DocsValidParams::VALIDMODELIDS;
+        //$validModelIds = DocsValidParams::VALIDMODELIDS;
         $validDocTypes = DocsValidParams::validDocTypes;
 
         if (in_array($request->model, $validModels) === false) {
             return (object) ['ok' => false, 'errors' => ['El modelo:'. $request->model. ' es invalido']];
         }
 
-        if (in_array($request->model_id, $validModelIds) === false) {
-            return (object) ['ok' => false, 'errors' => ['El modelo id: '. $request->model_id. ' es invalido']];
-        }
+        // if (in_array($request->model_id, $validModelIds) === false) {
+        //     return (object) ['ok' => false, 'errors' => ['El modelo id: '. $request->model_id. ' es invalido']];
+        // }
 
         if (in_array($request->doc_type, $validDocTypes) === false) {
             return (object) ['ok' => false, 'errors' => ['El tipo de documento es invalido', ['Tipos válidos' => $validDocTypes]]];
         }
 
-        if ($request->has('id') && $request->id > 0) {
-            $data =  DB::table($request->model)
-            ->where($request->model_id, '=', $request->model_id_value)
+        $query =  DB::table('modelos_docs')
+            ->where('modelo', $request->model)
+            ->where('modelo_id', '=', $request->model_id)
             ->where('estatus', '=', DocsStatusEnum::ACTIVO)
-            ->where('id', '=', $request->id)
-            ->orderBy('posicion', 'ASC')
-            ->first();
+            ->orderBy('posicion', 'ASC');
+
+        if ($request->has('id') && $request->id > 0) {
+            $data = $query->where('id', '=', $request->id)->first();
 
             if (!$data) {
                 return (object) ['ok' => false, 'errors' => ['No se encontro información para mostrar']];
@@ -272,11 +274,7 @@ class DocsManagmentHelper
             return (object) ['ok' => true, 'data' => $data];
         }
 
-        $validInDB = DB::table($request->model)
-                    ->where($request->model_id, '=', $request->model_id_value)
-                    ->where('estatus', '=', DocsStatusEnum::ACTIVO)
-                    ->orderBy('posicion', 'ASC')
-                    ->get();
+        $validInDB = $query->get();
 
         if ($validInDB && count($validInDB) === 0) {
             return (object) ['ok' => false, 'errors' => ['No existe información para mostrar']];
@@ -305,7 +303,7 @@ class DocsManagmentHelper
         // Guardamos archivo
         for ($i = 0; $i < count($request->file('files')); $i++) {
 
-            $dir = $request->model_id_value.'/'.$request->doc_type;
+            $dir = $request->model_id.'/'.$request->doc_type;
             $rand = rand(2, 100);
 
             $validImageMimeTypes = ['image/png','image/jpg','image/jpeg'];
@@ -330,14 +328,15 @@ class DocsManagmentHelper
                 'tipo_doc' => $request->doc_type,
                 'nombre_archivo' => $fileName,
                 'estatus' => DocsStatusEnuM::ACTIVO,
-                $request->model_id => $request->model_id_value,
+                'modelo' => $request->model,
+                'modelo_id' => $request->model_id,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
                 'posicion' => $positionsImg[$i],
                 'tipo_archivo' => $mimeType,
                 'etiqueta' => $etiquetas[$i]
             ];
-            $savedId = DB::table($request['model'])->insertGetId(
+            $savedId = DB::table('modelos_docs')->insertGetId(
                 $payload
             );
 
@@ -349,9 +348,9 @@ class DocsManagmentHelper
                     'success' => true,
                     'file_id' => $savedId,
                     'doc_type' => $request->doc_type,
-                    'model' => $request->model,
-                    'model_id' => $request->model_id,
-                    'model_id_value' => $request->model_id_value,
+                    'modelo' => $request->model,
+                    'modelo_id' => $request->model_id,
+                    //'model_id_value' => $request->model_id_value,
                     'mime_type' => $mimeType
                 ]);
             } else {
@@ -363,9 +362,9 @@ class DocsManagmentHelper
                     'success' => false,
                     'file_id' => $savedId,
                     'doc_type' => $request->doc_type,
-                    'model' => $request->model,
-                    'model_id' => $request->model_id,
-                    'model_id_value' => $request->model_id_value,
+                    'modelo' => $request->model,
+                    'modelo_id' => $request->model_id,
+                    //'model_id_value' => $request->model_id_value,
                     'mime_type' => $mimeType
                 ]);
             }

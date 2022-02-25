@@ -53,14 +53,19 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
         ],
 
-        'clientes_docs' => [
+        'clientes' => [
             'driver' => 'local',
-            'root' => storage_path('app/clientes_docs'),
+            'root' => storage_path('app/clientes'),
         ],
 
-        'contratos_docs' => [
+        'contratos' => [
             'driver' => 'local',
-            'root' => storage_path('app/contratos_docs'),
+            'root' => storage_path('app/contratos'),
+        ],
+
+        'cobranza' => [
+            'driver' => 'local',
+            'root' => storage_path('app/cobranza'),
         ]
 
     ],

@@ -78,24 +78,35 @@ Route::prefix('dash')->group(function () {
         Route::resource('sucursales', 'SucursalesController');
         //endregion
 
-        //region LISTADO HOTELES
+        //region HOTELES
         Route::get('hoteles/all', 'HotelesController@getAll');
         Route::get('hoteles/enable/{id}', 'HotelesController@enable');
         Route::resource('hoteles', 'HotelesController');
+        //endregion
 
+        //region COMISIONISTAS
         Route::get('comisionistas/all', 'ComisionistasController@getAll');
         Route::get('comisionistas/enable/{id}', 'ComisionistasController@enable');
         Route::resource('comisionistas', 'ComisionistasController');
+        //endregion
 
+        //region CLIENTES
         Route::get('clientes/all', 'ClientesController@getAll');
         Route::get('clientes/enable/{id}', 'ClientesController@enable');
         Route::get('clientes/list', 'ClientesController@getList');
         Route::resource('clientes', 'ClientesController');
+        //endregion
 
+        //region TARJETAS
         Route::get('tarjetas/all', 'TarjetasController@getAll');
         Route::get('tarjetas/enable/{id}', 'TarjetasController@enable');
         Route::resource('tarjetas', 'TarjetasController');
         //endregion
+
+        //region COBRANZA
+        Route::post('cobranza/cancel', 'CobranzaController@cancel');
+        //endregion
+
 
         //region CONFIGURACIÓN APP
         Route::resource('tipos-tarifas', 'TiposTarifasController');

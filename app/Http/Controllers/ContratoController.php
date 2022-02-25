@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CobranzaStatusEnum;
 use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
 use App\Models\Clientes;
+use App\Models\Cobranza;
 use App\Models\Contrato;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -117,8 +119,52 @@ class ContratoController extends Controller
 
                 $contrato->cliente_id = $cliente->id;
                 break;
+            case 'cobranza':
+                $validate = Cobranza::validateBeforeSave($request->all());
+                if ($validate !== true) {
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => $validate
+                    ], JsonResponse::BAD_REQUEST);
+                }
+                $cobranza = new Cobranza();
+                if ($request->has('cobranza_id') && isset($request->cobranza_id)) {
+                    $cobranza = Cobranza::where('id', $request->cobranza_id)->first();
+                }
 
+                $cobranza->contrato_id = $request->contrato_id;
+                $cobranza->tarjeta_id = $request->tarjeta_id;
+                $cobranza->cliente_id = $request->cliente_id;
+
+                if(!$cobranza->fecha_cargo) {
+                    $cobranza->fecha_cargo =  Carbon::now(); //TODO: por el momento en duro
+                }
+
+                $cobranza->monto = $request->monto;
+                $cobranza->moneda = $request->moneda;
+                $cobranza->tipo = $request->tipo;
+                $cobranza->estatus = CobranzaStatusEnum::COBRADO;
+                if (!$cobranza->fecha_procesado) {
+                    $cobranza->fecha_procesado = Carbon::now(); //TODO: por el momento en duro
+                }
+
+                $cobranza->cod_banco = $request->cod_banco;
+                $cobranza->res_banco = null; //TODO: agregar catálogo de respuestas
+
+                if (!$cobranza->fecha_reg) {
+                    $cobranza->fecha_reg = Carbon::now();
+                }
+
+                if ($cobranza->save() === false) {
+                    DB::rollBack();
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
+                    ], JsonResponse::BAD_REQUEST);
+                }
+                break;
         }
+
 
         $contrato->estatus = ContratoStatusEnum::BORRADOR;
         if (!$contrato->hora_elaboracion) {
@@ -147,7 +193,7 @@ class ContratoController extends Controller
                 'message' => $message,
                 'id' => $contrato->id,
                 'contract_number' => $contrato->num_contrato,
-                'id' => $contrato->id
+                'id' => $contrato->id,
             ], JsonResponse::OK);
         } else {
             DB::rollBack();
