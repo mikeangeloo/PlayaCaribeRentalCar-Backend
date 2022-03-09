@@ -100,7 +100,7 @@ class ContratoController extends Controller
                     $cliente = Clientes::where('id', $request->cliente_id)->first();
                 }
                 $cliente->nombre = $request->nombre;
-                $cliente->apellidos = $request->apellidos;
+                //$cliente->apellidos = $request->apellidos;
                 $cliente->telefono = $request->telefono;
                 $cliente->email = $request->email;
                 $cliente->num_licencia = $request->num_licencia;

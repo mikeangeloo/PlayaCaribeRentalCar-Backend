@@ -16,8 +16,8 @@ class Clientes extends Model
 
     public static function validateBeforeSave($request) {
         $validateData = Validator::make($request, [
-            'nombre' => 'required|string|max:70',
-            'apellidos' => 'required|string|max:70',
+            'nombre' => 'required|string|max:200',
+            //'apellidos' => 'required|string|max:70',
             'telefono' => 'required|string',
             'email' => 'required|email',
             'num_licencia' => 'required|string',

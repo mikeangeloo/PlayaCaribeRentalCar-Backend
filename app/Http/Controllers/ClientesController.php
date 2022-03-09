@@ -56,7 +56,7 @@ class ClientesController extends Controller
 
         $cliente = new Clientes();
         $cliente->nombre = $request->nombre;
-        $cliente->apellidos = $request->apellidos;
+        //$cliente->apellidos = $request->apellidos;
         $cliente->telefono = $request->telefono;
         $cliente->email = $request->email;
         $cliente->num_licencia = $request->num_licencia;
@@ -142,7 +142,7 @@ class ClientesController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
         $cliente->nombre = $request->nombre;
-        $cliente->apellidos = $request->apellidos;
+        //$cliente->apellidos = $request->apellidos;
         $cliente->telefono = $request->telefono;
         $cliente->email = $request->email;
         $cliente->num_licencia = $request->num_licencia;

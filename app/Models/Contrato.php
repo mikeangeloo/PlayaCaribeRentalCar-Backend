@@ -170,7 +170,9 @@ class Contrato extends Model
 
         $contract->load('cliente');
         $contract->load('vehiculo.marca', 'vehiculo.clase');
-        $contract->vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $contract->vehiculo->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
+        if (isset($contract->vehiculo) && isset($contract->vehiculo->tarifas)) {
+            $contract->vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $contract->vehiculo->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
+        }
         //$contract->load('cobranza');
         //$contract->load('cobranza.tarjeta');
 
