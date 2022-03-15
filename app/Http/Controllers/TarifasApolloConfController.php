@@ -17,13 +17,19 @@ class TarifasApolloConfController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tarifaes = TarifasApolloConf::where('activo', true)->orderBy('id', 'ASC')->get();
+        $tarifasQ = TarifasApolloConf::where('activo', true)->orderBy('id', 'ASC');
+        if ($request->has('model')) {
+            $tarifasQ->where('modelo', $request->model);
+        }
+
+        $tarifas = $tarifasQ->get();
+
 
         return response()->json([
             'ok' => true,
-            'data' => $tarifaes
+            'data' => $tarifas
         ], JsonResponse::OK);
     }
 
