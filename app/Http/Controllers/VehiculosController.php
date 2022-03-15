@@ -72,7 +72,7 @@ class VehiculosController extends Controller
         $vehiculo->activo = 1;
         $vehiculo->estatus = VehiculoStatusEnum::DISPONIBLE;
         $vehiculo->clase_id = $request->clase_id;
-
+        $vehiculo->tarifa_categoria_id = $request->tarifa_categoria_id;
 
         if ($request->has('prox_servicio')) {
             $vehiculo->prox_servicio = $request->prox_servicio;
@@ -97,6 +97,7 @@ class VehiculosController extends Controller
 
         if ($vehiculo->save()) {
              // Guardamos tarifas
+             // TODO: revisar si hay que omitir
              DB::beginTransaction();
              for ($i = 0; $i < count($request->tarifas_apollo); $i++) {
                  try {
@@ -154,6 +155,7 @@ class VehiculosController extends Controller
     {
         $vehiculo = Vehiculos::where('id', $id)->first();
         $vehiculo->load('clase');
+        //TODO: revisar si quitamos
         $totalTarifasApolloConf = TarifasApolloConf::where('activo', true)->count();
         $vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $vehiculo->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();
 
@@ -219,6 +221,7 @@ class VehiculosController extends Controller
         $vehiculo->color = $request->color;
         $vehiculo->version = $request->version;
         $vehiculo->clase_id = $request->clase_id;
+        $vehiculo->tarifa_categoria_id = $request->tarifa_categoria_id;
 
         if ($request->has('prox_servicio')) {
             $vehiculo->prox_servicio = $request->prox_servicio;
@@ -371,6 +374,7 @@ class VehiculosController extends Controller
 
 
         $_vehiculos = [];
+        //TODO: revisar si quitamos
         $totalTarifasApolloConf = TarifasApolloConf::where('activo', true)->count();
         for ($i = 0; $i < count($vehiculos); $i++) {
            $vehiculos[$i]->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $vehiculos[$i]->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();

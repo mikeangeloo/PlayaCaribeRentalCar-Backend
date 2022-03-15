@@ -6,24 +6,28 @@ use App\Enums\JsonResponse;
 use App\Helpers\CommonHelper;
 use App\Models\TarifasApollo;
 use App\Models\TarifasApolloConf;
+use App\Models\TarifasCategorias;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
-class TarifasApolloConfController extends Controller
+class TarifasCategoriasController extends Controller
 {
-     /**
+      /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $tarifaes = TarifasApolloConf::where('activo', true)->orderBy('id', 'ASC')->get();
+        $tarifasC = TarifasCategorias::where('activo', true)->orderBy('id', 'ASC')->get();
+        $totalTarifasApolloConf = TarifasApolloConf::where('modelo', 'tarifas_categorias')->where('activo', true)->count();
+        for ($i = 0; $i < count($tarifasC); $i++) {
+           $tarifasC[$i]->tarifas = TarifasApollo::where('modelo', 'tarifas_categorias')->where('modelo_id', $tarifasC[$i]->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();
+        }
 
         return response()->json([
             'ok' => true,
-            'data' => $tarifaes
+            'data' => $tarifasC
         ], JsonResponse::OK);
     }
 
@@ -48,7 +52,7 @@ class TarifasApolloConfController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = TarifasApolloConf::validateBeforeSave($request->all());
+        $validateData = TarifasCategorias::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -57,35 +61,34 @@ class TarifasApolloConfController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $tarifa = new TarifasApolloConf();
-        $tarifa->modelo = $request->modelo;
-        $tarifa->frecuencia = $request->frecuencia;
-        $tarifa->frecuencia_ref = $request->frecuencia_ref;
-        $tarifa->ap_descuento = $request->ap_descuento;
-        $tarifa->valor_descuento = $request->valor_descuento;
+        DB::beginTransaction();
+
+        $tarifa = new TarifasCategorias();
+        $tarifa->categoria = $request->categoria;
+        $tarifa->precio_renta = $request->precio_renta;
         $tarifa->activo = 1;
-        $tarifa->precio_final_editable = $request->precio_final_editable;
-        $tarifa->required = $request->required;
 
         if ($tarifa->save()) {
             if ($request->has('restartAll')) {
-                $res = CommonHelper::syncWithTarifasApollo($request->modelo, $tarifa, $request->restartAll);
+                $res = CommonHelper::syncWithTarifasApollo('tarifas_categorias', $tarifa, $request->restartAll);
             } else {
-                $res = CommonHelper::syncWithTarifasApollo($request->modelo, $tarifa);
+                $res =  CommonHelper::syncWithTarifasApollo('tarifas_categorias', $tarifa);
             }
 
             if ($res !== true) {
+                DB::rollBack();
                 return response()->json([
                     'ok' => false,
                     'errors' => ['Algo salio mal, intente nuevamente']
                 ], JsonResponse::BAD_REQUEST);
             }
-
+            DB::commit();
             return response()->json([
                 'ok' => true,
                 'message' => 'Dato registrado correctamente'
             ], JsonResponse::OK);
         } else {
+            DB::rollBack();
             return response()->json([
                 'ok' => false,
                 'errors' => ['Algo salio mal, intente nuevamente']
@@ -101,7 +104,9 @@ class TarifasApolloConfController extends Controller
      */
     public function show($id)
     {
-        $tarifa = TarifasApolloConf::where('id', $id)->first();
+        $tarifa = TarifasCategorias::where('id', $id)->first();
+        $totalTarifasApolloConf = TarifasApolloConf::where('modelo', 'tarifas_categorias')->where('activo', true)->count();
+        $tarifa->tarifas = TarifasApollo::where('modelo', 'tarifas_categorias')->where('modelo_id', $tarifa->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();
 
         if (!$tarifa) {
             return response()->json([
@@ -139,7 +144,7 @@ class TarifasApolloConfController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = TarifasApolloConf::validateBeforeSave($request->all());
+        $validateData = TarifasCategorias::validateBeforeSave($request->all(), true);
 
         if ($validateData !== true) {
             return response()->json([
@@ -148,43 +153,41 @@ class TarifasApolloConfController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $tarifa = TarifasApolloConf::where('id', $id)->first();
+        DB::beginTransaction();
+
+        $tarifa = TarifasCategorias::where('id', $id)->first();
         if (!$tarifa) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $tarifa->modelo = $request->modelo;
-        $tarifa->frecuencia = $request->frecuencia;
-        $tarifa->frecuencia_ref = $request->frecuencia_ref;
-        $tarifa->ap_descuento = $request->ap_descuento;
-        $tarifa->valor_descuento = $request->valor_descuento;
-        $tarifa->precio_final_editable = $request->precio_final_editable;
-        $tarifa->required = $request->required;
-
-
+        $tarifa->categoria = $request->categoria;
+        $tarifa->precio_renta = $request->precio_renta;
 
         if ($tarifa->save()) {
+
             if ($request->has('restartAll')) {
-                $res = CommonHelper::syncWithTarifasApollo($request->modelo, $tarifa, $request->restartAll);
+                $res = CommonHelper::syncWithTarifasApollo('tarifas_categorias', $tarifa, $request->restartAll);
             } else {
-                $res = CommonHelper::syncWithTarifasApollo($request->modelo, $tarifa);
+                $res =  CommonHelper::syncWithTarifasApollo('tarifas_categorias', $tarifa);
             }
 
-
             if ($res !== true) {
+                DB::rollBack();
                 return response()->json([
                     'ok' => false,
                     'errors' => ['Algo salio mal, intente nuevamente']
                 ], JsonResponse::BAD_REQUEST);
             }
 
+            DB::commit();
             return response()->json([
                 'ok' => true,
                 'message' => 'Información actualizada correctamente'
             ], JsonResponse::OK);
         } else {
+            DB::rollBack();
             return response()->json([
                 'ok' => false,
                 'errors' => ['Algo salio mal, intente nuevamente']
@@ -207,7 +210,7 @@ class TarifasApolloConfController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $tarifa = TarifasApolloConf::where('id', $id)->first();
+        $tarifa = TarifasCategorias::where('id', $id)->first();
 
         if (!$tarifa) {
             return response()->json([
@@ -219,8 +222,6 @@ class TarifasApolloConfController extends Controller
         $tarifa->activo = false;
 
         if ($tarifa->save()) {
-            // colocamos como inactivo todas las tarifas apollo encontradas
-            TarifasApollo::where('tarifa_apollo_conf_id', $tarifa->id)->update(['activo' => false]);
             return response()->json([
                 'ok' => true,
                 'message' => 'Configuración dada de baja correctamente'
@@ -234,16 +235,20 @@ class TarifasApolloConfController extends Controller
     }
 
     public function getAll(Request $request) {
-        $tarifas = TarifasApolloConf::orderBy('id', 'ASC')->get();
+        $tarifasC = TarifasCategorias::orderBy('id', 'ASC')->get();
+        $totalTarifasApolloConf = TarifasApolloConf::where('modelo', 'tarifas_categorias')->where('activo', true)->count();
+        for ($i = 0; $i < count($tarifasC); $i++) {
+           $tarifasC[$i]->tarifas = TarifasApollo::where('modelo', 'tarifas_categorias')->where('modelo_id', $tarifasC[$i]->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();
+        }
 
         return response()->json([
             'ok' => true,
-            'data' => $tarifas
+            'data' => $tarifasC
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $data = TarifasApolloConf::where('id', $id)->first();
+        $data = TarifasCategorias::where('id', $id)->first();
         if (!$data) {
             return response()->json([
                 'ok' => false,
@@ -261,10 +266,20 @@ class TarifasApolloConfController extends Controller
         $data->activo = true;
 
         if ($data->save()) {
+
+            $res =  CommonHelper::syncWithTarifasApollo('tarifas_categorias', $data);
+
+            if ($res !== true) {
+                return response()->json([
+                    'ok' => false,
+                    'errors' => ['Algo salio mal, intente nuevamente']
+                ], JsonResponse::BAD_REQUEST);
+            }
             return response()->json([
                 'ok' => true,
                 'message' => 'Registro habilitado correctamente'
             ], JsonResponse::OK);
         }
     }
+
 }

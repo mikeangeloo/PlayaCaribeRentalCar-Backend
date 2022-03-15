@@ -124,6 +124,12 @@ Route::prefix('dash')->group(function () {
               Route::resource('tarifas-apollo-conf', 'TarifasApolloConfController');
               //endregion
 
+              //region TARIFAS X CATEGORIA
+              Route::get('tarifas-categorias/all', 'TarifasCategoriasController@getAll');
+              Route::get('tarifas-categorias/enable/{id}', 'TarifasCategoriasController@enable');
+              Route::resource('tarifas-categorias', 'TarifasCategoriasController');
+              //endregion
+
         //endregion
 
         //region UBICACIONES

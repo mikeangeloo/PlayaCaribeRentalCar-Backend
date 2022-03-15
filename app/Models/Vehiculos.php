@@ -48,6 +48,9 @@ class Vehiculos extends Model
             'codigo' => 'nullable|string|max:200',
             'num_serie' => 'required|string|max:100',
             'clase_id' => 'required|numeric',
+
+            'tarifa_categoria_id' => 'required|numeric',
+
             'tarifas_apollo' => 'required',
             'tarifas_apollo.*.frecuencia' => 'required|string',
             'tarifas_apollo.*.frecuencia_ref' => 'required|string',
