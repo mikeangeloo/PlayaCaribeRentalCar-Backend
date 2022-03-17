@@ -17,7 +17,8 @@ class Contrato extends Model
         'etapas_guardadas' => 'array',
         'cobros_extras_ids' => 'array',
         'cobros_extras' => 'array',
-        'cobranza_calc' => 'array'
+        'cobranza_calc' => 'array',
+        'tarifa_modelo_obj' => 'array'
     ];
 
     public function cliente() {
@@ -51,15 +52,24 @@ class Contrato extends Model
             'tipo_tarifa_id' => 'required|exists:tipos_tarifas,id',
             'tipo_tarifa' => 'required|string',
 
-            'tarifa_modelo_id' => 'nullable|numeric',
-            'tarifa_modelo' => 'nullable|string',
+            'modelo_id' => 'nullable|numeric',
+            'modelo' => 'nullable|string',
+
+            'tarifa_modelo' => 'required|string',
+            'tarifa_modelo_id' => 'required|numeric',
+            'tarifa_apollo_id' => 'nullable|numeric',
+            'tarifa_modelo_label' => 'required|string',
+            'tarifa_modelo_precio' => 'required|numeric',
+            'tarifa_modelo_obj' => 'nullable',
+
             'vehiculo_clase_id' => 'nullable|numeric',
             'vehiculo_clase' => 'nullable|string',
             'vehiculo_clase_precio' => 'nullable|numeric',
-            'comision' => 'nullable|numeric',
 
             'precio_unitario_inicial' => 'required|numeric',
+            'comision' => 'nullable|numeric',
             'precio_unitario_final' => 'required|numeric',
+
             'rango_fechas' => 'required',
             'rango_fechas.fecha_salida' => 'required',
             'rango_fechas.fecha_retorno' => 'required',
