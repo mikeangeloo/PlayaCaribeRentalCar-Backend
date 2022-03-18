@@ -48,7 +48,7 @@ class Contrato extends Model
 
     public static function validateDatosGeneralesBeforeSave($request) {
         $validateData = Validator::make($request, [
-            'vehiculo_id' => 'required|exists:vehiculos,id',
+            //'vehiculo_id' => 'required|exists:vehiculos,id',
             'tipo_tarifa_id' => 'required|exists:tipos_tarifas,id',
             'tipo_tarifa' => 'required|string',
 
@@ -137,7 +137,7 @@ class Contrato extends Model
         $etapa = [];
 
         $datosGeneralesColumns = [
-            'vehiculo_id',
+            //'vehiculo_id',
             'tipo_tarifa_id',
             'tipo_tarifa',
             'precio_unitario_inicial',
