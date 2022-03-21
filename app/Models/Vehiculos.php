@@ -21,6 +21,10 @@ class Vehiculos extends Model
         return $this->belongsTo(CategoriasVehiculos::class, 'categoria_vehiculo_id', 'id')->select('id', 'categoria');
     }
 
+    public function tarifa_categoria() {
+        return $this->belongsTo(TarifasCategorias::class, 'tarifa_categoria_id', 'id');
+    }
+
     public function tarifas() {
         return $this->hasMany(TarifasApollo::class, 'modelo_id', 'id');
     }
@@ -51,19 +55,19 @@ class Vehiculos extends Model
 
             'tarifa_categoria_id' => 'required|numeric',
 
-            'tarifas_apollo' => 'required',
-            'tarifas_apollo.*.frecuencia' => 'required|string',
-            'tarifas_apollo.*.frecuencia_ref' => 'required|string',
-            'tarifas_apollo.*.activo' => 'nullable|boolean',
-            'tarifas_apollo.*.modelo' => 'required|string',
-            'tarifas_apollo.*.modelo_id' => 'nullable|numeric',
-            'tarifas_apollo.*.precio_base' => 'required|numeric',
-            'tarifas_apollo.*.precio_final_editable' => 'required|boolean',
-            'tarifas_apollo.*.ap_descuento' => 'required|boolean',
-            'tarifas_apollo.*.valor_descuento' => 'nullable|numeric',
-            'tarifas_apollo.*.descuento' => 'nullable|numeric',
-            'tarifas_apollo.*.precio_final' => 'required|numeric',
-            'tarifas_apollo.*.required' => 'required|boolean',
+            // 'tarifas_apollo' => 'required',
+            // 'tarifas_apollo.*.frecuencia' => 'required|string',
+            // 'tarifas_apollo.*.frecuencia_ref' => 'required|string',
+            // 'tarifas_apollo.*.activo' => 'nullable|boolean',
+            // 'tarifas_apollo.*.modelo' => 'required|string',
+            // 'tarifas_apollo.*.modelo_id' => 'nullable|numeric',
+            // 'tarifas_apollo.*.precio_base' => 'required|numeric',
+            // 'tarifas_apollo.*.precio_final_editable' => 'required|boolean',
+            // 'tarifas_apollo.*.ap_descuento' => 'required|boolean',
+            // 'tarifas_apollo.*.valor_descuento' => 'nullable|numeric',
+            // 'tarifas_apollo.*.descuento' => 'nullable|numeric',
+            // 'tarifas_apollo.*.precio_final' => 'required|numeric',
+            // 'tarifas_apollo.*.required' => 'required|boolean',
         ]);
 
 
