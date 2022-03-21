@@ -66,7 +66,7 @@ class Contrato extends Model
             'vehiculo_clase' => 'nullable|string',
             'vehiculo_clase_precio' => 'nullable|numeric',
 
-            'precio_unitario_inicial' => 'required|numeric',
+            'precio_unitario_inicial' => 'nullable|numeric',
             'comision' => 'nullable|numeric',
             'precio_unitario_final' => 'required|numeric',
 
