@@ -101,16 +101,16 @@ class Contrato extends Model
     }
 
     /**
-     * @deprecated
+     *
      */
     public static function validateDatosVehiculo($request) {
         $validateData = Validator::make($request, [
             'vehiculo_id' => 'required|exists:vehiculos,id',
-            'km_salida' => 'nullable|numeric',
-            'km_llegada' => 'nullable|numeric',
-            'km_recorrido' => 'nullable|numeric',
-            'gas_salida' => 'nullable|string|max:100',
-            'gas_llegada' => 'nullable|string|max:100'
+            'km_inicial' => 'nullable|numeric',
+            'km_final' => 'nullable|numeric',
+            'km_anterior' => 'nullable|numeric',
+            'cant_combustible_salida' => 'nullable|string',
+            'cant_combustible_retorno' => 'nullable|string',
         ]);
 
         if ($validateData->fails()) {

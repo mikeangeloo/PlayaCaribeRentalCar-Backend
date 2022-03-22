@@ -8,6 +8,7 @@ use App\Enums\JsonResponse;
 use App\Models\Clientes;
 use App\Models\Cobranza;
 use App\Models\Contrato;
+use App\Models\Vehiculos;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -126,6 +127,15 @@ class ContratoController extends Controller
                 }
 
                 $contrato->cliente_id = $cliente->id;
+                break;
+            case 'datos_vehiculo':
+                $validateVehiculo = Contrato::validateDatosVehiculo($request->all());
+                if ($validateVehiculo !== true) {
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => $validateVehiculo
+                    ], JsonResponse::BAD_REQUEST);
+                }
                 break;
             case 'cobranza':
                 $validate = Cobranza::validateBeforeSave($request->all());
