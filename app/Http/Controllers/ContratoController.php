@@ -136,6 +136,22 @@ class ContratoController extends Controller
                         'errors' => $validateVehiculo
                     ], JsonResponse::BAD_REQUEST);
                 }
+                $contrato->vehiculo_id = $request->vehiculo_id;
+                if ($request->has('km_inicial')) {
+                    $contrato->km_inicial = $request->km_inicial;
+                }
+                if ($request->has('km_final')) {
+                    $contrato->km_final = $request->km_final;
+                }
+                if ($request->has('km_anterior')) {
+                    $contrato->km_anterior = $request->km_anterior;
+                }
+                if ($request->has('cant_combustible_salida')) {
+                    $contrato->cant_combustible_salida = $request->cant_combustible_salida;
+                }
+                if ($request->has('cant_combustible_retorno')) {
+                    $contrato->cant_combustible_retorno = $request->cant_combustible_retorno;
+                }
                 break;
             case 'cobranza':
                 $validate = Cobranza::validateBeforeSave($request->all());

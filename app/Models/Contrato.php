@@ -168,6 +168,22 @@ class Contrato extends Model
             array_push($etapa, 'datos_cliente');
         }
 
+        $datosVehiculoColums = [
+            'vehiculo_id',
+            'vehiculo_id',
+            'km_inicial',
+            'km_final',
+            'km_anterior',
+            'cant_combustible_salida',
+            'cant_combustible_retorno'
+        ];
+        for ($i = 0; $i < count($datosVehiculoColums); $i ++) {
+            if (!is_null($contract->{$datosVehiculoColums[$i]})) {
+                array_push($etapa, 'datos_vehiculo');
+                break;
+            }
+        }
+
         //buscamos si hay información en cobranza
         $validCobranzaEstatus = [CobranzaStatusEnum::COBRADO, CobranzaStatusEnum::PROGRAMADO];
         $totalCobranza = Cobranza::where('contrato_id', $contract->id)->whereIn('estatus', $validCobranzaEstatus)->count();
