@@ -12,14 +12,14 @@ class Cobranza extends Model
     protected $table = 'cobranza';
 
     public function tarjeta() {
-        return $this->hasOne(Tarjetas::class, 'id', 'tarjeta_id')->select('id', 'c_type', 'c_method', 'c_cn1', 'c_cn4', 'c_month', 'c_year');
+        return $this->hasOne(Tarjetas::class, 'id', 'tarjeta_id')->select('id', 'c_type', 'c_charge_method', 'c_cn1', 'c_cn4', 'c_month', 'c_year');
     }
 
     public static function validateBeforeSave($request) {
         $validate = Validator::make($request, [
             'contrato_id' => 'required|exists:contratos,id',
             'cliente_id' => 'required|exists:clientes,id',
-            'tarjeta_id' => 'required|exists:tarjetas,id',
+            'tarjeta_id' => 'nullable|exists:tarjetas,id',
             'fecha_cargo' => 'nullable',
             'monto' => 'nullable|numeric',
             'moneda' => 'required|string',

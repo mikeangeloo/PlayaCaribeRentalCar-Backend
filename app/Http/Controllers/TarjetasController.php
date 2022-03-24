@@ -54,7 +54,18 @@ class TarjetasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $card = new Tarjetas();
+        $card = Tarjetas::where('c_cn1', $request->c_cn1)
+                ->where('c_cn2', $request->c_cn2)
+                ->where('c_cn3', $request->c_cn3)
+                ->where('c_cn4', $request->c_cn4)
+                ->where('c_code', $request->c_code)
+                ->where('cliente_id', $request->cliente_id)
+                ->first();
+
+        if (!$card) {
+            $card = new Tarjetas();
+        }
+
         $card->cliente_id = $request->cliente_id;
         $card->c_name = $request->c_name;
         $card->c_cn1 = $request->c_cn1;
@@ -65,7 +76,7 @@ class TarjetasController extends Controller
         $card->c_year = $request->c_year;
         $card->c_code = $request->c_code;
         $card->c_type = $request->c_type;
-        $card->c_method = $request->c_method;
+        $card->c_charge_method = $request->c_charge_method;
         $card->date_reg = Carbon::now();
 
         if ($card->save()) {
@@ -158,7 +169,7 @@ class TarjetasController extends Controller
         $card->c_year = $request->c_year;
         $card->c_code = $request->c_code;
         $card->c_type = $request->c_type;
-        $card->c_method = $request->c_method;
+        $card->c_charge_method = $request->c_charge_method;
 
 
         if ($card->save()) {

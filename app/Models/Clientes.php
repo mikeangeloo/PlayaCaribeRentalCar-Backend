@@ -34,6 +34,6 @@ class Clientes extends Model
     }
 
     public function tarjetas() {
-        return $this->hasMany(Tarjetas::class, 'cliente_id', 'id')->select('id', 'cliente_id', 'c_type', 'c_cn4', 'c_month', 'c_year', 'c_method');
+        return $this->hasMany(Tarjetas::class, 'cliente_id', 'id')->select('id', 'cliente_id', 'c_type', 'c_cn4', 'c_month', 'c_year', 'c_charge_method');
     }
 }

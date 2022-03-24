@@ -22,8 +22,7 @@ class Tarjetas extends Model
         'c_month' => EncryptCast::class,
         'c_year' => EncryptCast::class,
         'c_code' => EncryptCast::class,
-        'c_type' => EncryptCast::class,
-        'c_method' => EncryptCast::class,
+        'c_type' => EncryptCast::class
     ];
 
      // mensajes personalizados
@@ -57,7 +56,7 @@ class Tarjetas extends Model
             'c_year' => 'required|date_format:Y',
             'c_code' => 'required|string',
             'c_type' => 'required|string',
-            'c_method' => 'required|string'
+            'c_charge_method' => 'required|numeric'
         ], self::$messages);
 
         if ($validateCardData->fails()) {
