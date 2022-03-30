@@ -16,8 +16,8 @@ class Clientes extends Model
 
     public static function validateBeforeSave($request) {
         $validateData = Validator::make($request, [
-            'nombre' => 'required|string|max:70',
-            'apellidos' => 'required|string|max:70',
+            'nombre' => 'required|string|max:200',
+            //'apellidos' => 'required|string|max:70',
             'telefono' => 'required|string',
             'email' => 'required|email',
             'num_licencia' => 'required|string',
@@ -34,6 +34,6 @@ class Clientes extends Model
     }
 
     public function tarjetas() {
-        return $this->hasMany(Tarjetas::class, 'cliente_id', 'id')->select('id', 'cliente_id', 'c_type', 'c_cn4', 'c_month', 'c_year', 'c_method');
+        return $this->hasMany(Tarjetas::class, 'cliente_id', 'id')->select('id', 'cliente_id', 'c_type', 'c_cn4', 'c_month', 'c_year', 'c_charge_method');
     }
 }

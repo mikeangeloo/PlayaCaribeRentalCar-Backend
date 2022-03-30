@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
+use App\Helpers\CommonHelper;
 use App\Models\TarifasApollo;
 use App\Models\TarifasApolloConf;
 use Illuminate\Http\Request;
@@ -16,13 +17,19 @@ class TarifasApolloConfController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tarifaes = TarifasApolloConf::where('activo', true)->orderBy('id', 'ASC')->get();
+        $tarifasQ = TarifasApolloConf::where('activo', true)->orderBy('id', 'ASC');
+        if ($request->has('model')) {
+            $tarifasQ->where('modelo', $request->model);
+        }
+
+        $tarifas = $tarifasQ->get();
+
 
         return response()->json([
             'ok' => true,
-            'data' => $tarifaes
+            'data' => $tarifas
         ], JsonResponse::OK);
     }
 
@@ -68,9 +75,9 @@ class TarifasApolloConfController extends Controller
 
         if ($tarifa->save()) {
             if ($request->has('restartAll')) {
-                $res = $this->syncWithTarifasApollo($tarifa, $request->restartAll);
+                $res = CommonHelper::syncWithTarifasApollo($request->modelo, $tarifa, $request->restartAll);
             } else {
-                $res = $this->syncWithTarifasApollo($tarifa);
+                $res = CommonHelper::syncWithTarifasApollo($request->modelo, $tarifa);
             }
 
             if ($res !== true) {
@@ -166,9 +173,9 @@ class TarifasApolloConfController extends Controller
 
         if ($tarifa->save()) {
             if ($request->has('restartAll')) {
-                $res = $this->syncWithTarifasApollo($tarifa, $request->restartAll);
+                $res = CommonHelper::syncWithTarifasApollo($request->modelo, $tarifa, $request->restartAll);
             } else {
-                $res = $this->syncWithTarifasApollo($tarifa);
+                $res = CommonHelper::syncWithTarifasApollo($request->modelo, $tarifa);
             }
 
 
@@ -265,75 +272,5 @@ class TarifasApolloConfController extends Controller
                 'message' => 'Registro habilitado correctamente'
             ], JsonResponse::OK);
         }
-    }
-
-
-    public function syncWithTarifasApollo($tarifa = null, $syncRestart = false) {
-        // preparamos para insertar en tarifas_apollo
-        $modelData = DB::table($tarifa->modelo)->get();
-        if (!$modelData) {
-            return response()->json([
-                'ok' => false,
-                'errors' => ['No hay: '. $tarifa->modelo. 'registrados']
-            ], JsonResponse::BAD_REQUEST);
-        }
-
-        if ($syncRestart === true) {
-            TarifasApollo::where('modelo', $tarifa->modelo)->delete();
-        }
-
-        $tarifas = TarifasApolloConf::where('activo', true)->get();
-        for ($i = 0; $i < count($tarifas); $i++) {
-            $result = $this->insertTarifasApollo($tarifas[$i], $modelData);
-            if ($result !== true) {
-                return $result;
-                break;
-            }
-        }
-        return true;
-    }
-
-    private function insertTarifasApollo($tarifa, $modelData) {
-
-
-         DB::beginTransaction();
-         try {
-
-             for ($i = 0; $i < count($modelData); $i++) {
-                //dd($modelData[$i]->id);
-                $_valorDesc = (float) round(($tarifa->valor_descuento / 100), 4);
-                //dd($_valorDesc);
-                 DB::table('tarifas_apollo')->updateOrInsert
-                 (
-                     [
-                         'tarifa_apollo_conf_id' => $tarifa->id,
-                         'modelo_id' => $modelData[$i]->id,
-                     ],
-                     [
-                        'tarifa_apollo_conf_id' => $tarifa->id,
-                        'modelo' => $tarifa->modelo,
-                        'modelo_id' => $modelData[$i]->id,
-                        'frecuencia' => $tarifa->frecuencia,
-                        'frecuencia_ref' => $tarifa->frecuencia_ref,
-                        'precio_base' => $modelData[$i]->precio_renta,
-                        'ap_descuento' => $tarifa->ap_descuento,
-                        'valor_descuento' => $tarifa->valor_descuento,
-                        'descuento' => (float) round($modelData[$i]->precio_renta * $_valorDesc, 4),
-                        'precio_final' => ($tarifa->frecuencia_ref == 'hours') ? round($modelData[$i]->precio_renta / 7, 4) : round($modelData[$i]->precio_renta - (float) round($modelData[$i]->precio_renta * $_valorDesc, 4), 4),
-                        'activo' => $tarifa->activo,
-                        'precio_final_editable' => $tarifa->precio_final_editable,
-                        'required' => $tarifa->required,
-                     ]
-                );
-             }
-
-         } catch (\Throwable $e) {
-             DB::rollBack();
-             Log::debug($e);
-             return false;
-         }
-
-         DB::commit();
-         return true;
     }
 }

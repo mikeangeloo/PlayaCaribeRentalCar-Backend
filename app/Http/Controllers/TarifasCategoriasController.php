@@ -3,24 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Models\Tarjetas;
-use Carbon\Carbon;
+use App\Helpers\CommonHelper;
+use App\Models\TarifasApollo;
+use App\Models\TarifasApolloConf;
+use App\Models\TarifasCategorias;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class TarjetasController extends Controller
+class TarifasCategoriasController extends Controller
 {
-    /**
+      /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $tarjetas = Tarjetas::where('activo', true)->orderBy('id', 'ASC')->get();
+        $tarifasC = TarifasCategorias::where('activo', true)->orderBy('id', 'ASC')->get();
+        $totalTarifasApolloConf = TarifasApolloConf::where('modelo', 'tarifas_categorias')->where('activo', true)->count();
+        for ($i = 0; $i < count($tarifasC); $i++) {
+           $tarifasC[$i]->tarifas = TarifasApollo::where('modelo', 'tarifas_categorias')->where('modelo_id', $tarifasC[$i]->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();
+        }
 
         return response()->json([
             'ok' => true,
-            'tarjetas' => $tarjetas
+            'data' => $tarifasC
         ], JsonResponse::OK);
     }
 
@@ -45,7 +52,7 @@ class TarjetasController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = Tarjetas::validateBeforeSave($request->all());
+        $validateData = TarifasCategorias::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -54,44 +61,37 @@ class TarjetasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $card = Tarjetas::where('c_cn1', $request->c_cn1)
-                ->where('c_cn2', $request->c_cn2)
-                ->where('c_cn3', $request->c_cn3)
-                ->where('c_cn4', $request->c_cn4)
-                ->where('c_code', $request->c_code)
-                ->where('cliente_id', $request->cliente_id)
-                ->first();
+        DB::beginTransaction();
 
-        if (!$card) {
-            $card = new Tarjetas();
-        }
+        $tarifa = new TarifasCategorias();
+        $tarifa->categoria = $request->categoria;
+        $tarifa->precio_renta = $request->precio_renta;
+        $tarifa->activo = 1;
 
-        $card->cliente_id = $request->cliente_id;
-        $card->c_name = $request->c_name;
-        $card->c_cn1 = $request->c_cn1;
-        $card->c_cn2 = $request->c_cn2;
-        $card->c_cn3 = $request->c_cn3;
-        $card->c_cn4 = $request->c_cn4;
-        $card->c_month = $request->c_month;
-        $card->c_year = $request->c_year;
-        $card->c_code = $request->c_code;
-        $card->c_type = $request->c_type;
-        $card->c_charge_method = $request->c_charge_method;
-        $card->date_reg = Carbon::now();
+        if ($tarifa->save()) {
+            if ($request->has('restartAll')) {
+                $res = CommonHelper::syncWithTarifasApollo('tarifas_categorias', $tarifa, $request->restartAll);
+            } else {
+                $res =  CommonHelper::syncWithTarifasApollo('tarifas_categorias', $tarifa);
+            }
 
-        if ($card->save()) {
+            if ($res !== true) {
+                DB::rollBack();
+                return response()->json([
+                    'ok' => false,
+                    'errors' => ['Algo salio mal, intente nuevamente']
+                ], JsonResponse::BAD_REQUEST);
+            }
+            DB::commit();
             return response()->json([
                 'ok' => true,
-                'card_id' => $card->id,
-                'message' => 'La tarjeta fue registrada correctamente'
+                'message' => 'Dato registrado correctamente'
             ], JsonResponse::OK);
         } else {
+            DB::rollBack();
             return response()->json([
                 'ok' => false,
-                'errors' => $validateData
-            ], JsonResponse::BAD_REQUEST); return response()->json([
-                'ok' => false,
-                'errors' => ['Hubo un error al momento de guardar el registro, intente nuevamente']
+                'errors' => ['Algo salio mal, intente nuevamente']
             ], JsonResponse::BAD_REQUEST);
         }
     }
@@ -104,10 +104,11 @@ class TarjetasController extends Controller
      */
     public function show($id)
     {
-        $tarjeta = Tarjetas::where('id', $id)->first();
+        $tarifa = TarifasCategorias::where('id', $id)->first();
+        $totalTarifasApolloConf = TarifasApolloConf::where('modelo', 'tarifas_categorias')->where('activo', true)->count();
+        $tarifa->tarifas = TarifasApollo::where('modelo', 'tarifas_categorias')->where('modelo_id', $tarifa->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();
 
-
-        if (!$tarjeta) {
+        if (!$tarifa) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
@@ -116,7 +117,7 @@ class TarjetasController extends Controller
 
         return response()->json([
             'ok' => true,
-            'tarjeta' => $tarjeta
+            'data' => $tarifa
         ], JsonResponse::OK);
     }
 
@@ -143,7 +144,7 @@ class TarjetasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = Tarjetas::validateBeforeSave($request->all());
+        $validateData = TarifasCategorias::validateBeforeSave($request->all(), true);
 
         if ($validateData !== true) {
             return response()->json([
@@ -152,33 +153,41 @@ class TarjetasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $card = Tarjetas::where('id', $id)->first();
-        if (!$card) {
+        DB::beginTransaction();
+
+        $tarifa = TarifasCategorias::where('id', $id)->first();
+        if (!$tarifa) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $card->cliente_id = $request->cliente_id;
-        $card->c_name = $request->c_name;
-        $card->c_cn1 = $request->c_cn1;
-        $card->c_cn2 = $request->c_cn2;
-        $card->c_cn3 = $request->c_cn3;
-        $card->c_cn4 = $request->c_cn4;
-        $card->c_month = $request->c_month;
-        $card->c_year = $request->c_year;
-        $card->c_code = $request->c_code;
-        $card->c_type = $request->c_type;
-        $card->c_charge_method = $request->c_charge_method;
+        $tarifa->categoria = $request->categoria;
+        $tarifa->precio_renta = $request->precio_renta;
 
+        if ($tarifa->save()) {
 
-        if ($card->save()) {
+            if ($request->has('restartAll')) {
+                $res = CommonHelper::syncWithTarifasApollo('tarifas_categorias', $tarifa, $request->restartAll);
+            } else {
+                $res =  CommonHelper::syncWithTarifasApollo('tarifas_categorias', $tarifa);
+            }
+
+            if ($res !== true) {
+                DB::rollBack();
+                return response()->json([
+                    'ok' => false,
+                    'errors' => ['Algo salio mal, intente nuevamente']
+                ], JsonResponse::BAD_REQUEST);
+            }
+
+            DB::commit();
             return response()->json([
                 'ok' => true,
-                'card_id' => $card->id,
-                'message' => 'Tarjeta actualizada correctamente'
+                'message' => 'Información actualizada correctamente'
             ], JsonResponse::OK);
         } else {
+            DB::rollBack();
             return response()->json([
                 'ok' => false,
                 'errors' => ['Algo salio mal, intente nuevamente']
@@ -201,21 +210,21 @@ class TarjetasController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $tarjeta = Tarjetas::where('id', $id)->first();
+        $tarifa = TarifasCategorias::where('id', $id)->first();
 
-        if (!$tarjeta) {
+        if (!$tarifa) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $tarjeta->activo = false;
+        $tarifa->activo = false;
 
-        if ($tarjeta->save()) {
+        if ($tarifa->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Tarjeta dada de baja correctamente'
+                'message' => 'Configuración dada de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -226,37 +235,51 @@ class TarjetasController extends Controller
     }
 
     public function getAll(Request $request) {
-        $tarjetas = Tarjetas::orderBy('id', 'ASC')->get();
+        $tarifasC = TarifasCategorias::orderBy('id', 'ASC')->get();
+        $totalTarifasApolloConf = TarifasApolloConf::where('modelo', 'tarifas_categorias')->where('activo', true)->count();
+        for ($i = 0; $i < count($tarifasC); $i++) {
+           $tarifasC[$i]->tarifas = TarifasApollo::where('modelo', 'tarifas_categorias')->where('modelo_id', $tarifasC[$i]->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();
+        }
 
         return response()->json([
             'ok' => true,
-            'tarjetas' => $tarjetas
+            'data' => $tarifasC
         ], JsonResponse::OK);
     }
 
     public function enable($id) {
-        $tarjeta = Tarjetas::where('id', $id)->first();
-        if (!$tarjeta) {
+        $data = TarifasCategorias::where('id', $id)->first();
+        if (!$data) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No hay registros']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        if ($tarjeta->activo === 1 || $tarjeta->activo == true) {
+        if ($data->activo === 1 || $data->activo == true) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['El registro ya fue activado']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $tarjeta->activo = true;
+        $data->activo = true;
 
-        if ($tarjeta->save()) {
+        if ($data->save()) {
+
+            $res =  CommonHelper::syncWithTarifasApollo('tarifas_categorias', $data);
+
+            if ($res !== true) {
+                return response()->json([
+                    'ok' => false,
+                    'errors' => ['Algo salio mal, intente nuevamente']
+                ], JsonResponse::BAD_REQUEST);
+            }
             return response()->json([
                 'ok' => true,
                 'message' => 'Registro habilitado correctamente'
             ], JsonResponse::OK);
         }
     }
+
 }

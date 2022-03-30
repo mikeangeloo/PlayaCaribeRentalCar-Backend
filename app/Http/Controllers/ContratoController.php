@@ -8,6 +8,7 @@ use App\Enums\JsonResponse;
 use App\Models\Clientes;
 use App\Models\Cobranza;
 use App\Models\Contrato;
+use App\Models\Vehiculos;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -51,26 +52,30 @@ class ContratoController extends Controller
                 $contrato->vehiculo_id = $request->vehiculo_id;
                 $contrato->tipo_tarifa_id = $request->tipo_tarifa_id;
                 $contrato->tipo_tarifa = $request->tipo_tarifa;
+                $contrato->modelo_id = $request->modelo_id;
+                $contrato->modelo = $request->modelo;
 
-                $contrato->tarifa_modelo_id = $request->tarifa_modelo_id;
                 $contrato->tarifa_modelo = $request->tarifa_modelo;
+                $contrato->tarifa_modelo_id = $request->tarifa_modelo_id;
+                $contrato->tarifa_apollo_id = $request->tarifa_apollo_id;
+                $contrato->tarifa_modelo_label = $request->tarifa_modelo_label;
+                $contrato->tarifa_modelo_precio = $request->tarifa_modelo_precio;
+                $contrato->tarifa_modelo_obj = $request->tarifa_modelo_obj;
+
                 $contrato->vehiculo_clase_id = $request->vehiculo_clase_id;
                 $contrato->vehiculo_clase = $request->vehiculo_clase;
                 $contrato->vehiculo_clase_precio = $request->vehiculo_clase_precio;
-                $contrato->comision = $request->comision;
 
                 $contrato->precio_unitario_inicial = $request->precio_unitario_inicial;
+                $contrato->comision = $request->comision;
                 $contrato->precio_unitario_final = $request->precio_unitario_final;
-                $contrato->total_dias = $request->total_dias;
-                $contrato->ub_salida_id = $request->ub_salida_id;
-                $contrato->ub_retorno_id = $request->ub_retorno_id;
-
 
                 $contrato->fecha_salida = $request->rango_fechas['fecha_salida'];
                 $contrato->fecha_retorno = $request->rango_fechas['fecha_retorno'];
 
-                $contrato->cobros_extras = $request->cobros_extras;
                 $contrato->cobros_extras_ids = $request->cobros_extras_ids;
+                $contrato->cobros_extras = $request->cobros_extras;
+
                 $contrato->subtotal = $request->subtotal;
                 $contrato->con_descuento = $request->con_descuento;
                 $contrato->descuento = $request->descuento;
@@ -80,9 +85,13 @@ class ContratoController extends Controller
                 $contrato->total = $request->total;
 
                 $contrato->folio_cupon = $request->folio_cupon;
-                $contrato->valor_cupon = $request->valor_cupon;
+                $contrato->valor_cupon = $request->valor_cupon; //TODO: ya no se usara
 
                 $contrato->cobranza_calc = $request->cobranza_calc;
+
+                $contrato->total_dias = $request->total_dias;
+                $contrato->ub_salida_id = $request->ub_salida_id;
+                $contrato->ub_retorno_id = $request->ub_retorno_id;
 
                 $contrato->user_create_id = $user->id;
                 break;
@@ -100,7 +109,7 @@ class ContratoController extends Controller
                     $cliente = Clientes::where('id', $request->cliente_id)->first();
                 }
                 $cliente->nombre = $request->nombre;
-                $cliente->apellidos = $request->apellidos;
+                //$cliente->apellidos = $request->apellidos;
                 $cliente->telefono = $request->telefono;
                 $cliente->email = $request->email;
                 $cliente->num_licencia = $request->num_licencia;
@@ -118,6 +127,31 @@ class ContratoController extends Controller
                 }
 
                 $contrato->cliente_id = $cliente->id;
+                break;
+            case 'datos_vehiculo':
+                $validateVehiculo = Contrato::validateDatosVehiculo($request->all());
+                if ($validateVehiculo !== true) {
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => $validateVehiculo
+                    ], JsonResponse::BAD_REQUEST);
+                }
+                $contrato->vehiculo_id = $request->vehiculo_id;
+                if ($request->has('km_inicial')) {
+                    $contrato->km_inicial = $request->km_inicial;
+                }
+                if ($request->has('km_final')) {
+                    $contrato->km_final = $request->km_final;
+                }
+                if ($request->has('km_anterior')) {
+                    $contrato->km_anterior = $request->km_anterior;
+                }
+                if ($request->has('cant_combustible_salida')) {
+                    $contrato->cant_combustible_salida = $request->cant_combustible_salida;
+                }
+                if ($request->has('cant_combustible_retorno')) {
+                    $contrato->cant_combustible_retorno = $request->cant_combustible_retorno;
+                }
                 break;
             case 'cobranza':
                 $validate = Cobranza::validateBeforeSave($request->all());
