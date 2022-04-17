@@ -33,6 +33,10 @@ Route::prefix('dash')->group(function () {
         Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
         //endregion
 
+        //region CHECKLIST
+        Route::post('check-list/save', 'CheckListController@saveUpdate');
+        //endregion
+
         Route::post('files/store-docs', 'DocsController@storeFiles');
         Route::post('files/get-docs', 'DocsController@getActiveFiles');
         Route::post('files/delete', 'DocsController@deleteFile');
