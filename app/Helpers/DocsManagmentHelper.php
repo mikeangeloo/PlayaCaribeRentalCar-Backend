@@ -16,9 +16,9 @@ class DocsTypeEnum
 
 class DocsValidParams
 {
-    const VALIDMODELS = ['clientes', 'contratos', 'cobranza'];
+    const VALIDMODELS = ['clientes', 'contratos', 'cobranza', 'check_list'];
     //const VALIDMODELIDS = ['cliente_id', 'contrato_id', 'cobranza_id'];
-    const validDocTypes = ['licencia_conducir', 'ine', 'cupon', 'voucher'];
+    const validDocTypes = ['licencia_conducir', 'ine', 'cupon', 'voucher', 'check_indicator'];
 }
 
 class DocsStatusEnum

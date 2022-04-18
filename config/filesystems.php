@@ -66,6 +66,11 @@ return [
         'cobranza' => [
             'driver' => 'local',
             'root' => storage_path('app/cobranza'),
+        ],
+
+        'check_list' => [
+            'driver' => 'local',
+            'root' => storage_path('app/check_list'),
         ]
 
     ],
