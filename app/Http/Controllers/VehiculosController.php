@@ -401,6 +401,7 @@ class VehiculosController extends Controller
                 'estatus' => $vehiculos[$i]->estatus,
                 'tarifa' => isset($vehiculos[$i]->tarifa_categoria) ? $vehiculos[$i]->tarifa_categoria->categoria. ' | ' .$vehiculos[$i]->tarifa_categoria->precio_renta : '--',
                 'código' => $vehiculos[$i]->codigo,
+                'categoría' => $vehiculos[$i]->categoria->categoria,
                 'modelo' => $vehiculos[$i]->modelo,
                 'modelo_año' => $vehiculos[$i]->modelo_ano,
                 'marca' => $vehiculos[$i]->marca->marca,

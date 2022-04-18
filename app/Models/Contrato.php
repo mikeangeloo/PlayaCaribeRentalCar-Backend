@@ -34,7 +34,7 @@ class Contrato extends Model
     }
 
     public function check_list_salida() {
-        return $this->hasMany(CheckList::class, 'contrato_id', 'id')->where('tipo', 0);
+        return $this->hasMany(CheckList::class, 'contrato_id', 'id')->where('tipo', 0)->where('activo', 1);
     }
 
     public static function validateBeforeSaveProgress($request) {
@@ -200,6 +200,7 @@ class Contrato extends Model
 
         $contract->load('cliente');
         $contract->load('vehiculo.marca', 'vehiculo.clase');
+        $contract->load('vehiculo.categoria');
         if (isset($contract->vehiculo) && isset($contract->vehiculo->tarifas)) {
             $contract->vehiculo->tarifas = TarifasApollo::where('modelo', 'vehiculos')->where('modelo_id', $contract->vehiculo->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
         }

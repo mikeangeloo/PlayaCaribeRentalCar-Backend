@@ -52,9 +52,13 @@ class CheckListController extends Controller
                 $checkList->levelTxt = $request->payload[$i]['levelTxt'];
                 $checkList->indicatorIcon = $request->payload[$i]['indicatorIcon'];
                 $checkList->indicatorTitle = $request->payload[$i]['indicatorTitle'];
-                if ($request->has('enable')) {
+                if (isset($request->payload[$i]['enable'])) {
                     $checkList->enable = $request->payload[$i]['enable'];
                 }
+                if (isset($request->payload[$i]['lock'])) {
+                    $checkList->lock = $request->payload[$i]['lock'];
+                }
+
                 $checkList->saved = true;
                 $checkList->agente_id = $user->id;
                 $checkList->agente = $user->nombre;
