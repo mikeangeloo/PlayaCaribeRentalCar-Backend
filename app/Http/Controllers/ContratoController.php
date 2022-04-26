@@ -197,6 +197,14 @@ class ContratoController extends Controller
                     ], JsonResponse::BAD_REQUEST);
                 }
                 break;
+            case 'check_in_salida':
+                $checkInCtrl = new CheckListController();
+                $response = $checkInCtrl->saveUpdate($request);
+                //dd($response);
+                if($response->original['ok'] !== true) {
+                    return $response;
+                }
+                break;
         }
 
 
@@ -217,8 +225,10 @@ class ContratoController extends Controller
             DB::commit();
 
 
-            $contrato->num_contrato = $contractInitials.sprintf('%03d', $contrato->id);
-            $contrato->save();
+            if (!$contrato->num_contrato) {
+                $contrato->num_contrato = $contractInitials.sprintf('%03d', $contrato->id);
+                $contrato->save();
+            }
 
             Contrato::setEtapasGuardadas($contrato->num_contrato);
 

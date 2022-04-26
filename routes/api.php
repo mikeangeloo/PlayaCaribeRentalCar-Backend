@@ -33,6 +33,12 @@ Route::prefix('dash')->group(function () {
         Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
         //endregion
 
+        //region CHECKLIST
+        Route::post('check-list/save', 'CheckListController@saveUpdate');
+        Route::get('check-list/{id}', 'CheckListController@show');
+        Route::get('check-list/delete/{id}', 'CheckListController@remove');
+        //endregion
+
         Route::post('files/store-docs', 'DocsController@storeFiles');
         Route::post('files/get-docs', 'DocsController@getActiveFiles');
         Route::post('files/delete', 'DocsController@deleteFile');
@@ -137,6 +143,11 @@ Route::prefix('dash')->group(function () {
         Route::get('ubicaciones/enable/{id}', 'UbicacionesController@enable');
         Route::get('ubicaciones/list', 'UbicacionesController@getList');
         Route::resource('ubicaciones', 'UbicacionesController');
+        //endregion
+
+        //region NOTAS
+        Route::post('notas/save', 'NotasController@saveUpdate');
+        Route::get('notas/delete/{id}', 'NotasController@remove');
         //endregion
 
     });

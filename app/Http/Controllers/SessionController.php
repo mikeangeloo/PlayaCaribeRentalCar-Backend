@@ -119,7 +119,7 @@ class SessionController extends Controller
                 $user->load('rol');
                 $user->load('area_trabajo');
                 $user->load('sucursal');
-                $user->makeHidden('id', 'username', 'created_at', 'updated_at', 'role_id', 'area_trabajo_id', 'sucursal_id');
+                $user->makeHidden('username', 'created_at', 'updated_at', 'role_id', 'area_trabajo_id', 'sucursal_id');
             }
 
             return response()->json(
