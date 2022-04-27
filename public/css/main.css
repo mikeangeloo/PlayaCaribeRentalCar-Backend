@@ -11285,8 +11285,80 @@ textarea.form-control-lg {
   }
 }
 .contract-container {
-  width: 22cm;
+  width: 28cm;
   height: 28cm;
   border: 1px solid black;
   padding: 5px;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.contract-container .subhead-contract {
+  margin-top: 12px;
+}
+.contract-container .subhead-contract .column {
+  border: 2px solid black;
+  border-right: none;
+  flex: 0 1 20%;
+}
+.contract-container .subhead-contract .column:last-of-type {
+  border-right: 2px solid black;
+}
+.contract-container p {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.contract-container .date-time p {
+  text-align: center;
+}
+.contract-container .office-name {
+  display: flex;
+  justify-content: space-around;
+  font-weight: bold;
+}
+
+.border-arround {
+  border: 2px solid black;
+}
+
+.items-table thead th {
+  font-weight: bold;
+}
+.items-table thead th:nth-child(1) {
+  width: 50%;
+  text-align: left;
+}
+.items-table thead th:nth-child(2) {
+  width: 20%;
+  text-align: right;
+}
+.items-table thead th:nth-child(3) {
+  width: 10%;
+  text-align: right;
+}
+.items-table thead th:nth-child(4) {
+  width: 20%;
+  text-align: right;
+}
+.items-table tbody td {
+  font-weight: bold;
+}
+.items-table tbody td:nth-child(1) {
+  width: 50%;
+  text-align: left;
+}
+.items-table tbody td:nth-child(2) {
+  width: 20%;
+  text-align: right;
+}
+.items-table tbody td:nth-child(3) {
+  width: 10%;
+  text-align: right;
+}
+.items-table tbody td:nth-child(4) {
+  width: 20%;
+  text-align: right;
+  padding-right: 14px;
 }

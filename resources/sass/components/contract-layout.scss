@@ -1,6 +1,94 @@
 .contract-container {
-    width: 22cm;
+    width: 28cm;
     height: 28cm;
     border: 1px solid black;
     padding: 5px;
+    font-size: 11px;
+    text-transform: uppercase;
+
+    .subhead-contract {
+        margin-top: 12px;
+        .column {
+            border: 2px solid black;
+            border-right: none;
+            &:last-of-type {
+                border-right: 2px solid black;
+            }
+
+            flex: 0 1 20%
+        }
+        // .flex-15 {
+        //     flex: 0 1 15%;
+        // }
+    }
+
+    p {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .date-time {
+        p {
+            text-align: center;
+        }
+    }
+
+    .office-name {
+        display: flex;
+        justify-content: space-around;
+        font-weight: bold;
+    }
+}
+.border-arround {
+    border: 2px solid black;
+}
+
+.items-table {
+    thead {
+        th {
+            font-weight: bold;
+            &:nth-child(1) {
+                width: 50%;
+                text-align: left;
+            }
+            &:nth-child(2) {
+                width: 20%;
+                text-align: right;
+            }
+            &:nth-child(3) {
+                width: 10%;
+                text-align: right;
+            }
+            &:nth-child(4) {
+                width: 20%;
+                text-align: right;
+            }
+        }
+    }
+    tbody {
+        td {
+
+            font-weight: bold;
+            &:nth-child(1) {
+                width: 50%;
+                text-align: left;
+            }
+            &:nth-child(2) {
+                width: 20%;
+                text-align: right;
+            }
+            &:nth-child(3) {
+                width: 10%;
+                text-align: right;
+            }
+            &:nth-child(4) {
+                width: 20%;
+                text-align: right;
+                padding-right: 14px;
+            }
+        }
+    }
 }
