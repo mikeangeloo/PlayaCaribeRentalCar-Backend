@@ -385,6 +385,20 @@
                 </div>
             </div>
 
+            <div class="row mt-2">
+                <div class="col-12">
+                    <p style="margin: 0; font-weight: bold">Información de los cargos totales:</p>
+                    <p style="text-transform: none;">
+                        (1) Al firmar este contrato el cliente declara tener conocimiento de todas las condiciones establecidas y acepta el clausulado al reverso. <br>
+                        (2) Los cargos son ESTIMADOS, el importe total a pagar del contrato aparecera al cierre del mismo. <br>
+                        (3) Usted va a alquilar y devolver el vehículo en el momneto y lugares indicados. Gasolina no reembolsable en prepago, EXCEPTO si se regresa con tanque lleno. <br>
+                        (4) El cliente es responsable por infracciones de tránsito. <br>
+                        (5) El vehículo pierde la cobertura de los seguros bajo las siguientes condiciones: <br>
+                        &nbsp; &nbsp; &nbsp; (a) Si el vehículo es manejado en caminos sinuosos y/o terraciería.
+                    </p>
+                </div>
+            </div>
+
 
         </div>
     </section>

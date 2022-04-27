@@ -11292,6 +11292,14 @@ textarea.form-control-lg {
   padding: 5px;
   font-size: 11px;
 }
+.page-container p {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-weight: initial;
+}
 .page-container .subhead-contract {
   margin-top: 12px;
 }
@@ -11303,25 +11311,18 @@ textarea.form-control-lg {
 .page-container .subhead-contract .column:last-of-type {
   border-right: 2px solid black;
 }
+.page-container .subhead-contract .date-time p {
+  text-align: center;
+}
+.page-container .subhead-contract .office-name {
+  display: flex;
+  justify-content: space-around;
+  font-weight: bold;
+}
 .page-container .contract-content {
   text-transform: uppercase;
   border: 2px solid black;
   border-top: none;
-}
-.page-container .contract-content p {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-.page-container .contract-content .date-time p {
-  text-align: center;
-}
-.page-container .contract-content .office-name {
-  display: flex;
-  justify-content: space-around;
-  font-weight: bold;
 }
 
 .border-arround {
