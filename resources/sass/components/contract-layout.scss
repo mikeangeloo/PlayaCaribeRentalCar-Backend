@@ -1,10 +1,10 @@
-.contract-container {
+
+.page-container {
     width: 28cm;
     height: 28cm;
-    border: 1px solid black;
+    border: 1px solid rgb(110, 168, 62);
     padding: 5px;
     font-size: 11px;
-    text-transform: uppercase;
 
     .subhead-contract {
         margin-top: 12px;
@@ -22,25 +22,34 @@
         // }
     }
 
-    p {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-    }
+    .contract-content {
+        text-transform: uppercase;
+        border: 2px solid black;
+        border-top: none;
 
-    .date-time {
+
+
         p {
-            text-align: center;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .date-time {
+            p {
+                text-align: center;
+            }
+        }
+
+        .office-name {
+            display: flex;
+            justify-content: space-around;
+            font-weight: bold;
         }
     }
 
-    .office-name {
-        display: flex;
-        justify-content: space-around;
-        font-weight: bold;
-    }
 }
 .border-arround {
     border: 2px solid black;
@@ -91,4 +100,8 @@
             }
         }
     }
+}
+.policy-console {
+    font-family: 'Inconsolata', monospace;
+    text-transform: none;
 }

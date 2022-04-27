@@ -1,3 +1,4 @@
+@import url(https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;500;600;700;800;900&display=swap);
 @charset "UTF-8";
 /*
 * Este archivo importa las dependencias de estilos ubicadas en la carpeta sytles
@@ -11284,36 +11285,40 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
-.contract-container {
+.page-container {
   width: 28cm;
   height: 28cm;
-  border: 1px solid black;
+  border: 1px solid rgb(110, 168, 62);
   padding: 5px;
   font-size: 11px;
-  text-transform: uppercase;
 }
-.contract-container .subhead-contract {
+.page-container .subhead-contract {
   margin-top: 12px;
 }
-.contract-container .subhead-contract .column {
+.page-container .subhead-contract .column {
   border: 2px solid black;
   border-right: none;
   flex: 0 1 20%;
 }
-.contract-container .subhead-contract .column:last-of-type {
+.page-container .subhead-contract .column:last-of-type {
   border-right: 2px solid black;
 }
-.contract-container p {
+.page-container .contract-content {
+  text-transform: uppercase;
+  border: 2px solid black;
+  border-top: none;
+}
+.page-container .contract-content p {
   margin: 0;
   padding: 0;
   width: 100%;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-.contract-container .date-time p {
+.page-container .contract-content .date-time p {
   text-align: center;
 }
-.contract-container .office-name {
+.page-container .contract-content .office-name {
   display: flex;
   justify-content: space-around;
   font-weight: bold;
@@ -11361,4 +11366,9 @@ textarea.form-control-lg {
   width: 20%;
   text-align: right;
   padding-right: 14px;
+}
+
+.policy-console {
+  font-family: "Inconsolata", monospace;
+  text-transform: none;
 }
