@@ -2,7 +2,7 @@
 .page-container {
     width: 28cm;
     height: 28cm;
-    border: 1px solid rgb(110, 168, 62);
+    //border: 1px solid rgb(110, 168, 62);
     padding: 5px;
     font-size: 11px;
 
@@ -100,4 +100,6 @@
 .policy-console {
     font-family: 'Inconsolata', monospace;
     text-transform: none;
+    padding-right: 1.5rem !important;
+    text-align: justify;
 }

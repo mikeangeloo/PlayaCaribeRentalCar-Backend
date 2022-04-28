@@ -12,14 +12,14 @@
         <div class="container-fluid">
             <!-- CONTRACT HEADER -->
             <div class="row no-gutters align-content-center">
-                <div class="col-6">
+                <div class="col-6 p-0">
                     <img class="img-fluid" src="{{ 'assets/img/PDF-Logo.png' }}">
                 </div>
                 <div class="col-3 d-flex flex-column align-self-center">
                     <p class="m-0 text-uppercase">ANEXO</p>
                     <p class="m-0">--</p>
                 </div>
-                <div class="col-3 d-flex align-items-center">
+                <div class="col-3 d-flex align-items-end">
                     <p class="text-uppercase">CONTRATO#: F3939393</p>
                 </div>
             </div> <!-- END CONTRACT HEADER -->
@@ -391,10 +391,44 @@
                     <p style="text-transform: none;">
                         (1) Al firmar este contrato el cliente declara tener conocimiento de todas las condiciones establecidas y acepta el clausulado al reverso. <br>
                         (2) Los cargos son ESTIMADOS, el importe total a pagar del contrato aparecera al cierre del mismo. <br>
-                        (3) Usted va a alquilar y devolver el vehículo en el momneto y lugares indicados. Gasolina no reembolsable en prepago, EXCEPTO si se regresa con tanque lleno. <br>
+                        (3) Usted va a alquilar y devolver el vehículo en el momento y lugares indicados. Gasolina no reembolsable en prepago, EXCEPTO si se regresa con tanque lleno. <br>
                         (4) El cliente es responsable por infracciones de tránsito. <br>
                         (5) El vehículo pierde la cobertura de los seguros bajo las siguientes condiciones: <br>
-                        &nbsp; &nbsp; &nbsp; (a) Si el vehículo es manejado en caminos sinuosos y/o terraciería.
+                            <p style="padding-left: 1rem; text-align: justify">(a) Si el vehículo es manejado en caminos sinuosos y/o terraciería.</p>
+                            <p style="padding-left: 1rem; text-align: justify">(b) Si el conductor maneja en estado de ebriedad y/o bajo la influencia de alguna droga.</p>
+                            <p style="padding-left: 1rem; text-align: justify">(c) Una vez entregado el vehículo, el cliente es responsable por cualquier anomalía mecánica, eléctrica o las que resulten si el vehículo se manejó bajo condiciones serveras (previa revisión por personal autorizado).</p>
+                            <p style="padding-left: 1rem; text-align: justify">(d) El vehículo deberá ser entregado en el horario estipulado en el contrato y bajo las condiciones en que se recibió el mismo, en caso de incumplimiento las tarifas serán: TARIFAS EXTRAORDINARIAS.</p>
+                            <p style="padding-left: 1rem; text-align: justify">(e) El vehículo debe devolverse en las mismas condiciones den las cuales se recibió; el exceso de arena, cemento, tierra, en asienteos, tapetes, techo y/o cajuela; además de asientos mojasdos y vestiduras manchagas y/o quemadas (general un costo extra de $300.00).</p>
+                    </p>
+                    <p class="mt-2" style="text-transform: none;">
+                        <b>*EXCLUSIONES E INCLUSIONES GENERALES DE LAS COBERTURAS LDW / CDW / CDW-2 / LDW PACK / CDW PACK / CDW2 PACK / CDW2 - LDW0 / CDW - LDW0</b> <br>
+                        1. No cubren perdida de placas, multas o llaves. No cubren daños en llangas, rines espejos leterales y cristales. <br>
+                        2 . LDW PACK / LDW PACK US / Extensión a (B2B) / cubren "Defensa a Defensa" por lo que daños a llantas, rines, espejos laterales y cristales si lo cubren. No cubre robo de llantas ni Rines.
+                        3. Cualquier protección se invalida en caso de que el cliente no reporte el accidente dentro de un periodo menor a 24 horas despues del siniestro, tambien se invalidan en caso de haber alcohol. <br>
+                        estupefacientes y/o drogas involucradas. No cubre si se conduce en el camino no pavimentado o si existe negligencia por parte del cliente, como cualquier acto doloso, irresponsable o temerario.
+                        4. Cualquier protección se invalida si existen conductores NO autorizados en el presente contrato. <br>
+                        5. Ninguna Protección cubre Daño o perdida de GPS.
+                    </p>
+                    <div class="mt-2" style="display: flex;justify-content: space-between;align-items: center;">
+                        <div style="flex: 0 1 50%;">
+                            <p>
+                                <b>ELABORADO POR: APOLLO COMPANY</b> &nbsp; 23-NOV-2022 02:57 PM ENVIADO POR:
+                            </p>
+                        </div>
+                        <div style="flex: 0 1 50%;">
+                            <div></div>
+                            <p style="font-size: 1rem; text-align: center;border-top: 1px solid;letter-spacing: 7px;">
+                                FIRMA DEL CLIENTE
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2 border-arround" style="height: 35px;display: flex;align-content: center;">
+                <div class="col-12">
+                    <p style="text-transform: none;">
+                        SERVICIO AL CLIENTE EN EL CAMINO: <b>+52 (999)-689-1510</b> &nbsp; (24 Hhrs / 7 dias a la Semana)
                     </p>
                 </div>
             </div>
