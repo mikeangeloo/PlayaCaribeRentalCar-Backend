@@ -21,11 +21,12 @@ Route::post('activate-usr-token', 'SessionController@activateUserByCode');
 Route::post('recovery-psw', 'SessionController@generateRecoveryPswToken');
 Route::post('review-recovery-token', 'SessionController@reviewToken');
 Route::post('change-pwd-token', 'SessionController@changePwdByToken');
+Route::get('test/pdf', 'ContratoController@getContractPDF');
 //endregion
 
 Route::prefix('dash')->group(function () {
     Route::post('login', 'SessionController@login');
-
+    Route::get('test/pdf', 'ContratoController@getContractPDF');
     Route::middleware('verify.jwt')->group(function () {
 
         //region CONTRATOS

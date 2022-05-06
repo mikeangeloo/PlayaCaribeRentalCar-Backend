@@ -12,6 +12,8 @@ use App\Models\Vehiculos;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use PDF;
 
 class ContratoController extends Controller
 {
@@ -260,5 +262,25 @@ class ContratoController extends Controller
             'ok' => true,
             'data' => $getData->data
         ], JsonResponse::OK);
+    }
+
+    public function getContractPDF(Request $request, $num_contrato = null) {
+        $data = [
+            'contract'=> "Hola"
+        ];
+        $pdf = PDF::loadView('pdfs.contract-pdf', $data)->setPaper('a4','portrait');
+
+        try {
+            $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf) {
+                $mail->from('apolloDev@mail.mx','Apollo');
+                $mail->subject('Contrato de arrendamiento');
+                $mail->to('danywolfslife@gmail.com');
+                $mail->attachData($pdf->output(), 'contrato.pdf');
+            });
+        } catch(\Throwable $e) {
+
+        }
+        // dd($sendMail);
+        return $pdf->download();
     }
 }
