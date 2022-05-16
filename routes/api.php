@@ -32,6 +32,8 @@ Route::prefix('dash')->group(function () {
         //region CONTRATOS
         Route::post('contratos/save-progress', 'ContratoController@saveProcess');
         Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
+        Route::get('contratos/pdf/{num_contrato}', 'ContratoController@getContractPDF');
+        Route::delete('contratos/cancel/{id}', 'ContratoController@cancelContract');
         //endregion
 
         //region CHECKLIST

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use PDF;
 use App\Helpers\GenerateUniqueAlphCodesHelper;
+use Illuminate\Support\Facades\Log;
 
 class ContratoController extends Controller
 {
@@ -271,8 +272,8 @@ class ContratoController extends Controller
     }
 
     public function getContractPDF(Request $request, $num_contrato) {
-        $getContract = Contrato::with('cliente','vehiculo','cobranza','salida','retorno')->where('id', $num_contrato)->first();
-        #dd($getContract);
+        $getContract = Contrato::with('cliente','vehiculo','cobranza','salida','retorno')->where('num_contrato', $num_contrato)->first();
+        //dd($getContract);
         $data = [
             'contrato'=>  $getContract
         ];
@@ -290,5 +291,36 @@ class ContratoController extends Controller
         }
         // dd($sendMail);
         return $pdf->download();
+    }
+
+    public function cancelContract(Request $request, $id) {
+        $validStatus = [ContratoStatusEnum::BORRADOR];
+        $getContract = Contrato::where('id', $id)->whereIn('estatus', $validStatus)->first();
+
+        if(!$getContract) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Este contrato no puede ser cancelado']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        try {
+            $getContract->cobranza()->update(['estatus' => CobranzaStatusEnum::CANCELADO]);
+            $getContract->check_list_salida()->update(['activo' => false]);
+            $getContract->estatus = ContratoStatusEnum::CANCELADO;
+            if ($getContract->save()) {
+                return response()->json([
+                    'ok' => true,
+                    'message' => 'Contrato cancelado correctamente'
+                ], JsonResponse::OK);
+            }
+        } catch (\Throwable $e) {
+            Log::debug($e);
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Este contrato no puede ser cancelado']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
     }
 }
