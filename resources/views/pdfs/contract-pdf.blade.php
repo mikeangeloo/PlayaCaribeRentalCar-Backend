@@ -45,8 +45,7 @@
             </td>
             <td style="width: 60%; vertical-align:bottom; text-align:right">
 
-                <p style="">-----CODIGO DE BARRAS---</p>
-                <p style="font-size: 14px; "> <b> CONTRATO # :</b> <span style="font-size: 24px;"> <b> F3939393</b></span> </p>
+                <p style="font-size: 14px; "> <b> CONTRATO # :</b> <span style="font-size: 24px;"> <b> {{$contrato->num_contrato}}</b></span> </p>
 
 
             </td>
@@ -57,38 +56,38 @@
         <table style="width: 100%; border: 1px solid black; border-collapse: collapse;">
             <tr style="font-size: 8px;">
                 <td style="width: 20%; border: 1px solid black; ">
-                    <p>C TIGRILLO MZA 12 LT1 </p>
-                    <p>COZUMEL QROO 777646</p>
-                    <p>9872727272</p>
-                    <p><b>test@mail.com.mx</b></p>
+                    <p style="text-transform:uppercase;">{{$contrato->cliente->nombre}}</p>
+                    <p style="text-transform:uppercase;">{{$contrato->cliente->direccion}}</p>
+                    <p>{{$contrato->cliente->telefono}}</p>
+                    <p style="text-transform:uppercase;"><b>{{$contrato->cliente->email}}</b></p>
                 </td>
                 <td style="width: 20%;border: 1px solid black; ">
-                    <p><b>OFICINA DE RENTA</b> <span><b> FPDC60</b></span></p>
-                    <p>PDC PLAZA TUKAN</p>
-                    <p>AV 10 ESQUINA 16</p>
-                    <p>PLAYA DEL CARMEN</p>
-                    <p>77710</p>
+                    <p style="text-transform:uppercase;"><b>{{$contrato->salida->alias}}</b></p>
+                    <p style="text-transform:uppercase;">{{$contrato->salida->direccion}}</p>
+                    <p style="text-transform:uppercase;">{{$contrato->salida->colonia}}</p>
+                    <p style="text-transform:uppercase;">{{$contrato->salida->municipio}}</p>
+                    <p style="text-transform:uppercase;">{{$contrato->salida->cp}}</p>
                 </td>
                 <td style="width: 12%; text-align:center; border: 1px solid black;">
                     <p><b>FECHA DE RENTA</b></p>
-                    <p>23-NOV-2022</p>
+                    <p style="text-transform:uppercase;">{{date_format(date_create($contrato->fecha_salida), 'd-F-Y')}}</p>
                     &nbsp;
                     <p><b>HORA</b></p>
-                    <p>02:57 PM</p>
+                    <p style="text-transform:uppercase;">{{date_format(date_create($contrato->hora_salida), 'h:i a')}}</p>
                 </td>
                 <td style="width: 20%; border: 1px solid black;">
-                    <p><b>OFICINA DE RETORNO</b> <span style="text-align: right;"><b> FPDC60</b></span></p>
-                    <p>PDC PLAZA TUKAN</p>
-                    <p>AV 10 ESQUINA 16</p>
-                    <p>PLAYA DEL CARMEN</p>
-                    <p>77710</p>
+                <p style="text-transform:uppercase;"><b>{{$contrato->salida->alias}}</b></p>
+                    <p style="text-transform:uppercase;">{{$contrato->salida->direccion}}</p>
+                    <p style="text-transform:uppercase;">{{$contrato->salida->colonia}}</p>
+                    <p style="text-transform:uppercase;">{{$contrato->salida->municipio}}</p>
+                    <p style="text-transform:uppercase;">{{$contrato->salida->cp}}</p>
                 </td>
                 <td style="width: 15%; text-align:center; border: 1px solid black;">
                     <p><b>FECHA DE RETORNO</b></p>
-                    <p>26-NOV-2022</p>
+                    <p style="text-transform:uppercase;">{{date_format(date_create($contrato->fecha_retorno), 'd-F-Y')}}</p>
                     &nbsp;
                     <p><b>HORA</b></p>
-                    <p>01:00 PM</p>
+                    <p style="text-transform:uppercase;">{{date_format(date_create($contrato->hora_retorno), 'h:i a')}}</p>
                 </td>
             </tr>
         </table><!-- END INFO CLIENTE Y ARRENDAMIENTO DEL VEHICULO -->
@@ -97,19 +96,19 @@
         <div style="border: 1px solid black;">
             <table style="width: 100%;">
                 <tr style="font-size: 8px;">
-                    <td style="width: 25%; ">
+                    <!-- <td style="width: 25%; ">
                         <p><b>TARIFAS PACTADAS</b></p>
                         <p><b>CDP:</b>&nbsp;PREPAGO02F 50% DCTP PREPAGO</p>
-                    </td>
-                    <td style="width: 25%; text-align:center">
+                    </td> -->
+                    <td style="width: 33.3333333333%; text-align: left">
                         <p><b>CONFIRMACION #:</b>&nbsp;619BCFC1462</p>
                         <p><b>RES LOCAL #:</b>&nbsp;06JJW1</p>
                     </td>
-                    <td style="width: 25%;">
+                    <td style="width: 33.3333333333%; text-align: left">
                         <p><b>CANAL DE ORIGEN:</b>&nbsp;WEB</p>
                         <p><b>CÓDIGO DE TARIFA:</b>&nbsp;FCATD</p>
                     </td>
-                    <td style="width: 25%;">
+                    <td style="width: 33.3333333333%; text-align: left">
                         <p><b>NO. DE CLIENTE:</b>&nbsp;Z0KFGG</p>
                         <p><b>CONTACTO:</b>&nbsp;CZM LOCAL</p>
                     </td>
@@ -129,7 +128,6 @@
                         <div style="width: 50%; float:left">
                             <p>CLASE RESERVADA</p>
                             <p>CLASE ASIGNADA</p>
-                            <p>CLASE CARGADA</p>
                             <p>NO. DE VEHICULO</p>
                             <p>MARCA</p>
                             <p>MODELO</p>
@@ -144,7 +142,6 @@
                         <div style="width: 50%; float:right">
                             <p>C</p>
                             <p>D</p>
-                            <p>C</p>
                             <p>VV1308</p>
                             <p>VW</p>
                             <p>VENTO</p>
@@ -167,7 +164,7 @@
                             <div style="font-size: 8px;">
                                 <p>__________ACEPTADO LDW</p>
                                 <p class="policy-console">
-                                    El cliente es responsable por el 0% del valor del vehículo
+                                    El cliente es responsable por el 10% del valor del vehículo
                                     en caso de ACCIDENTE, DAÑO, o ROBO, incluye "Perdidad de uso"
                                     *En contratos con código de tarifa "WKL" la protección defensa a
                                     defensa (B2B) NO esta incluida a menos que sea aceptada o adquirida
@@ -237,7 +234,7 @@
                                     <b>GASOLINA:</b>&nbsp;PRECIO POR LITRO FALTANTE <b>$19.00</b> MXN MAS CARGO
                                     POR SERVICIO DE <b>$13.00</b> MXN POR LiTRO FALTANTE IMPUESTOS INCLUIDOS
                                 </p>
-                                <small><b>APLICABLE SI LA OPCION DE PREPAFO DE GAS NO FUE ADQUIRIDA</b></small>
+                                <small><b>APLICABLE SI LA OPCION DE PREPAGO DE GAS NO FUE ADQUIRIDA</b></small>
                             </div>
                         </div>
 
@@ -245,137 +242,110 @@
                     </td> <!-- END INFO VEHICULO Y SEGUROS -->
                     <!-- INFO CARGOS -->
                     <td style=" width: 50%; ">
-                        <div style="width: 50%; float:left">
+                        <div style="width: 100%; text-align:left;">
                             <p><b>TARIFA PUBLICA VIGENTE MXN</b></p>
                         </div>
                         <br>
-                        <br>
-                        <div style=" width: 90%; border: 1px solid black; float:left; ">
-                            <div style="width: 35%;">
-                                <p><b>DESCRIPCION DE LOS CARGOS</b></p>
+                        <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
+                            <div style="display: table-row">
+                                <div style="display: table-cell; text-align:left; width:43%;"> <p><b>DESCRIPCION DE LOS CARGOS</b></p> </div>
+                                <div style="display: table-cell; text-align:center; width:28%;"> <p><b> ------ </b></p> </div>
+                                <div style="display: table-cell; text-align:right; width:26%;"> <p><b>CARGO ESTIMADO</b></p> </div>
                             </div>
-                            <div style="width: 15%;">
-                                <p>---</p>
+                        </div>
+                        <div style="width: 100%; display: table;">
+                            <div style="display: table-row">
+                                <div style="display: table-cell;  width:43%"></div>
+                                <div style="display: table-cell; text-align:left; width:14%;"> <p><b> PRECIO.UNIT </b></p> </div>
+                                <div style="display: table-cell; text-align: right; width:12%;"> <p><b>DIA</b></p> </div>
+                                <div style="display: table-cell; width:24%"></div>
                             </div>
-                            <div style="width: 35%;">
-                                <p><b>CARGO ESTIMADO</b></p>
+                            <div style="display: table-row">
+                                <div style="display: table-cell; width: 50%; text-decoration: underline;"><p><b> TARIFAS TIEMPO Y KILOMETRAJE</b></p></div>
+                                <div style="display: table-cell; ">  </div>
+                                <div style="display: table-cell; "></div>
+                                <div style="display: table-cell;  "></div>
+                            </div>
+                            <div style="display: table-row">
+                                <div style="display: table-cell; width:45%;"> DAYS / DIAS</div>
+                                <div style="display: table-cell; text-align:left; "> $750.62 </div>
+                                <div style="display: table-cell; text-align:right;">X 3</div>
+                                <div style="display: table-cell; width:45%;  text-align:center;">$2251.66</div>
+                            </div>
+                            <div style="display: table-row">
+                                <div style="display: table-cell; width:45%;"> DESCUENTO / DISCOUNT</div>
+                                <div style="display: table-cell; text-align:left; "> 50% </div>
+                                <div style="display: table-cell; text-align:right;">X 1</div>
+                                <div style="display: table-cell; width:45%;  text-align:center;">-$1125.93</div>
+                            </div>
+                            <div style="display: table-row">
+                                <div style="display: table-cell; width: 50%; text-decoration: underline;"><p><b> CARGOS DE GAS</b></p></div>
+                                <div style="display: table-cell; ">  </div>
+                                <div style="display: table-cell; "></div>
+                                <div style="display: table-cell;  "></div>
                             </div>
                         </div>
                         <br>
-                        <div style=" width: 50%">
-                            <table class="items-table">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>Precio.UNIT</th>
-                                        <th>DIA</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td style="text-decoration: underline;">Tarifas tiempo y kilometraje</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-bold">HOURS / HORAS</td>
-                                        <td class="text-bold">$187.66</td>
-                                        <td class="text-bold"></td>
-                                        <td class="text-bold"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-bold">DAYS / DIAS</td>
-                                        <td class="text-bold">$750.62</td>
-                                        <td class="text-bold">X 3</td>
-                                        <td class="text-bold">$2251.66</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-bold">WEEKS / SEMANAL</td>
-                                        <td class="text-bold">$4503.72</td>
-                                        <td class="text-bold"></td>
-                                        <td class="text-bold"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-bold">MONTHS / MENSUAL</td>
-                                        <td class="text-bold">$21017.38</td>
-                                        <td class="text-bold"></td>
-                                        <td class="text-bold"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-bold">EX DAYS / DIA EXTRA</td>
-                                        <td class="text-bold">$750.62</td>
-                                        <td class="text-bold"></td>
-                                        <td class="text-bold"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-bold">DESCUENTO T&K / DISCOUNT T&M</td>
-                                        <td class="text-bold">50%</td>
-                                        <td class="text-bold">X 1</td>
-                                        <td class="text-bold">-$1125.93</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-decoration: underline;">Cargos de gas</td>
-                                        <td class="text-bold"></td>
-                                        <td class="text-bold"></td>
-                                        <td class="text-bold"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <div style="width: 100%; border: 1px solid black;">
-                                <div>
-                                    <p><b>Subtotal-2</b></p>
-                                </div>
-                                <div>
-                                </div>
-                                <div>
-                                    <p><b>$4112.93</b></p>
-                                </div>
+                        <div style="width: 100%; display: table;">
+                            <div style="display: table-row">
+                                <div style="display: table-cell;  width:43%"></div>
+                                <div style="display: table-cell; text-align:left; width:14%;"> <p><b> PRECIO.UNIT </b></p> </div>
+                                <div style="display: table-cell; text-align: right; width:12%;"> <p><b>DIA</b></p> </div>
+                                <div style="display: table-cell; width:35%"></div>
                             </div>
-
-                            <table class="items-table">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>Precio.UNIT</th>
-                                        <th>DIA</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="pb-1 pt-1 text-decoration-underline text-bold">PRODUCTOS ADICIONALES</td>
-                                        <td class="pb-1 pt-1 text-bold"></td>
-                                        <td class="pb-1 pt-1 text-bold"></td>
-                                        <td class="pb-1 pt-1 text-bold"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-bold">PREMIUM RETURN</td>
-                                        <td class="text-bold">$350.00</td>
-                                        <td class="text-bold">X 1</td>
-                                        <td class="text-bold">$350.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <br>
-
-                            <div style="width: 100%; border: 1px solid black;">
-                                <div>
-                                    <p><b>CARGOS ESTIMADOS TOTALES INICIALES X_______</p>
-                                    <p style="font-weight: 300; font-size: 9px;">*TODAS LAS CANTIDADES REFLEJADAS SON EN MONEDA NACIONAL (MXN)</p>
-
-                                    <div>
-                                    </div>
-                                    <div>
-                                        <p><b>$6123.46</b></p>
-                                    </div>
-                                </div>
+                            <div style="display: table-row">
+                                <div style="display: table-cell; width: 50%; text-decoration: underline;"><p><b> PRODUCTOS ADICIONALES</b></p></div>
+                                <div style="display: table-cell; ">  </div>
+                                <div style="display: table-cell; "></div>
+                                <div style="display: table-cell;  "></div>
+                            </div>
+                            <div style="display: table-row">
+                                <div style="display: table-cell; width:45%;"> SILLA BEBE</div>
+                                <div style="display: table-cell; text-align:left; "> $300 </div>
+                                <div style="display: table-cell; text-align:right;">X 3</div>
+                                <div style="display: table-cell; width:45%;  text-align:center;">$900.00</div>
+                            </div>
+                        </div>
+                        <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
+                            <div style="display: table-row">
+                                <div style="display: table-cell; text-align:left; width:43%;"> <p><b>SUBTOTAL-2</b></p> </div>
+                                <div style="display: table-cell; text-align:center; width:28%;"> <p><b>  </b></p> </div>
+                                <div style="display: table-cell; text-align:right; width:26%;"> <p><b>$4112.93</b></p> </div>
+                            </div>
+                        </div>
+                        <div style="width: 100%; display: table;">
+                            <div style="display: table-row">
+                                <div style="display: table-cell;  width:43%"></div>
+                                <div style="display: table-cell; text-align:left; width:14%;"> <p><b> PRECIO.UNIT </b></p> </div>
+                                <div style="display: table-cell; text-align: right; width:12%;"> <p><b>DIA</b></p> </div>
+                                <div style="display: table-cell; width:24%"></div>
+                            </div>
+                            <div style="display: table-row">
+                                <div style="display: table-cell; width: 50%; text-decoration: underline;"><p><b> CUOTAS LOCALES E IMPUESTOS FEDERALES</b></p></div>
+                                <div style="display: table-cell; ">  </div>
+                                <div style="display: table-cell; "></div>
+                                <div style="display: table-cell;  "></div>
+                            </div>
+                            <div style="display: table-row">
+                                <div style="display: table-cell; width:45%;"> I.V.A / TAX</div>
+                                <div style="display: table-cell; text-align:left; ">  </div>
+                                <div style="display: table-cell; text-align:right;"></div>
+                                <div style="display: table-cell; width:45%;  text-align:center;">$818.15</div>
+                            </div>
+                        </div>
+                        <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
+                            <div style="display: table-row">
+                                <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS ESTIMADOS TOTALES INICIALES X_______</b></p> </div>
+                                <div style="display: table-cell; text-align:right; width:20%;"> <p><b>$6123.46</b></p> </div>
 
                             </div>
-
-
+                            <div style="display: table-row">
+                                <div style="display: table-cell; text-align:left; width:100%;">
+                                    <p style="font-size: 6px;">*TODAS LAS CANTIDADES REFLEJADAS SON EN MONEDA NACIONAL (MXN)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="height: 25%;"></div>
                     </td> <!-- END INFO CARGOS -->
                 </tr>
 
@@ -396,7 +366,6 @@
                         <p style="padding-left: 1rem; text-align: justify">(d) El vehículo deberá ser entregado en el horario estipulado en el contrato y bajo las condiciones en que se recibió el mismo, en caso de incumplimiento las tarifas serán: TARIFAS EXTRAORDINARIAS.</p>
                         <p style="padding-left: 1rem; text-align: justify">(e) El vehículo debe devolverse en las mismas condiciones den las cuales se recibió; el exceso de arena, cemento, tierra, en asienteos, tapetes, techo y/o cajuela; además de asientos mojasdos y vestiduras manchagas y/o quemadas (general un costo extra de $300.00).</p>
                 </p>
-                <br>
                 <p style="text-transform: none;">
                     <b>*EXCLUSIONES E INCLUSIONES GENERALES DE LAS COBERTURAS LDW / CDW / CDW-2 / LDW PACK / CDW PACK / CDW2 PACK / CDW2 - LDW0 / CDW - LDW0</b> <br>
                     1. No cubren perdida de placas, multas o llaves. No cubren daños en llangas, rines espejos leterales y cristales. <br>
@@ -406,31 +375,28 @@
                     4. Cualquier protección se invalida si existen conductores NO autorizados en el presente contrato. <br>
                     5. Ninguna Protección cubre Daño o perdida de GPS.
                 </p>
-                <br>
-                <div style="display: flex;justify-content: space-between;align-items: center;">
-                    <div style="width: 50%">
-                        <p>
-                            <b>ELABORADO POR: APOLLO COMPANY</b> &nbsp; 23-NOV-2022 02:57 PM <span>
-                        </p>
-                        <p>
-                            <b> ENVIADO POR:  </b> -------------</span>
-                        </p>
-                    </div>
-                    <br>
-                    <br>
-                    <br>
-                    <div style="width: 50%; float:right;">
-                        <div></div>
-                        <p style="font-size: 1rem; text-align: center;border-top: 1px solid;letter-spacing: 7px;">
-                            FIRMA DEL CLIENTE
-                        </p>
-                    </div>
+            </div>
+        </div>
+        <div style="width: 100%; display: table;">
+            <div style="display: table-row">
+                <div style="display: table-cell;  width:45%; font-size: 8px; vertical-align:middle;">
+                    <p>
+                        <b>ELABORADO POR: APOLLO COMPANY</b> &nbsp; 23-NOV-2022 02:57 PM
+                    </p>
+                    <p>
+                        <b> ENVIADO POR:  </b> &nbsp;  -------------
+                    </p>
+                </div>
+                <div style="display: table-cell; text-align:center; width:55%;">
+                    <img style="width:45%;" src="{{$contrato->firma_cliente}}" />
+                    <p style="font-size: 12px; text-align: center;border-top: 1px solid;letter-spacing: 7px;">
+                        FIRMA DEL CLIENTE
+                    </p>
                 </div>
             </div>
         </div>
-        <br>
-        <div style="height: 35px; align-content: center; border: 1px solid black;">
-            <div style="width: 100%;">
+        <div style="align-content: center; border: 1px solid black;">
+            <div style="width: 100%; padding: 10px;">
                 <p style="text-transform: none; font-size: 10px;">
                     SERVICIO AL CLIENTE EN EL CAMINO: <b>+52 (999)-689-1510</b> &nbsp; (24 Hhrs / 7 dias a la Semana)
                 </p>

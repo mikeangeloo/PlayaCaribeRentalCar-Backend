@@ -29,6 +29,14 @@ class Contrato extends Model
         return $this->hasOne(Vehiculos::class, 'id', 'vehiculo_id');
     }
 
+    public function salida() {
+        return $this->hasOne(Ubicaciones::class, 'id', 'ub_salida_id');
+    }
+
+    public function retorno() {
+        return $this->hasOne(Vehiculos::class, 'id', 'ub_retorno_id');
+    }
+
     public function cobranza() {
         return $this->hasMany(Cobranza::class, 'contrato_id', 'id');
     }
@@ -209,6 +217,12 @@ class Contrato extends Model
 
         if (isset($contract->check_list_salida) && count($contract->check_list_salida) > 0) {
             array_push($etapa, 'check_list_salida');
+            $contract->etapas_guardadas = $etapa;
+            $contract->save();
+        }
+
+        if ($contract->firma_cliente) {
+            array_push($etapa, 'firma');
             $contract->etapas_guardadas = $etapa;
             $contract->save();
         }

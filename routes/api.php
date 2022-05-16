@@ -21,7 +21,7 @@ Route::post('activate-usr-token', 'SessionController@activateUserByCode');
 Route::post('recovery-psw', 'SessionController@generateRecoveryPswToken');
 Route::post('review-recovery-token', 'SessionController@reviewToken');
 Route::post('change-pwd-token', 'SessionController@changePwdByToken');
-Route::get('test/pdf', 'ContratoController@getContractPDF');
+Route::get('contratos/pdf/{num_contrato}', 'ContratoController@getContractPDF');
 //endregion
 
 Route::prefix('dash')->group(function () {

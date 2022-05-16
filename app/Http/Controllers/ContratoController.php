@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use PDF;
+use App\Helpers\GenerateUniqueAlphCodesHelper;
 
 class ContratoController extends Controller
 {
@@ -119,6 +120,7 @@ class ContratoController extends Controller
                 $cliente->licencia_ano = $request->licencia_ano;
                 $cliente->direccion = (isset($request->direccion)) ? $request->direccion : null;
                 $cliente->activo = true;
+                $cliente->num_cliente = GenerateUniqueAlphCodesHelper::random_strings(6);
 
                 if ($cliente->save() === false) {
                     DB::rollBack();
@@ -207,6 +209,9 @@ class ContratoController extends Controller
                     return $response;
                 }
                 break;
+            case 'firma':
+                $contrato->firma_cliente = $request->signature_img;
+                break;
         }
 
 
@@ -229,6 +234,7 @@ class ContratoController extends Controller
 
             if (!$contrato->num_contrato) {
                 $contrato->num_contrato = $contractInitials.sprintf('%03d', $contrato->id);
+                $contrato->confirmacion = GenerateUniqueAlphCodesHelper::random_strings(13);
                 $contrato->save();
             }
 
@@ -264,9 +270,11 @@ class ContratoController extends Controller
         ], JsonResponse::OK);
     }
 
-    public function getContractPDF(Request $request, $num_contrato = null) {
+    public function getContractPDF(Request $request, $num_contrato) {
+        $getContract = Contrato::with('cliente','vehiculo','cobranza','salida','retorno')->where('id', $num_contrato)->first();
+        #dd($getContract);
         $data = [
-            'contract'=> "Hola"
+            'contrato'=>  $getContract
         ];
         $pdf = PDF::loadView('pdfs.contract-pdf', $data)->setPaper('a4','portrait');
 
