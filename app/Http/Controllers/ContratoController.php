@@ -44,6 +44,40 @@ class ContratoController extends Controller
 
         DB::beginTransaction();
         switch ($request->seccion) {
+            case 'datos_cliente':
+                $validate = Clientes::validateBeforeSave($request->all());
+                if ($validate !== true) {
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => $validate
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+                $cliente = new Clientes();
+                if ($request->has('cliente_id') && isset($request->cliente_id)) {
+                    $cliente = Clientes::where('id', $request->cliente_id)->first();
+                }
+                $cliente->nombre = $request->nombre;
+                //$cliente->apellidos = $request->apellidos;
+                $cliente->telefono = $request->telefono;
+                $cliente->email = $request->email;
+                $cliente->num_licencia = $request->num_licencia;
+                $cliente->licencia_mes = $request->licencia_mes;
+                $cliente->licencia_ano = $request->licencia_ano;
+                $cliente->direccion = (isset($request->direccion)) ? $request->direccion : null;
+                $cliente->activo = true;
+                $cliente->num_cliente = GenerateUniqueAlphCodesHelper::random_strings(6);
+
+                if ($cliente->save() === false) {
+                    DB::rollBack();
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+                $contrato->cliente_id = $cliente->id;
+                break;
             case 'datos_generales':
                 $validate = Contrato::validateDatosGeneralesBeforeSave($request->all());
 
@@ -99,40 +133,7 @@ class ContratoController extends Controller
 
                 $contrato->user_create_id = $user->id;
                 break;
-            case 'datos_cliente':
-                $validate = Clientes::validateBeforeSave($request->all());
-                if ($validate !== true) {
-                    return response()->json([
-                        'ok' => false,
-                        'errors' => $validate
-                    ], JsonResponse::BAD_REQUEST);
-                }
 
-                $cliente = new Clientes();
-                if ($request->has('cliente_id') && isset($request->cliente_id)) {
-                    $cliente = Clientes::where('id', $request->cliente_id)->first();
-                }
-                $cliente->nombre = $request->nombre;
-                //$cliente->apellidos = $request->apellidos;
-                $cliente->telefono = $request->telefono;
-                $cliente->email = $request->email;
-                $cliente->num_licencia = $request->num_licencia;
-                $cliente->licencia_mes = $request->licencia_mes;
-                $cliente->licencia_ano = $request->licencia_ano;
-                $cliente->direccion = (isset($request->direccion)) ? $request->direccion : null;
-                $cliente->activo = true;
-                $cliente->num_cliente = GenerateUniqueAlphCodesHelper::random_strings(6);
-
-                if ($cliente->save() === false) {
-                    DB::rollBack();
-                    return response()->json([
-                        'ok' => false,
-                        'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
-                    ], JsonResponse::BAD_REQUEST);
-                }
-
-                $contrato->cliente_id = $cliente->id;
-                break;
             case 'datos_vehiculo':
                 $validateVehiculo = Contrato::validateDatosVehiculo($request->all());
                 if ($validateVehiculo !== true) {
@@ -236,6 +237,7 @@ class ContratoController extends Controller
             if (!$contrato->num_contrato) {
                 $contrato->num_contrato = $contractInitials.sprintf('%03d', $contrato->id);
                 $contrato->confirmacion = GenerateUniqueAlphCodesHelper::random_strings(13);
+                $contrato->res_local = GenerateUniqueAlphCodesHelper::random_strings(6);
                 $contrato->save();
             }
 
@@ -271,9 +273,26 @@ class ContratoController extends Controller
         ], JsonResponse::OK);
     }
 
-    public function getContractPDF(Request $request, $num_contrato) {
-        $getContract = Contrato::with('cliente','vehiculo','cobranza','salida','retorno')->where('num_contrato', $num_contrato)->first();
-        //dd($getContract);
+    public function getContractPDF(Request $request, $id) {
+        $getContract = Contrato::with('cliente'
+        ,'vehiculo'
+        ,'vehiculo.tarifas'
+        ,'vehiculo.marca'
+        ,'vehiculo.categoria'
+        ,'vehiculo.clase'
+        ,'vehiculo.tarifa_categoria'
+        ,'salida'
+        ,'retorno'
+        ,'cobranza'
+        ,'cobranza.tarjeta'
+        ,'usuario'
+        )->where('id', $id)->first();
+
+        // return response()->json([
+        //     'ok' => true,
+        //     'data' => $getContract
+        // ], JsonResponse::OK);
+        // dd($getContract);
         $data = [
             'contrato'=>  $getContract
         ];

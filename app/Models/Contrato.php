@@ -25,6 +25,11 @@ class Contrato extends Model
         return $this->hasOne(Clientes::class, 'id', 'cliente_id');
     }
 
+    public function usuario() {
+        return $this->hasOne(User::class, 'id', 'user_create_id');
+    }
+
+
     public function vehiculo() {
         return $this->hasOne(Vehiculos::class, 'id', 'vehiculo_id');
     }
@@ -34,7 +39,7 @@ class Contrato extends Model
     }
 
     public function retorno() {
-        return $this->hasOne(Vehiculos::class, 'id', 'ub_retorno_id');
+        return $this->hasOne(Ubicaciones::class, 'id', 'ub_retorno_id');
     }
 
     public function cobranza() {
@@ -148,6 +153,10 @@ class Contrato extends Model
         }
         $etapa = [];
 
+        if ($contract->cliente_id) {
+            array_push($etapa, 'datos_cliente');
+        }
+
         $datosGeneralesColumns = [
             //'vehiculo_id',
             'tipo_tarifa_id',
@@ -157,7 +166,6 @@ class Contrato extends Model
             'total_dias',
             'ub_salida_id',
             'ub_retorno_id',
-            'hora_elaboracion',
             'fecha_salida',
             'fecha_retorno',
             'cobros_extras',
@@ -174,10 +182,6 @@ class Contrato extends Model
                 array_push($etapa, 'datos_generales');
                 break;
             }
-        }
-
-        if ($contract->cliente_id) {
-            array_push($etapa, 'datos_cliente');
         }
 
         $datosVehiculoColums = [

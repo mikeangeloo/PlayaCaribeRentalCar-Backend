@@ -62,7 +62,7 @@
                     <p style="text-transform:uppercase;"><b>{{$contrato->cliente->email}}</b></p>
                 </td>
                 <td style="width: 20%;border: 1px solid black; ">
-                    <p style="text-transform:uppercase;"><b>{{$contrato->salida->alias}}</b></p>
+                    <p style="text-transform:uppercase;"><b>Oficina de renta:  {{$contrato->salida->alias}}</b></p>
                     <p style="text-transform:uppercase;">{{$contrato->salida->direccion}}</p>
                     <p style="text-transform:uppercase;">{{$contrato->salida->colonia}}</p>
                     <p style="text-transform:uppercase;">{{$contrato->salida->municipio}}</p>
@@ -76,11 +76,11 @@
                     <p style="text-transform:uppercase;">{{date_format(date_create($contrato->hora_salida), 'h:i a')}}</p>
                 </td>
                 <td style="width: 20%; border: 1px solid black;">
-                <p style="text-transform:uppercase;"><b>{{$contrato->salida->alias}}</b></p>
-                    <p style="text-transform:uppercase;">{{$contrato->salida->direccion}}</p>
-                    <p style="text-transform:uppercase;">{{$contrato->salida->colonia}}</p>
-                    <p style="text-transform:uppercase;">{{$contrato->salida->municipio}}</p>
-                    <p style="text-transform:uppercase;">{{$contrato->salida->cp}}</p>
+                    <p style="text-transform:uppercase;"><b>Oficina de retorno:  {{$contrato->retorno->alias}}</b></p>
+                    <p style="text-transform:uppercase;">{{$contrato->retorno->direccion}}</p>
+                    <p style="text-transform:uppercase;">{{$contrato->retorno->colonia}}</p>
+                    <p style="text-transform:uppercase;">{{$contrato->retorno->municipio}}</p>
+                    <p style="text-transform:uppercase;">{{$contrato->retorno->cp}}</p>
                 </td>
                 <td style="width: 15%; text-align:center; border: 1px solid black;">
                     <p><b>FECHA DE RETORNO</b></p>
@@ -101,16 +101,16 @@
                         <p><b>CDP:</b>&nbsp;PREPAGO02F 50% DCTP PREPAGO</p>
                     </td> -->
                     <td style="width: 33.3333333333%; text-align: left">
-                        <p><b>CONFIRMACION #:</b>&nbsp;619BCFC1462</p>
-                        <p><b>RES LOCAL #:</b>&nbsp;06JJW1</p>
+                        <p><b>CONFIRMACION #:</b>&nbsp;{{$contrato->confirmacion}}</p>
+                        <p><b>RES LOCAL #:</b>&nbsp;{{$contrato->res_local}}</p>
                     </td>
                     <td style="width: 33.3333333333%; text-align: left">
-                        <p><b>CANAL DE ORIGEN:</b>&nbsp;WEB</p>
-                        <p><b>CÓDIGO DE TARIFA:</b>&nbsp;FCATD</p>
+                        <p><b>CANAL DE ORIGEN:</b>&nbsp;LOCAL</p>
+                        <p><b>CÓDIGO DE TARIFA:</b>&nbsp;@if($contrato->tipo_tarifa == 'Apollo' ) <span>AP</span> @elseif ($contrato->tipo_tarifa == 'Hotel')<span>HT</span>@else <span>CS</span> @endif</p>
                     </td>
                     <td style="width: 33.3333333333%; text-align: left">
-                        <p><b>NO. DE CLIENTE:</b>&nbsp;Z0KFGG</p>
-                        <p><b>CONTACTO:</b>&nbsp;CZM LOCAL</p>
+                        <p><b>NO. DE CLIENTE:</b>&nbsp;{{$contrato->cliente->num_cliente}}</p>
+                        <p><b>CONTACTO:</b>&nbsp;@if($contrato->tipo_tarifa == 'Apollo' ) <span>AP LOCAL</span> @elseif ($contrato->tipo_tarifa == 'Hotel')<span>HT LOCAL</span>@else <span>CS LOCAL</span> @endif</p>
                     </td>
                 </tr>
             </table>
@@ -126,8 +126,8 @@
                         <br>
                         <br>
                         <div style="width: 50%; float:left">
-                            <p>CLASE RESERVADA</p>
-                            <p>CLASE ASIGNADA</p>
+                            <p style="text-transform:uppercase;">@if($contrato->tipo_tarifa == 'Apollo' || $contrato->tipo_tarifa == 'Comisionista' ) <span>Categoría</span> @else <span> Clase</span>@endif RESERVADA</p>
+                            <p style="text-transform:uppercase;">@if($contrato->tipo_tarifa == 'Apollo' || $contrato->tipo_tarifa == 'Comisionista' ) <span>Categoría</span> @else <span> Clase</span>@endif ASIGNADA</p>
                             <p>NO. DE VEHICULO</p>
                             <p>MARCA</p>
                             <p>MODELO</p>
@@ -140,17 +140,17 @@
                         </div>
 
                         <div style="width: 50%; float:right">
-                            <p>C</p>
-                            <p>D</p>
-                            <p>VV1308</p>
-                            <p>VW</p>
-                            <p>VENTO</p>
-                            <p>Blanco</p>
-                            <p>YYP-744-D</p>
-                            <p>MX93938383MT838383</p>
-                            <p>55.0 LITROS</p>
-                            <p>8</p>
-                            <p>15018</p>
+                            <p style="text-transform:uppercase;"> {{$contrato->tarifa_modelo_label}}</p>
+                            <p style="text-transform:uppercase;">@if($contrato->tipo_tarifa == 'Apollo' || $contrato->tipo_tarifa == 'Comisionista' ) <span>{{$contrato->vehiculo->tarifa_categoria->categoria}}</span> @else <span> {{$contrato->vehiculo->clase->clase}}</span>@endif</p>
+                            <p style="text-transform:uppercase;">{{$contrato->vehiculo->codigo}}</p>
+                            <p style="text-transform:uppercase;">{{$contrato->vehiculo->marca->marca}}</p>
+                            <p style="text-transform:uppercase;">{{$contrato->vehiculo->modelo}}</p>
+                            <p style="text-transform:uppercase;">{{$contrato->vehiculo->color}}</p>
+                            <p style="text-transform:uppercase;">{{$contrato->vehiculo->placas}}</p>
+                            <p style="text-transform:uppercase;">{{$contrato->vehiculo->num_serie}}</p>
+                            <p style="text-transform:uppercase;">{{$contrato->vehiculo->cap_tanque}} LT</p>
+                            <p style="text-transform:uppercase;">{{$contrato->cant_combustible_salida}}</p>
+                            <p style="text-transform:uppercase;">{{$contrato->km_inicial}} KM</p>
                         </div>
                         <br>
 
@@ -221,9 +221,16 @@
                             </div>
                             <br>
                             <div style="width: 100%;">
-                                <p>MC 5470*2708 PRE-AUT: 288122 23-NOV-2022 $5,000.00</p>
-                                <p>WEBBCC 1111*2708 DEPOSITO: 288122 23-NOV-2022 $1,667.41</p>
-                                <p>MC 5470*2708 DEPOSITO: 288122 23-NOV-2022 $4,456.05</p>
+                                @foreach ($contrato->cobranza as $cobranza)
+                                    <p>
+                                        @if ($cobranza->tarjeta != null)
+                                            <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "DEPOSITO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}}</span>
+                                        @else
+                                            <span>DEPOSITO: EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}} </span>
+                                        @endif
+                                    </p>
+                                @endforeach
+
                             </div>
                         </div>
                         <br>
@@ -268,49 +275,56 @@
                             </div>
                             <div style="display: table-row">
                                 <div style="display: table-cell; width:45%;"> DAYS / DIAS</div>
-                                <div style="display: table-cell; text-align:left; "> $750.62 </div>
-                                <div style="display: table-cell; text-align:right;">X 3</div>
-                                <div style="display: table-cell; width:45%;  text-align:center;">$2251.66</div>
+                                <div style="display: table-cell; text-align:left; "> ${{$contrato->cobranza_calc[0]["value"]}} </div>
+                                <div style="display: table-cell; text-align:right;">X {{$contrato->cobranza_calc[0]["quantity"]}}</div>
+                                <div style="display: table-cell; width:45%;  text-align:center;">${{$contrato->cobranza_calc[0]["amount"]}}</div>
                             </div>
-                            <div style="display: table-row">
-                                <div style="display: table-cell; width:45%;"> DESCUENTO / DISCOUNT</div>
-                                <div style="display: table-cell; text-align:left; "> 50% </div>
-                                <div style="display: table-cell; text-align:right;">X 1</div>
-                                <div style="display: table-cell; width:45%;  text-align:center;">-$1125.93</div>
-                            </div>
-                            <div style="display: table-row">
-                                <div style="display: table-cell; width: 50%; text-decoration: underline;"><p><b> CARGOS DE GAS</b></p></div>
-                                <div style="display: table-cell; ">  </div>
-                                <div style="display: table-cell; "></div>
-                                <div style="display: table-cell;  "></div>
-                            </div>
+                            @if ($contrato->con_descuento != null)
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; width:45%;"> DESCUENTO / DISCOUNT</div>
+                                    <div style="display: table-cell; text-align:left; "> 50% </div>
+                                    <div style="display: table-cell; text-align:right;">X 1</div>
+                                    <div style="display: table-cell; width:45%;  text-align:center;">-$1125.93</div>
+                                </div>
+                            @endif
+                            @if (false)
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; width: 50%; text-decoration: underline;"><p><b> CARGOS DE GAS</b></p></div>
+                                    <div style="display: table-cell; ">  </div>
+                                    <div style="display: table-cell; "></div>
+                                    <div style="display: table-cell;  "></div>
+                                </div>
+                            @endif
                         </div>
                         <br>
-                        <div style="width: 100%; display: table;">
-                            <div style="display: table-row">
-                                <div style="display: table-cell;  width:43%"></div>
-                                <div style="display: table-cell; text-align:left; width:14%;"> <p><b> PRECIO.UNIT </b></p> </div>
-                                <div style="display: table-cell; text-align: right; width:12%;"> <p><b>DIA</b></p> </div>
-                                <div style="display: table-cell; width:35%"></div>
+                        @if ($contrato->cobros_extras != null)
+                            <div style="width: 100%; display: table;">
+                                <div style="display: table-row">
+                                    <div style="display: table-cell;  width:43%"></div>
+                                    <div style="display: table-cell; text-align:left; width:14%;"> <p><b> PRECIO.UNIT </b></p> </div>
+                                    <div style="display: table-cell; text-align: right; width:12%;"> <p><b>DIA</b></p> </div>
+                                    <div style="display: table-cell; width:35%"></div>
+                                </div>
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; width: 50%; text-decoration: underline;"><p><b> PRODUCTOS ADICIONALES</b></p></div>
+                                    <div style="display: table-cell; ">  </div>
+                                    <div style="display: table-cell; "></div>
+                                    <div style="display: table-cell;  "></div>
+                                </div>
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; width:45%;"> SILLA BEBE</div>
+                                    <div style="display: table-cell; text-align:left; "> $300 </div>
+                                    <div style="display: table-cell; text-align:right;">X 3</div>
+                                    <div style="display: table-cell; width:45%;  text-align:center;">$900.00</div>
+                                </div>
                             </div>
-                            <div style="display: table-row">
-                                <div style="display: table-cell; width: 50%; text-decoration: underline;"><p><b> PRODUCTOS ADICIONALES</b></p></div>
-                                <div style="display: table-cell; ">  </div>
-                                <div style="display: table-cell; "></div>
-                                <div style="display: table-cell;  "></div>
-                            </div>
-                            <div style="display: table-row">
-                                <div style="display: table-cell; width:45%;"> SILLA BEBE</div>
-                                <div style="display: table-cell; text-align:left; "> $300 </div>
-                                <div style="display: table-cell; text-align:right;">X 3</div>
-                                <div style="display: table-cell; width:45%;  text-align:center;">$900.00</div>
-                            </div>
-                        </div>
+
+                        @endif
                         <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
                             <div style="display: table-row">
                                 <div style="display: table-cell; text-align:left; width:43%;"> <p><b>SUBTOTAL-2</b></p> </div>
                                 <div style="display: table-cell; text-align:center; width:28%;"> <p><b>  </b></p> </div>
-                                <div style="display: table-cell; text-align:right; width:26%;"> <p><b>$4112.93</b></p> </div>
+                                <div style="display: table-cell; text-align:right; width:26%;"> <p><b>${{$contrato->cobranza_calc[1]["amount"]}}</b></p> </div>
                             </div>
                         </div>
                         <div style="width: 100%; display: table;">
@@ -326,17 +340,20 @@
                                 <div style="display: table-cell; "></div>
                                 <div style="display: table-cell;  "></div>
                             </div>
-                            <div style="display: table-row">
-                                <div style="display: table-cell; width:45%;"> I.V.A / TAX</div>
-                                <div style="display: table-cell; text-align:left; ">  </div>
-                                <div style="display: table-cell; text-align:right;"></div>
-                                <div style="display: table-cell; width:45%;  text-align:center;">$818.15</div>
-                            </div>
+                            @if ($contrato->con_iva == 1)
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; width:45%;"> I.V.A / TAX</div>
+                                    <div style="display: table-cell; text-align:left; ">  </div>
+                                    <div style="display: table-cell; text-align:right;"></div>
+                                    <div style="display: table-cell; width:45%;  text-align:center;">${{$contrato->iva_monto}}</div>
+                                </div>
+                            @endif
+
                         </div>
                         <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
                             <div style="display: table-row">
                                 <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS ESTIMADOS TOTALES INICIALES X_______</b></p> </div>
-                                <div style="display: table-cell; text-align:right; width:20%;"> <p><b>$6123.46</b></p> </div>
+                                <div style="display: table-cell; text-align:right; width:20%;"> <p><b>${{$contrato->total}}</b></p> </div>
 
                             </div>
                             <div style="display: table-row">
@@ -345,7 +362,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div style="height: 25%;"></div>
+                        <div style="height: 30%;"></div>
                     </td> <!-- END INFO CARGOS -->
                 </tr>
 
@@ -380,11 +397,11 @@
         <div style="width: 100%; display: table;">
             <div style="display: table-row">
                 <div style="display: table-cell;  width:45%; font-size: 8px; vertical-align:middle;">
-                    <p>
-                        <b>ELABORADO POR: APOLLO COMPANY</b> &nbsp; 23-NOV-2022 02:57 PM
+                    <p style="text-transform:uppercase;">
+                        <b>ELABORADO POR: {{$contrato->usuario->nombre. ' ' .$contrato->usuario->apellidos}}</b> &nbsp; {{date_format(date_create($contrato->created_at), 'd-F-Y H:i:s')}}
                     </p>
-                    <p>
-                        <b> ENVIADO POR:  </b> &nbsp;  -------------
+                    <p style="text-transform:uppercase;">
+                        <b> ENVIADO POR:  {{$contrato->usuario->nombre. ' ' .$contrato->usuario->apellidos}}</b> &nbsp;  {{date_format(date_create(), 'd-F-Y H:i:s')}}
                     </p>
                 </div>
                 <div style="display: table-cell; text-align:center; width:55%;">
@@ -524,8 +541,8 @@
             </table>
         </div>
         <div style="width: 100%; margin-top:100px;">
-            <div style="width: 50%; float:right;">
-                <div></div>
+            <div style="width: 50%; text-align:center; float:right;">
+                <img style="width:60%;" src="{{$contrato->firma_cliente}}" />
                 <p style="font-size: 1rem; text-align: center;border-top: 1px solid;letter-spacing: 7px;">
                     FIRMA DEL CLIENTE
                 </p>
