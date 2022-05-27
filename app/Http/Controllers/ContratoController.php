@@ -9,6 +9,7 @@ use App\Models\Clientes;
 use App\Models\Cobranza;
 use App\Models\Contrato;
 use App\Models\Vehiculos;
+use App\Models\CheckFormList;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -210,6 +211,52 @@ class ContratoController extends Controller
                 if($response->original['ok'] !== true) {
                     return $response;
                 }
+                break;
+            case 'check_form_list':
+                $validate = CheckFormList::validateBeforeSave($request->all());
+
+                if ($validate !== true) {
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => $validate
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+                $checkFormList = new CheckFormList();
+
+                if ($request->has('check_form_list_id') && isset($request->check_form_list_id)) {
+                    $checkFormList = CheckFormList::where('id', $request->check_form_list_id)->first();
+                }
+
+                $checkFormList->contrato_id = $request->contrato_id;
+                $checkFormList->tarjeta_circulacion  = $request->tarjeta_circulacion;
+                $checkFormList->tapetes  = $request->tapetes;
+                $checkFormList->silla_bebes = $request->silla_bebes;
+                $checkFormList->espejos = $request->espejos;
+                $checkFormList->tapones_rueda = $request->tapones_rueda;
+                $checkFormList->tapon_gas = $request->tapon_gas;
+                $checkFormList->senalamientos = $request->senalamientos;
+                $checkFormList->gato = $request->gato;
+                $checkFormList->llave_rueda = $request->llave_rueda;
+                $checkFormList->limpiadores = $request->limpiadores;
+                $checkFormList->antena = $request->antena;
+                $checkFormList->navegador = $request->navegador;
+                $checkFormList->placas = $request->placas;
+                $checkFormList->radio = $request->radio;
+                $checkFormList->llantas = $request->llantas;
+
+
+
+                if ($checkFormList->save() === false) {
+                    DB::rollBack();
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => ['Algo salio mal al guardar la inforamción, intente de nuevo']
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+                $contrato->check_form_list_id = $checkFormList->id;
+
                 break;
             case 'firma':
                 $contrato->firma_cliente = $request->signature_img;

@@ -50,6 +50,10 @@ class Contrato extends Model
         return $this->hasMany(CheckList::class, 'contrato_id', 'id')->where('tipo', 0)->where('activo', 1);
     }
 
+    public function check_form_list() {
+        return $this->hasOne(CheckFormList::class, 'contrato_id', 'id');
+    }
+
     public static function validateBeforeSaveProgress($request) {
         $validateData = Validator::make($request, [
             'seccion' => 'required|string',
@@ -224,6 +228,15 @@ class Contrato extends Model
             $contract->etapas_guardadas = $etapa;
             $contract->save();
         }
+
+
+        if ($contract->check_form_list_id) {
+            $contract->load('check_form_list');
+            array_push($etapa, 'check_form_list');
+            $contract->etapas_guardadas = $etapa;
+            $contract->save();
+        }
+
 
         if ($contract->firma_cliente) {
             array_push($etapa, 'firma');
