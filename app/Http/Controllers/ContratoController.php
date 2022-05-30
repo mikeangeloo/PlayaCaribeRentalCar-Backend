@@ -22,7 +22,7 @@ class ContratoController extends Controller
 {
     public function saveProcess(Request $request) {
 
-        dd($request);
+        //dd($request);
 
         $validateInit = Contrato::validateBeforeSaveProgress($request->all());
         if ($validateInit !== true) {
