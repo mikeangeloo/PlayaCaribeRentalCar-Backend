@@ -22,6 +22,8 @@ class ContratoController extends Controller
 {
     public function saveProcess(Request $request) {
 
+        dd($request);
+
         $validateInit = Contrato::validateBeforeSaveProgress($request->all());
         if ($validateInit !== true) {
             return response()->json([
@@ -244,7 +246,8 @@ class ContratoController extends Controller
                 $checkFormList->placas = $request->placas;
                 $checkFormList->radio = $request->radio;
                 $checkFormList->llantas = $request->llantas;
-
+                $checkFormList->observaciones = $request->observaciones;
+                $checkFormList->check_list_img = $request->check_list_img;
 
 
                 if ($checkFormList->save() === false) {
@@ -332,7 +335,8 @@ class ContratoController extends Controller
         ,'retorno'
         ,'cobranza'
         ,'cobranza.tarjeta'
-        ,'usuario'
+        ,'usuario',
+        'check_form_list'
         )->where('id', $id)->first();
 
         // return response()->json([
