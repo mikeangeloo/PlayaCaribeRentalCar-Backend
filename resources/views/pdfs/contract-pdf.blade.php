@@ -343,13 +343,15 @@
                                     <div style="display: table-cell;  "></div>
                                 </div>
 
-                                @foreach ($contrato->cobros_extras as $cobroExtra)
-                                    <div style="display: table-row">
-                                        <div style="display: table-cell; width:45%;"> {{$cobroExtra['nombre']}}</div>
-                                        <div style="display: table-cell; text-align:right; ">${{$cobroExtra['precio']}} </div>
-                                        <div style="display: table-cell; text-align:center;">X {{$contrato->cobranza_calc[0]["quantity"]}}</div>
-                                        <div style="display: table-cell; width:45%;  text-align:right;">${{$cobroExtra['precio'] * $contrato->cobranza_calc[0]["quantity"]}}</div>
-                                    </div>
+                                @foreach ($contrato->cobranza_calc as $cobroExtra)
+                                    @if($cobroExtra['element'] == 'extra')
+                                        <div style="display: table-row">
+                                            <div style="display: table-cell; width:45%;"> {{$cobroExtra['element_label']}} X {{$cobroExtra['quantity']}}</div>
+                                            <div style="display: table-cell; text-align:right; ">${{$cobroExtra['value']}} </div>
+                                            <div style="display: table-cell; text-align:center;">X {{$contrato->cobranza_calc[0]["quantity"]}}</div>
+                                            <div style="display: table-cell; width:45%;  text-align:right;">${{$cobroExtra['amount']}}</div>
+                                        </div>
+                                    @endif
                                 @endforeach
                             </div>
 
@@ -720,7 +722,22 @@
     </div>
     <div class="page-break"></div>
     <div class="anexos" style="max-width: 100%;">
-
+         <!-- HEADER -->
+         <table style="width: 100%;">
+            <th>
+                <td style="width: 50%;">
+                    <img src="{{ 'assets/img/PDF-Logo.png' }}">
+                </td>
+                <td style="width: 50%; vertical-align:middle">
+                    <p style="font-size:14px;">
+                        <strong>
+                            ANEXOS
+                        </strong>
+                    </p>
+                </td>
+            </th>
+        </table> <!-- END HEADER -->
+        <h4 style="width: 100%; text-align: center;">EN CONSTRUCCIÓN</h4>
     </div>
 
 

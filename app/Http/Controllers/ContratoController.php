@@ -90,7 +90,7 @@ class ContratoController extends Controller
                         'errors' => $validate
                     ], JsonResponse::BAD_REQUEST);
                 }
-                $contrato->vehiculo_id = $request->vehiculo_id;
+                //$contrato->vehiculo_id = $request->vehiculo_id;
                 $contrato->tipo_tarifa_id = $request->tipo_tarifa_id;
                 $contrato->tipo_tarifa = $request->tipo_tarifa;
                 $contrato->modelo_id = $request->modelo_id;
