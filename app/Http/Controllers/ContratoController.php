@@ -263,6 +263,7 @@ class ContratoController extends Controller
                 break;
             case 'firma':
                 $contrato->firma_cliente = $request->signature_img;
+                $contrato->firma_matrix = json_encode($request->signature_matrix);
                 break;
         }
 
@@ -324,7 +325,9 @@ class ContratoController extends Controller
     }
 
     public function getContractPDF(Request $request, $id) {
-        $getContract = Contrato::with('cliente'
+        $getContract = Contrato::with(
+        'cliente'
+        ,'cliente.cliente_docs'
         ,'vehiculo'
         ,'vehiculo.tarifas'
         ,'vehiculo.marca'

@@ -43,7 +43,7 @@ class Contrato extends Model
     }
 
     public function cobranza() {
-        return $this->hasMany(Cobranza::class, 'contrato_id', 'id');
+        return $this->hasMany(Cobranza::class, 'contrato_id', 'id')->where('estatus', 2);;
     }
 
     public function check_list_salida() {
