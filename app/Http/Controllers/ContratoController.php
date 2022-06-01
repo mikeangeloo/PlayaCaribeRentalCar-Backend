@@ -353,11 +353,11 @@ class ContratoController extends Controller
         $pdf = PDF::loadView('pdfs.contract-pdf', $data)->setPaper('a4','portrait');
 
         try {
-            $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf) {
+            $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
                 $mail->from('apolloDev@mail.mx','Apollo');
                 $mail->subject('Contrato de arrendamiento');
                 $mail->to('danywolfslife@gmail.com');
-                $mail->attachData($pdf->output(), 'contrato.pdf');
+                $mail->attachData($pdf->output(), 'APOLLO_Contrato_'.$getContract->num_contrato.'.pdf');
             });
         } catch(\Throwable $e) {
 

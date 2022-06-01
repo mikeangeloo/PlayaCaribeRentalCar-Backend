@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Contract</title>
+    <title>APOLLO_CONTRATO_{{$contrato->num_contrato}}</title>
 </head>
 <style>
     p {
@@ -137,7 +137,7 @@
                     </td>
                     <td style="width: 33.3333333333%; text-align: left">
                         <p><b>CANAL DE ORIGEN:</b>&nbsp;LOCAL</p>
-                        <p><b>CÓDIGO DE TARIFA:</b>&nbsp;@if($contrato->tipo_tarifa == 'Apollo' ) <span>AP</span> @elseif ($contrato->tipo_tarifa == 'Hotel')<span>HT</span>@else <span>CS</span> @endif</p>
+                        <p><b>CÓDIGO DE TARIFA:</b>&nbsp;@if($contrato->tipo_tarifa == 'Apollo' ) <span>AP</span> @elseif ($contrato->tipo_tarifa == 'Hotel')<span>HT &nbsp; @if($contrato->folio_cupon) <b>FOLIO CUPÓN:</b> {{ $contrato->folio_cupon }}@endif</span>@else <span>CS</span> @endif</p>
                     </td>
                     <td style="width: 33.3333333333%; text-align: left">
                         <p><b>NO. DE CLIENTE:</b>&nbsp;{{$contrato->cliente->num_cliente}}</p>
@@ -345,7 +345,7 @@
 
                                 @foreach ($contrato->cobranza_calc as $cobroExtra)
                                     @if($cobroExtra['element'] == 'extra')
-                                        <div style="display: table-row">
+                                        <div style="display: table-row; text-transform: uppercase">
                                             <div style="display: table-cell; width:45%;"> {{$cobroExtra['element_label']}} X {{$cobroExtra['quantity']}}</div>
                                             <div style="display: table-cell; text-align:right; ">${{$cobroExtra['value']}} </div>
                                             <div style="display: table-cell; text-align:center;">X {{$contrato->cobranza_calc[0]["quantity"]}}</div>
@@ -680,6 +680,9 @@
                         <div>
                             <p>ENTREGADO POR / DELIVERED BY</p>
                         </div>
+                        <div > <!-- TODO: temporal aqui ira firma del agente -->
+
+                        </div>
                         <div>
                             <p>{{$contrato->usuario->nombre. ' ' .$contrato->usuario->apellidos}}</p>
                         </div>
@@ -690,10 +693,10 @@
                             <p>CLIENTE / CUSTOMER SIGNATURE</p>
                         </div>
                         <div>
-                            <p>{{$contrato->cliente->nombre}}</p>
+                            <img style="width:35%;" src="{{$contrato->firma_cliente}}" />
                         </div>
                         <div>
-                            <img style="width:35%;" src="{{$contrato->firma_cliente}}" />
+                            <p>{{$contrato->cliente->nombre}}</p>
                         </div>
                     </td>
                 </tr>
