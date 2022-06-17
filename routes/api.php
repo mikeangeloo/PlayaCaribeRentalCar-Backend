@@ -127,6 +127,13 @@ Route::prefix('dash')->group(function () {
             Route::resource('tarifas-extras', 'TarifasExtrasController');
             //endregion
 
+            //region CARGOS RETORNO EXTRAS
+            Route::get('cargos-extras/all', 'CargosRetornoExtrasController@getAll');
+            Route::get('cargos-extras/enable/{id}', 'CargosRetornoExtrasController@enable');
+            Route::get('cargos-extras/list', 'CargosRetornoExtrasController@getList');
+            Route::resource('cargos-extras', 'CargosRetornoExtrasController');
+            //endregion
+
               //region TARIFAS APOLLO CONF
               Route::get('tarifas-apollo-conf/all', 'TarifasApolloConfController@getAll');
               Route::get('tarifas-apollo-conf/enable/{id}', 'TarifasApolloConfController@enable');

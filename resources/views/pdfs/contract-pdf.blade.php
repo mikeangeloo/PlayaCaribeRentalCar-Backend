@@ -382,7 +382,7 @@
                         </div>
                         <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
                             <div style="display: table-row">
-                                <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS ESTIMADOS TOTALES INICIALES X_______</b></p> </div>
+                                <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS ESTIMADOS TOTALES INICIALES </b></p> </div>
                                 <div style="display: table-cell; text-align:right; width:20%;"> <p><b>${{$contrato->total}}</b></p> </div>
 
                             </div>
@@ -598,19 +598,19 @@
             <br>
             <div style="width: 100%; display: table; font-size:10px;">
                 <div style="display: table-row;">
-                    <div style="display: table-cell; text-align:center;  width:25%">
+                    <div style="display: table-cell; text-align:left;  width:25%">
                         <p><span class="circulo"></span>&nbsp;<b> ABOLLADURA</b></p>
                         <p><span class="circulo"></span>&nbsp;<b> DENT</b></p>
                     </div>
-                    <div style="display: table-cell; text-align:center;  width:25%">
+                    <div style="display: table-cell; text-align:left;  width:25%">
                         <p><span class="linea"></span>&nbsp;<b> RAYON</b></p>
                         <p><span class="linea"></span>&nbsp;<b> SCRATCHES</b></p>
                     </div>
-                    <div style="display: table-cell; text-align:center;  width:25%">
+                    <div style="display: table-cell; text-align:left;  width:25%">
                         <p><span class="x">X</span>&nbsp;<b> GOLPES</b></p>
                         <p><span class="x">X</span>&nbsp;<b> BUMP</b></p>
                     </div>
-                    <div style="display: table-cell; text-align:center;  width:25%">
+                    <div style="display: table-cell; text-align:left;  width:25%">
                         <p><span class="x">^</span>&nbsp;<b> ROTURA</b></p>
                         <p><span class="x">^</span>&nbsp;<b> BROKEN</b></p>
                     </div>
@@ -629,16 +629,13 @@
                 <tr>
                     <td style="border-bottom: solid; width:8%">{{$contrato->check_form_list->tarjeta_circulacion}}</td>
                     <td><p><span></span>&nbsp;<b> TARJETA DE CIRCULACIÓN / CAR PAPER</b></p></td>
-                </tr>
-                <tr>
                     <td style="border-bottom: solid; width:8%;">{{$contrato->check_form_list->tapetes}}</td>
                     <p><span ></span>&nbsp;<b> TAPETES / MATS</b></p>
-                    <td style="border-bottom: solid; width:8%;">{{$contrato->check_form_list->llave_rueda}}</td>
-                    <p><span ></span>&nbsp;<b> LLAVES DE RUEDAS / LUG</b></p>
                 </tr>
                 <tr>
-                    <td style="border-bottom: solid; width:8%;">{{$contrato->check_form_list->silla_bebes}}</td>
-                    <p><span ></span>&nbsp;<b> SILLA PARA BEBES / BABY SEAT</b></p>
+
+                    <td style="border-bottom: solid; width:8%;">{{$contrato->check_form_list->llave_rueda}}</td>
+                    <p><span ></span>&nbsp;<b> LLAVES DE RUEDAS / LUG</b></p>
                     <td style="border-bottom: solid; width:8%;">{{$contrato->check_form_list->limpiadores}}</td>
                     <p><span ></span>&nbsp;<b> LIMPIADORES / WIPERS</b></p>
                 </tr>

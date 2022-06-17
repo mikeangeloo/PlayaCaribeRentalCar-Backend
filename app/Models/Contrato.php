@@ -18,7 +18,10 @@ class Contrato extends Model
         'cobros_extras_ids' => 'array',
         'cobros_extras' => 'array',
         'cobranza_calc' => 'array',
-        'tarifa_modelo_obj' => 'array'
+        'tarifa_modelo_obj' => 'array',
+        'cargos_retorno_extras_ids' => 'array',
+        'cargos_retorno_extras' => 'array',
+        'cobranza_calc_retorno' => 'array',
     ];
 
     public function cliente() {
@@ -120,6 +123,29 @@ class Contrato extends Model
             return true;
         }
     }
+
+    public static function validateDatosReronoBeforeSave($request) {
+        $validateData = Validator::make($request, [
+            //'vehiculo_id' => 'required|exists:vehiculos,id',
+            'cant_combustible_retorno' =>'required',
+            'km_final' =>'required',
+            'cargos_extras_retorno' => 'nullable',
+            'cargos_extras_retorno_ids' => 'nullable',
+            'subtotal_retorno' => 'required|numeric',
+            'con_iva_retorno' => 'nullable',
+            'iva_retorno' => 'nullable',
+            'iva_monto_retorno' => 'nullable',
+            'total_retorno' => 'required',
+            'cobranza_calc_retorno' => 'required',
+        ]);
+
+        if ($validateData->fails()) {
+            return $validateData->errors()->all();
+        } else {
+            return true;
+        }
+    }
+
 
     /**
      *
@@ -243,6 +269,27 @@ class Contrato extends Model
             $contract->etapas_guardadas = $etapa;
             $contract->save();
         }
+
+        $datosRetornoColumns = [
+            //'vehiculo_id',
+            'cant_combustible_retorno',
+            'km_final',
+            'cargos_retorno_extras',
+            'subtotal_retorno',
+            'con_iva_retorno',
+            'iva_retorno',
+            'iva_monto_retorno',
+            'total_retorno',
+            'cobranza_calc_retorno'
+        ];
+        for ($i = 0; $i < count($datosRetornoColumns); $i ++) {
+            if (!is_null($contract->{$datosRetornoColumns[$i]})) {
+                array_push($etapa, 'retorno');
+                break;
+            }
+        }
+        $contract->etapas_guardadas = $etapa;
+        $contract->save();
 
         return (object) ['ok' => true, 'data' => $contract];
     }
