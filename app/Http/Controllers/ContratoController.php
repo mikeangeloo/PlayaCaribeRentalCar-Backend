@@ -280,6 +280,9 @@ class ContratoController extends Controller
                 $contrato->cargos_retorno_extras_ids = $request->cargos_extras_retorno_ids;
                 $contrato->cargos_retorno_extras = $request->cargos_extras_retorno;
 
+                $contrato->frecuencia_extra = $request->frecuencia_extra;
+                $contrato->cobranzaExtraPor = $request->cobranzaExtraPor;
+
                 $contrato->subtotal_retorno = $request->subtotal_retorno;
                 $contrato->con_iva_retorno = $request->con_iva_retorno;
                 $contrato->iva_retorno = $request->iva_retorno;

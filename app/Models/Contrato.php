@@ -137,6 +137,8 @@ class Contrato extends Model
             'iva_monto_retorno' => 'nullable',
             'total_retorno' => 'required',
             'cobranza_calc_retorno' => 'required',
+            'frecuencia_extra' => 'nullable',
+            'cobranzaExtraPor' => 'nullable'
         ]);
 
         if ($validateData->fails()) {
