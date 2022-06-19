@@ -234,7 +234,7 @@ class Contrato extends Model
 
         //buscamos si hay información en cobranza
         $validCobranzaEstatus = [CobranzaStatusEnum::COBRADO, CobranzaStatusEnum::PROGRAMADO];
-        $totalCobranza = Cobranza::where('contrato_id', $contract->id)->whereIn('estatus', $validCobranzaEstatus)->count();
+        $totalCobranza = Cobranza::where('contrato_id', $contract->id)->where('cobranza_seccion', 'salida')->whereIn('estatus', $validCobranzaEstatus)->count();
         if ($totalCobranza > 0) {
             array_push($etapa, 'cobranza');
         }
@@ -292,6 +292,17 @@ class Contrato extends Model
         }
         $contract->etapas_guardadas = $etapa;
         $contract->save();
+
+        //buscamos si hay información en cobranza retorno
+        $validCobranzaEstatus = [CobranzaStatusEnum::COBRADO, CobranzaStatusEnum::PROGRAMADO];
+        $totalCobranzaRetorno = Cobranza::where('contrato_id', $contract->id)->where('cobranza_seccion', 'retorno')->whereIn('estatus', $validCobranzaEstatus)->count();
+        if ($totalCobranzaRetorno > 0) {
+            array_push($etapa, 'cobranza_retorno');
+        }
+
+        $contract->etapas_guardadas = $etapa;
+        $contract->save();
+
 
         return (object) ['ok' => true, 'data' => $contract];
     }

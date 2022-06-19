@@ -182,7 +182,7 @@ class ContratoController extends Controller
                 if(!$cobranza->fecha_cargo) {
                     $cobranza->fecha_cargo =  Carbon::now(); //TODO: por el momento en duro
                 }
-
+                $cobranza->cobranza_seccion = $request->cobranza_seccion;
                 $cobranza->monto = $request->monto;
                 $cobranza->moneda = $request->moneda;
                 $cobranza->tipo = $request->tipo;
@@ -265,30 +265,51 @@ class ContratoController extends Controller
                 $contrato->firma_cliente = $request->signature_img;
                 $contrato->firma_matrix = json_encode($request->signature_matrix);
                 break;
-            case 'retorno':
-                $validate = Contrato::validateDatosReronoBeforeSave($request->all());
+            case 'cobranza_retorno':
 
-                if ($validate !== true) {
-                    return response()->json([
-                        'ok' => false,
-                        'errors' => $validate
-                    ], JsonResponse::BAD_REQUEST);
-                }
+            $validate = Cobranza::validateBeforeSave($request->all());
+            if ($validate !== true) {
+                return response()->json([
+                    'ok' => false,
+                    'errors' => $validate
+                ], JsonResponse::BAD_REQUEST);
+            }
+            $cobranza = new Cobranza();
+            if ($request->has('cobranza_id') && isset($request->cobranza_id)) {
+                $cobranza = Cobranza::where('id', $request->cobranza_id)->first();
+            }
 
-                $contrato->km_final = $request->km_final;
-                $contrato->cant_combustible_retorno = $request->cant_combustible_retorno;
-                $contrato->cargos_retorno_extras_ids = $request->cargos_extras_retorno_ids;
-                $contrato->cargos_retorno_extras = $request->cargos_extras_retorno;
+            $cobranza->contrato_id = $request->contrato_id;
+            $cobranza->tarjeta_id = $request->tarjeta_id;
+            $cobranza->cliente_id = $request->cliente_id;
 
-                $contrato->frecuencia_extra = $request->frecuencia_extra;
-                $contrato->cobranzaExtraPor = $request->cobranzaExtraPor;
+            if(!$cobranza->fecha_cargo) {
+                $cobranza->fecha_cargo =  Carbon::now(); //TODO: por el momento en duro
+            }
+            $cobranza->cobranza_seccion = $request->cobranza_seccion;
+            $cobranza->monto = $request->monto;
+            $cobranza->moneda = $request->moneda;
+            $cobranza->tipo = $request->tipo;
+            $cobranza->estatus = CobranzaStatusEnum::COBRADO;
+            if (!$cobranza->fecha_procesado) {
+                $cobranza->fecha_procesado = Carbon::now(); //TODO: por el momento en duro
+            }
 
-                $contrato->subtotal_retorno = $request->subtotal_retorno;
-                $contrato->con_iva_retorno = $request->con_iva_retorno;
-                $contrato->iva_retorno = $request->iva_retorno;
-                $contrato->iva_monto_retorno = $request->iva_monto_retorno;
-                $contrato->total_retorno = $request->total_retorno;
-                $contrato->cobranza_calc_retorno = $request->cobranza_calc_retorno;
+            $cobranza->cod_banco = $request->cod_banco;
+            $cobranza->res_banco = null; //TODO: agregar catálogo de respuestas
+
+            if (!$cobranza->fecha_reg) {
+                $cobranza->fecha_reg = Carbon::now();
+            }
+
+            if ($cobranza->save() === false) {
+                DB::rollBack();
+                return response()->json([
+                    'ok' => false,
+                    'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
+                ], JsonResponse::BAD_REQUEST);
+            }
+            break;
         }
 
 
