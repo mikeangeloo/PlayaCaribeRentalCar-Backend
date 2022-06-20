@@ -245,14 +245,12 @@
                             </div>
                         </div>
                         <br>
-                        <br>
                         <div>
                             <div style="width: 100%;">
                                 <p style="font-size: 8px; font-weight: bold">DESCRIPCION DE CARGOS Y PRE-AUTORIZACIONES: </p>
                             </div>
-                            <br>
                             <div style="width: 100%;">
-                                @foreach ($contrato->cobranza as $cobranza)
+                                @foreach ($contrato->cobranza_salida as $cobranza)
                                     <p>
                                         @if ($cobranza->tarjeta != null)
                                             <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}}</span>
@@ -263,8 +261,26 @@
                                 @endforeach
 
                             </div>
+                            <br>
+                            @if (count($contrato->cobranza_retorno) > 0)
+                                <div style="width: 100%;">
+                                    <p style="font-size: 8px; font-weight: bold">DESCRIPCION DE CARGOS EXTRAS: </p>
+                                </div>
+                                <div style="width: 100%;">
+
+                                    @foreach ($contrato->cobranza_retorno as $cobranza)
+                                        <p>
+                                            @if ($cobranza->tarjeta != null)
+                                                <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}}</span>
+                                            @else
+                                                <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}} </span>
+                                            @endif
+                                        </p>
+                                    @endforeach
+
+                                </div>
+                            @endif
                         </div>
-                        <br>
                         <br>
                         <div>
                             <div style="width: 100%;">
@@ -392,12 +408,86 @@
                                 </div>
                             </div>
                         </div>
+                        <br>
+                        <div style="border-top: 1px solid; width:90%"></div>
+                        <br>
+                        @if ($contrato->cargos_retorno_extras != null)
+                            <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; text-align:left; width:50%;"> <p><b>DESCRIPCION DE CARGOS EXTRAS</b></p> </div>
+                                    <div style="display: table-cell; text-align:center; width:22%;"> <p><b> ---- </b></p> </div>
+                                    <div style="display: table-cell; text-align:right; width:28%;"> <p><b>CARGO ESTIMADO</b></p> </div>
+                                </div>
+                            </div>
+                            <div style="width: 90%; display: table;">
+                                <div style="display: table-row">
+                                    <div style="display: table-cell;  width:43%"></div>
+                                    <div style="display: table-cell; text-align:right; width:14%;"> <p><b> PRECIO.UNIT </b></p> </div>
+                                    <div style="display: table-cell; text-align: center; width:12%;"> <p><b>CANT.</b></p> </div>
+                                    <div style="display: table-cell; width:35%"></div>
+                                </div>
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; width: 100%; text-decoration: underline;"><p><b> CARGOS EXTRAS</b></p></div>
+                                    <div style="display: table-cell; ">  </div>
+                                    <div style="display: table-cell; "></div>
+                                    <div style="display: table-cell;  "></div>
+                                </div>
+
+                                @foreach ($contrato->cobranza_calc_retorno as $cargoExtra)
+                                    @if($cargoExtra['element'] == 'cargoExtra')
+                                        <div style="display: table-row; text-transform: uppercase">
+                                            <div style="display: table-cell; width:43%;"> {{$cargoExtra['element_label']}}</div>
+                                            <div style="display: table-cell; text-align:right; width:14%; ">${{$cargoExtra['value']}}</div>
+                                            <div style="display: table-cell; text-align:center; width:12%;">X {{$cargoExtra['quantity']}}</div>
+                                            <div style="display: table-cell; width:35%;  text-align:right;">${{$cargoExtra['amount']}}</div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                            <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; text-align:left; width:43%;"> <p><b>SUBTOTAL-2</b></p> </div>
+                                    <div style="display: table-cell; text-align:center; width:28%;"> <p><b>  </b></p> </div>
+                                    <div style="display: table-cell; text-align:right; width:26%;"> <p><b>${{$contrato->subtotal_retorno}}</b></p> </div>
+                                </div>
+                            </div>
+                            <div style="width: 90%; display: table;">
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; width: 100%; text-decoration: underline;"><p><b> CUOTAS LOCALES E IMPUESTOS FEDERALES</b></p></div>
+                                    <div style="display: table-cell; ">  </div>
+                                    <div style="display: table-cell; "></div>
+                                    <div style="display: table-cell;  "></div>
+                                </div>
+                                @if ($contrato->con_iva_retorno == 1)
+                                    <div style="display: table-row">
+                                        <div style="display: table-cell; width:45%;"> I.V.A / TAX</div>
+                                        <div style="display: table-cell; text-align:left; ">  </div>
+                                        <div style="display: table-cell; text-align:right;"></div>
+                                        <div style="display: table-cell; width:45%;  text-align:right;">${{$contrato->iva_monto_retorno}}</div>
+                                    </div>
+                                @endif
+
+                            </div>
+                            <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS EXTRA ESTIMADOS TOTALES </b></p> </div>
+                                    <div style="display: table-cell; text-align:right; width:20%;"> <p><b>${{$contrato->total_retorno}}</b></p> </div>
+
+                                </div>
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; text-align:left; width:100%;">
+                                        <p style="font-size: 6px;">*TODAS LAS CANTIDADES REFLEJADAS SON EN MONEDA NACIONAL (MXN)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        @endif
                     </td> <!-- END INFO CARGOS -->
                 </tr>
 
             </table>
         </div>
-        <div style="font-size: 8px;">
+        <div style="font-size: 6.6px;">
             <div style="width: 100%;">
                 <p style="margin: 0; font-weight: bold">Información de los cargos totales:</p>
                 <p style="text-transform: none;">
@@ -415,9 +505,8 @@
                 <p style="text-transform: none;">
                     <b>*EXCLUSIONES E INCLUSIONES GENERALES DE LAS COBERTURAS LDW / CDW / CDW-2 / LDW PACK / CDW PACK / CDW2 PACK / CDW2 - LDW0 / CDW - LDW0</b> <br>
                     1. No cubren perdida de placas, multas o llaves. No cubren daños en llangas, rines espejos leterales y cristales. <br>
-                    2 . LDW PACK / LDW PACK US / Extensión a (B2B) / cubren "Defensa a Defensa" por lo que daños a llantas, rines, espejos laterales y cristales si lo cubren. No cubre robo de llantas ni Rines.
-                    3. Cualquier protección se invalida en caso de que el cliente no reporte el accidente dentro de un periodo menor a 24 horas despues del siniestro, tambien se invalidan en caso de haber alcohol. <br>
-                    estupefacientes y/o drogas involucradas. No cubre si se conduce en el camino no pavimentado o si existe negligencia por parte del cliente, como cualquier acto doloso, irresponsable o temerario.
+                    2. LDW PACK / LDW PACK US / Extensión a (B2B) / cubren "Defensa a Defensa" por lo que daños a llantas, rines, espejos laterales y cristales si lo cubren. No cubre robo de llantas ni Rines. <br>
+                    3. Cualquier protección se invalida en caso de que el cliente no reporte el accidente dentro de un periodo menor a 24 horas despues del siniestro, tambien se invalidan en caso de haber alcohol, estupefacientes y/o drogas involucradas. No cubre si se conduce en el camino no pavimentado o si existe negligencia por parte del cliente, como cualquier acto doloso, irresponsable o temerario. <br>
                     4. Cualquier protección se invalida si existen conductores NO autorizados en el presente contrato. <br>
                     5. Ninguna Protección cubre Daño o perdida de GPS.
                 </p>
@@ -434,7 +523,7 @@
                     </p>
                 </div>
                 <div style="display: table-cell; text-align:center; width:55%;">
-                    <img style="width:35%;" src="{{$contrato->firma_cliente}}" />
+                    <img style="width:55%;" src="{{$contrato->firma_cliente}}" />
                     <p>{{$contrato->cliente->nombre}}</p>
                     <p style="font-size: 11px; text-align: center;border-top: 1px solid;letter-spacing: 7px;">
                         FIRMA DEL CLIENTE

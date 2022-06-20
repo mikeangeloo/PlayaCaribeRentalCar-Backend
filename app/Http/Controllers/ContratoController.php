@@ -405,8 +405,10 @@ class ContratoController extends Controller
         ,'vehiculo.tarifa_categoria'
         ,'salida'
         ,'retorno'
-        ,'cobranza'
-        ,'cobranza.tarjeta'
+        ,'cobranza_salida'
+        ,'cobranza_salida.tarjeta'
+        ,'cobranza_retorno'
+        ,'cobranza_retorno.tarjeta'
         ,'usuario',
         'check_form_list'
         )->where('id', $id)->first();
@@ -415,7 +417,7 @@ class ContratoController extends Controller
         //     'ok' => true,
         //     'data' => $getContract
         // ], JsonResponse::OK);
-        // dd($getContract);
+       // dd($getContract );
         $data = [
             'contrato'=>  $getContract
         ];
