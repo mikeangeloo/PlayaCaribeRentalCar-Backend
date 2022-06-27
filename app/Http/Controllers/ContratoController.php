@@ -80,6 +80,7 @@ class ContratoController extends Controller
                 }
 
                 $contrato->cliente_id = $cliente->id;
+                $contrato->estatus = ContratoStatusEnum::BORRADOR;
                 break;
             case 'datos_generales':
                 $validate = Contrato::validateDatosGeneralesBeforeSave($request->all());
@@ -264,6 +265,7 @@ class ContratoController extends Controller
             case 'firma':
                 $contrato->firma_cliente = $request->signature_img;
                 $contrato->firma_matrix = json_encode($request->signature_matrix);
+                $contrato->estatus = ContratoStatusEnum::RENTADO;
                 break;
             case 'retorno':
                 $validate = Contrato::validateDatosReronoBeforeSave($request->all());
@@ -333,11 +335,12 @@ class ContratoController extends Controller
                         'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
                     ], JsonResponse::BAD_REQUEST);
                 }
+                $contrato->estatus = ContratoStatusEnum::RETORNO;
              break;
         }
 
 
-        $contrato->estatus = ContratoStatusEnum::BORRADOR;
+
         if (!$contrato->hora_elaboracion) {
             $contrato->hora_elaboracion = Carbon::now()->toTimeString();
         }
@@ -438,8 +441,8 @@ class ContratoController extends Controller
     }
 
     public function cancelContract(Request $request, $id) {
-        $validStatus = [ContratoStatusEnum::BORRADOR];
-        $getContract = Contrato::where('id', $id)->whereIn('estatus', $validStatus)->first();
+        //$validStatus = [ContratoStatusEnum::BORRADOR];
+        $getContract = Contrato::where('id', $id)->first();
 
         if(!$getContract) {
             return response()->json([

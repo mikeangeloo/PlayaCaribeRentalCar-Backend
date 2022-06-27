@@ -63,6 +63,7 @@ Route::prefix('dash')->group(function () {
         Route::get('vehiculos/all', 'VehiculosController@getAll');
         Route::get('vehiculos/enable/{id}', 'VehiculosController@enable');
         Route::get('vehiculos/list', 'VehiculosController@getList');
+        Route::get('vehiculos/list-estatus-contract', 'VehiculosController@listWithContract');
         Route::resource('vehiculos', 'VehiculosController');
 
         //endregion

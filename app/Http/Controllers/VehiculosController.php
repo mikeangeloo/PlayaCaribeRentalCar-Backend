@@ -30,6 +30,22 @@ class VehiculosController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function listWithContract()
+    {
+        $vehiculos = Vehiculos::where('activo', true)->orderBy('id', 'ASC')->get();
+        $vehiculos->load('marca', 'categoria', 'tarifa_categoria', 'clase','contrato');
+
+        return response()->json([
+            'ok' => true,
+            'vehiculos' => $vehiculos
+        ], JsonResponse::OK);
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
