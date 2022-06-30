@@ -33,6 +33,7 @@ Route::prefix('dash')->group(function () {
         Route::post('contratos/save-progress', 'ContratoController@saveProcess');
         Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
         Route::get('contratos/pdf/{id}', 'ContratoController@getContractPDF');
+        Route::get('contratos/view/pdf/{id}', 'ContratoController@viewPDF');
         Route::delete('contratos/cancel/{id}', 'ContratoController@cancelContract');
         //endregion
 

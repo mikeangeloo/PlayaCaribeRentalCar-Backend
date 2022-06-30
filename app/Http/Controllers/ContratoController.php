@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\CobranzaStatusEnum;
 use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
+use App\Enums\VehiculoStatusEnum;
 use App\Models\Clientes;
 use App\Models\Cobranza;
 use App\Models\Contrato;
@@ -266,6 +267,7 @@ class ContratoController extends Controller
                 $contrato->firma_cliente = $request->signature_img;
                 $contrato->firma_matrix = json_encode($request->signature_matrix);
                 $contrato->estatus = ContratoStatusEnum::RENTADO;
+                $contrato->vehiculo()->update(['estatus' => VehiculoStatusEnum::RENTADO]);
                 break;
             case 'retorno':
                 $validate = Contrato::validateDatosReronoBeforeSave($request->all());
@@ -397,36 +399,38 @@ class ContratoController extends Controller
     }
 
     public function getContractPDF(Request $request, $id) {
-        $getContract = Contrato::with(
-        'cliente'
-        ,'cliente.cliente_docs'
-        ,'vehiculo'
-        ,'vehiculo.tarifas'
-        ,'vehiculo.marca'
-        ,'vehiculo.categoria'
-        ,'vehiculo.clase'
-        ,'vehiculo.tarifa_categoria'
-        ,'salida'
-        ,'retorno'
-        ,'cobranza_salida'
-        ,'cobranza_salida.tarjeta'
-        ,'cobranza_retorno'
-        ,'cobranza_retorno.tarjeta'
-        ,'usuario',
-        'check_form_list'
-        )->where('id', $id)->first();
-
-        // return response()->json([
-        //     'ok' => true,
-        //     'data' => $getContract
-        // ], JsonResponse::OK);
-       // dd($getContract );
-        $data = [
-            'contrato'=>  $getContract
-        ];
-        $pdf = PDF::loadView('pdfs.contract-pdf', $data)->setPaper('a4','portrait');
 
         try {
+            $getContract = Contrato::with(
+            'cliente'
+            ,'cliente.cliente_docs'
+            ,'vehiculo'
+            ,'vehiculo.tarifas'
+            ,'vehiculo.marca'
+            ,'vehiculo.categoria'
+            ,'vehiculo.clase'
+            ,'vehiculo.tarifa_categoria'
+            ,'salida'
+            ,'retorno'
+            ,'cobranza_salida'
+            ,'cobranza_salida.tarjeta'
+            ,'cobranza_retorno'
+            ,'cobranza_retorno.tarjeta'
+            ,'usuario',
+            'check_form_list'
+            )->where('id', $id)->first();
+
+            // return response()->json([
+            //     'ok' => true,
+            //     'data' => $getContract
+            // ], JsonResponse::OK);
+            // dd($getContract );
+            $data = [
+                'contrato'=>  $getContract
+            ];
+            $pdf = PDF::loadView('pdfs.contract-pdf', $data)->setPaper('a4','portrait');
+
+
             $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
                 $mail->from('apolloDev@mail.mx','Apollo');
                 $mail->subject('Contrato de arrendamiento');
@@ -434,7 +438,52 @@ class ContratoController extends Controller
                 $mail->attachData($pdf->output(), 'APOLLO_Contrato_'.$getContract->num_contrato.'.pdf');
             });
         } catch(\Throwable $e) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Hubo un error al generar el pdf del contrato, intenta de nuevo']
+            ], JsonResponse::BAD_REQUEST);
+        }
+        // dd($sendMail);
+        return $pdf->download();
+    }
 
+    public function viewPDF(Request $request, $id) {
+
+        try {
+            $getContract = Contrato::with(
+            'cliente'
+            ,'cliente.cliente_docs'
+            ,'vehiculo'
+            ,'vehiculo.tarifas'
+            ,'vehiculo.marca'
+            ,'vehiculo.categoria'
+            ,'vehiculo.clase'
+            ,'vehiculo.tarifa_categoria'
+            ,'salida'
+            ,'retorno'
+            ,'cobranza_salida'
+            ,'cobranza_salida.tarjeta'
+            ,'cobranza_retorno'
+            ,'cobranza_retorno.tarjeta'
+            ,'usuario',
+            'check_form_list'
+            )->where('id', $id)->first();
+
+            // return response()->json([
+            //     'ok' => true,
+            //     'data' => $getContract
+            // ], JsonResponse::OK);
+            // dd($getContract );
+            $data = [
+                'contrato'=>  $getContract
+            ];
+            $pdf = PDF::loadView('pdfs.contract-pdf', $data)->setPaper('a4','portrait');
+
+        } catch(\Throwable $e) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Hubo un error al generar el pdf del contrato, intenta de nuevo']
+            ], JsonResponse::BAD_REQUEST);
         }
         // dd($sendMail);
         return $pdf->download();
@@ -453,6 +502,7 @@ class ContratoController extends Controller
 
         try {
             $getContract->cobranza()->update(['estatus' => CobranzaStatusEnum::CANCELADO]);
+            $getContract->vehiculo()->update(['estatus'=> VehiculoStatusEnum::DISPONIBLE]);
             $getContract->check_list_salida()->update(['activo' => false]);
             $getContract->estatus = ContratoStatusEnum::CANCELADO;
             if ($getContract->save()) {
