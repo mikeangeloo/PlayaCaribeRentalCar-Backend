@@ -57,6 +57,10 @@ class Contrato extends Model
         return $this->hasMany(Cobranza::class, 'contrato_id', 'id')->where('estatus', 2)->where('cobranza_seccion', 'retorno');
     }
 
+    public function cobranza_reserva() {
+        return $this->hasMany(Cobranza::class, 'contrato_id', 'id')->where('estatus', 2)->where('cobranza_seccion', 'reserva');
+    }
+
     public function check_list_salida() {
         return $this->hasMany(CheckList::class, 'contrato_id', 'id')->where('tipo', 0)->where('activo', 1);
     }
@@ -242,7 +246,7 @@ class Contrato extends Model
 
         //buscamos si hay información en cobranza
         $validCobranzaEstatus = [CobranzaStatusEnum::COBRADO, CobranzaStatusEnum::PROGRAMADO];
-        $totalCobranza = Cobranza::where('contrato_id', $contract->id)->where('cobranza_seccion', 'salida')->whereIn('estatus', $validCobranzaEstatus)->count();
+        $totalCobranza = Cobranza::where('contrato_id', $contract->id)->where('cobranza_seccion', 'salida')->orWhere('cobranza_seccion','reserva')->whereIn('estatus', $validCobranzaEstatus)->count();
         if ($totalCobranza > 0) {
             array_push($etapa, 'cobranza');
         }

@@ -33,7 +33,7 @@ class ContratoController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $contractInitials = 'AP';
+        $contractInitials = ($request->reserva) ? 'RS': 'AP';
         //dd($contractInitials.sprintf('%03d', '33333'));
         $message = 'Avance guardado correctamente';
         $user = $request->user;
@@ -193,11 +193,17 @@ class ContratoController extends Controller
                     $cobranza->fecha_procesado = Carbon::now(); //TODO: por el momento en duro
                 }
 
+
                 $cobranza->cod_banco = $request->cod_banco;
                 $cobranza->res_banco = null; //TODO: agregar catálogo de respuestas
 
                 if (!$cobranza->fecha_reg) {
                     $cobranza->fecha_reg = Carbon::now();
+                }
+
+                // si viene reserva: true se cambia status a reserva
+                if ($request->reserva) {
+                    $contrato->estatus = 4;
                 }
 
                 if ($cobranza->save() === false) {
@@ -447,6 +453,62 @@ class ContratoController extends Controller
         return $pdf->download();
     }
 
+    public function getReservaPDF(Request $request, $id) {
+
+        try {
+            $getContract = Contrato::with(
+                'cliente'
+                ,'cliente.cliente_docs'
+                ,'salida'
+                ,'retorno'
+                ,'cobranza_reserva'
+                ,'cobranza_reserva.tarjeta'
+                ,'usuario',
+                )->where('id', $id)->first();
+
+            // return response()->json([
+            //     'ok' => true,
+            //     'data' => $getContract
+            // ], JsonResponse::OK);
+            // dd($getContract );
+            $data = [
+                'contrato'=>  $getContract
+            ];
+            $pdf = PDF::loadView('pdfs.reserva-pdf', $data)->setPaper('a4','portrait');
+
+
+            $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
+                $mail->from('apolloDev@mail.mx','Apollo');
+                $mail->subject('Reserva de arrendamiento');
+                $mail->to('danywolfslife@gmail.com');
+                $mail->attachData($pdf->output(), 'APOLLO_Reserva_'.$getContract->num_contrato.'.pdf');
+            });
+        } catch(\Throwable $e) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Hubo un error al generar el pdf del contrato, intenta de nuevo']
+            ], JsonResponse::BAD_REQUEST);
+        }
+        // dd($sendMail);
+        return $pdf->download();
+    }
+
+    public function getReservas(Request $request) {
+        $reservas = Contrato::where('estatus', 4)->orderBy('id', 'ASC')->get();
+        $reservas->load('cliente'
+        ,'cliente.cliente_docs'
+        ,'salida'
+        ,'retorno'
+        ,'cobranza_reserva'
+        ,'cobranza_reserva.tarjeta'
+        ,'usuario');
+
+        return response()->json([
+            'ok' => true,
+            'reservas' => $reservas
+        ], JsonResponse::OK);
+    }
+
     public function viewPDF(Request $request, $id) {
 
         try {
@@ -489,6 +551,40 @@ class ContratoController extends Controller
         return $pdf->download();
     }
 
+    public function viewReservaPDF(Request $request, $id) {
+
+        try {
+            $getContract = Contrato::with(
+            'cliente'
+            ,'cliente.cliente_docs'
+            ,'salida'
+            ,'retorno'
+            ,'cobranza_reserva'
+            ,'cobranza_reserva.tarjeta'
+            ,'usuario',
+            )->where('id', $id)->first();
+
+            // return response()->json([
+            //     'ok' => true,
+            //     'data' => $getContract
+            // ], JsonResponse::OK);
+            // dd($getContract );
+            $data = [
+                'contrato'=>  $getContract
+            ];
+            $pdf = PDF::loadView('pdfs.reserva-pdf', $data)->setPaper('a4','portrait');
+
+        } catch(\Throwable $e) {
+            Log::debug($e);
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Hubo un error al generar el pdf del contrato, intenta de nuevo']
+            ], JsonResponse::BAD_REQUEST);
+        }
+        // dd($sendMail);
+        return $pdf->download();
+    }
+
     public function cancelContract(Request $request, $id) {
         //$validStatus = [ContratoStatusEnum::BORRADOR];
         $getContract = Contrato::where('id', $id)->first();
@@ -501,9 +597,16 @@ class ContratoController extends Controller
         }
 
         try {
-            $getContract->cobranza()->update(['estatus' => CobranzaStatusEnum::CANCELADO]);
-            $getContract->vehiculo()->update(['estatus'=> VehiculoStatusEnum::DISPONIBLE]);
-            $getContract->check_list_salida()->update(['activo' => false]);
+            if($getContract->cobranza() != null){
+                $getContract->cobranza()->update(['estatus' => CobranzaStatusEnum::CANCELADO]);
+            }
+            if($getContract->vehiculo() != null){
+                $getContract->vehiculo()->update(['estatus'=> VehiculoStatusEnum::DISPONIBLE]);
+            }
+            if($getContract->check_list_salida() != null){
+                $getContract->check_list_salida()->update(['activo' => false]);
+            }
+
             $getContract->estatus = ContratoStatusEnum::CANCELADO;
             if ($getContract->save()) {
                 return response()->json([

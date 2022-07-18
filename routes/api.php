@@ -21,18 +21,19 @@ Route::post('activate-usr-token', 'SessionController@activateUserByCode');
 Route::post('recovery-psw', 'SessionController@generateRecoveryPswToken');
 Route::post('review-recovery-token', 'SessionController@reviewToken');
 Route::post('change-pwd-token', 'SessionController@changePwdByToken');
-Route::get('contratos/pdf/{id}', 'ContratoController@getContractPDF');
+Route::get('contratos/pdf/{id}', 'ContratoController@viewReservaPDF');
+Route::get('test/pdf', 'ContratoController@viewReservaPDF');
 //endregion
 
 Route::prefix('dash')->group(function () {
     Route::post('login', 'SessionController@login');
-    Route::get('test/pdf', 'ContratoController@getContractPDF');
     Route::middleware('verify.jwt')->group(function () {
 
         //region CONTRATOS
         Route::post('contratos/save-progress', 'ContratoController@saveProcess');
         Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
         Route::get('contratos/pdf/{id}', 'ContratoController@getContractPDF');
+        Route::get('reservas/pdf/{id}', 'ContratoController@getReservaPDF');
         Route::get('contratos/view/pdf/{id}', 'ContratoController@viewPDF');
         Route::delete('contratos/cancel/{id}', 'ContratoController@cancelContract');
         //endregion
