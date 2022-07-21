@@ -35,7 +35,9 @@ Route::prefix('dash')->group(function () {
         Route::get('contratos/pdf/{id}', 'ContratoController@getContractPDF');
         Route::get('reservas/pdf/{id}', 'ContratoController@getReservaPDF');
         Route::get('contratos/view/pdf/{id}', 'ContratoController@viewPDF');
+        Route::get('reservas/view/pdf/{id}', 'ContratoController@viewReservaPDF');
         Route::delete('contratos/cancel/{id}', 'ContratoController@cancelContract');
+        Route::get('reservas', 'ContratoController@getReservas');
         //endregion
 
         //region CHECKLIST
