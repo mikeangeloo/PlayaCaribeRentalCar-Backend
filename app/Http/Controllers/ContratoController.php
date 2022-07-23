@@ -372,6 +372,13 @@ class ContratoController extends Controller
                 $contrato->save();
             }
 
+            //Revisamos si es una reserva que ya esta en estatus rentado
+           if ($contractInitials === 'AP' && $contrato->estatus === ContratoStatusEnum::RENTADO) {
+                $contrato->num_reserva = $contrato->num_contrato;
+                $contrato->num_contrato = $contractInitials.sprintf('%03d', $contrato->id);
+                $contrato->save();
+           }
+
             Contrato::setEtapasGuardadas($contrato->num_contrato);
 
             return response()->json([
@@ -418,6 +425,7 @@ class ContratoController extends Controller
             ,'vehiculo.tarifa_categoria'
             ,'salida'
             ,'retorno'
+            ,'cobranza_reserva'
             ,'cobranza_salida'
             ,'cobranza_salida.tarjeta'
             ,'cobranza_retorno'
@@ -588,14 +596,18 @@ class ContratoController extends Controller
     public function cancelContract(Request $request, $id) {
         //$validStatus = [ContratoStatusEnum::BORRADOR];
         $getContract = Contrato::where('id', $id)->first();
+        $msg = 'Contrato';
 
         if(!$getContract) {
             return response()->json([
                 'ok' => false,
-                'errors' => ['Este contrato no puede ser cancelado']
+                'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
+        if (substr($getContract->num_contrato, 0 ,2) === 'RS') {
+            $msg = 'Reserva';
+        }
         try {
             if($getContract->cobranza() != null){
                 $getContract->cobranza()->update(['estatus' => CobranzaStatusEnum::CANCELADO]);
@@ -611,14 +623,14 @@ class ContratoController extends Controller
             if ($getContract->save()) {
                 return response()->json([
                     'ok' => true,
-                    'message' => 'Contrato cancelado correctamente'
+                    'message' => ''.$msg.' cancelado correctamente'
                 ], JsonResponse::OK);
             }
         } catch (\Throwable $e) {
             Log::debug($e);
             return response()->json([
                 'ok' => false,
-                'errors' => ['Este contrato no puede ser cancelado']
+                'errors' => ['Este '.$msg.' no puede ser cancelado']
             ], JsonResponse::BAD_REQUEST);
         }
 

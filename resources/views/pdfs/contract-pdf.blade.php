@@ -250,6 +250,15 @@
                                 <p style="font-size: 8px; font-weight: bold">DESCRIPCION DE CARGOS Y PRE-AUTORIZACIONES: </p>
                             </div>
                             <div style="width: 100%;">
+                                @foreach ($contrato->cobranza_reserva as $cobranza)
+                                    <p>
+                                        @if ($cobranza->tarjeta != null)
+                                            <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}}</span> - RESERVA
+                                        @else
+                                            <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}} </span> - RESERVA
+                                        @endif
+                                    </p>
+                                @endforeach
                                 @foreach ($contrato->cobranza_salida as $cobranza)
                                     <p>
                                         @if ($cobranza->tarjeta != null)
