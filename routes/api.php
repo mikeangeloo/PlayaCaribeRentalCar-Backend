@@ -33,9 +33,9 @@ Route::prefix('dash')->group(function () {
         Route::post('contratos/save-progress', 'ContratoController@saveProcess');
         Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
         Route::get('contratos/pdf/{id}', 'ContratoController@getContractPDF');
-        Route::get('reservas/pdf/{id}', 'ContratoController@getReservaPDF');
+        Route::get('reservas/pdf/{id}/{idioma}', 'ContratoController@getReservaPDF');
         Route::get('contratos/view/pdf/{id}', 'ContratoController@viewPDF');
-        Route::get('reservas/view/pdf/{id}', 'ContratoController@viewReservaPDF');
+        Route::get('reservas/view/pdf/{id}/{idioma}', 'ContratoController@viewReservaPDF');
         Route::delete('contratos/cancel/{id}', 'ContratoController@cancelContract');
         Route::get('reservas', 'ContratoController@getReservas');
         //endregion

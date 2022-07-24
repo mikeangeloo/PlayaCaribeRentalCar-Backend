@@ -75,7 +75,7 @@
                 </p>
                 <p style="font-size:16px;">
                     <strong>
-                        Adminiestracion@priceautorental.com
+                        administracion@priceautorental.com
                     </strong>
                 </p>
                 <p style="font-size:16px;">
@@ -140,7 +140,7 @@
 
         </table>
         <br>
-        <div style="width: 100%; display: table; background: #E6E6E6; padding: 3px">
+        <div style="width: 100%; display: table; padding: 3px">
             <div style="display: table-row">
                 <div style="display: table-cell; ">
                     @if ($contrato->con_descuento != null || $contrato->con_iva == 1 )
@@ -152,8 +152,12 @@
                     @if ( $contrato->con_iva == 1 )
                         <p style="font-size:18px; text-align: right"> <strong>IVA</strong> $ {{number_format(intval($contrato->iva_monto))}} MXN</p>
                     @endif
-                    <p style="font-size:18px; text-align: right"> <strong>Total</strong> $ {{number_format(intval($contrato->total))}} MXN</p>
                 </div>
+            </div>
+        </div>
+        <div style="width: 100%; display: table; background: #E6E6E6; padding: 3px">
+            <div style="display: table-row">
+                <p style="font-size:18px; text-align: right"> <strong>Total</strong> $ {{number_format(intval($contrato->total))}} MXN</p>
             </div>
         </div>
         <br>

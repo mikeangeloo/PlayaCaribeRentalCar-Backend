@@ -461,7 +461,7 @@ class ContratoController extends Controller
         return $pdf->download();
     }
 
-    public function getReservaPDF(Request $request, $id) {
+    public function getReservaPDF(Request $request, $id, $idioma) {
 
         try {
             $getContract = Contrato::with(
@@ -482,9 +482,13 @@ class ContratoController extends Controller
             $data = [
                 'contrato'=>  $getContract
             ];
-            $pdf = PDF::loadView('pdfs.reserva-pdf', $data)->setPaper('a4','portrait');
-
-
+            if ($idioma === 'es') {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
+            } else if ($idioma === 'en') {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_en', $data)->setPaper('a4','portrait');
+            } else {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
+            }
             $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
                 $mail->from('apolloDev@mail.mx','Apollo');
                 $mail->subject('Reserva de arrendamiento');
@@ -559,7 +563,7 @@ class ContratoController extends Controller
         return $pdf->download();
     }
 
-    public function viewReservaPDF(Request $request, $id) {
+    public function viewReservaPDF(Request $request, $id, $idioma) {
 
         try {
             $getContract = Contrato::with(
@@ -580,7 +584,14 @@ class ContratoController extends Controller
             $data = [
                 'contrato'=>  $getContract
             ];
-            $pdf = PDF::loadView('pdfs.reserva-pdf', $data)->setPaper('a4','portrait');
+            if ($idioma === 'es') {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
+            } else if ($idioma === 'en') {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_en', $data)->setPaper('a4','portrait');
+            } else {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
+            }
+
 
         } catch(\Throwable $e) {
             Log::debug($e);
