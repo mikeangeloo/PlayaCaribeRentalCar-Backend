@@ -835,7 +835,17 @@
                 </td>
             </th>
         </table> <!-- END HEADER -->
-        <h4 style="width: 100%; text-align: center;">EN CONSTRUCCIÓN</h4>
+        <br>
+        @if($docs->total > 0)
+
+            <h4 style="width: 100%; text-align: center;">Licencia cliente</h4>
+            @foreach ($docs->data as $doc)
+            <div style="width: 100%; text-align:center">
+
+                <img style="width:35%;" src="{{ $doc['file'] }}" />
+            </div>
+            @endforeach
+        @endif
     </div>
 
 

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Enums\JsonResponse;
 use App\Models\CategoriasVehiculos;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\TryCatch;
 
 class CategoriasVehiculosController extends Controller
 {
@@ -54,7 +57,8 @@ class CategoriasVehiculosController extends Controller
         }
 
         $categoria = new CategoriasVehiculos();
-        $categoria->categoria = $request->categoria;
+        $categoria->categoria = $request['categoria']['categoria'];
+        $categoria->imagen_url = $request['layout']['fileName'];
         $categoria->activo = true;
 
         if ($categoria->save()) {
@@ -87,9 +91,18 @@ class CategoriasVehiculosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
+        $getCategoriaDoc = self::getCategoriaDoc($categoria->imagen_url);
+
+        $layout = null;
+
+        if($getCategoriaDoc->ok == true) {
+            $layout = $getCategoriaDoc->data[0];
+        }
+
         return response()->json([
             'ok' => true,
-            'categoria' => $categoria
+            'categoria' => $categoria,
+            'layout'=> $layout
         ], JsonResponse::OK);
     }
 
@@ -132,7 +145,8 @@ class CategoriasVehiculosController extends Controller
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
-        $categoria->categoria = $request->categoria;
+        $categoria->categoria = $request['categoria']['categoria'];
+        $categoria->imagen_url = $request['layout']['fileName'];
 
         if ($categoria->save()) {
             return response()->json([
@@ -219,5 +233,58 @@ class CategoriasVehiculosController extends Controller
                 'message' => 'Registro habilitado correctamente'
             ], JsonResponse::OK);
         }
+    }
+
+    private static function getCategoriaDoc($nombre_archivo) {
+        $response = [];
+
+        if ($nombre_archivo) {
+            $query =  DB::table('modelos_docs')
+            ->where('modelo', 'categorias_vehiculos')
+            ->where('nombre_archivo', '=', $nombre_archivo)
+            ->where('estatus', '=', 1)
+            ->orderBy('posicion', 'ASC');
+
+            $validInDB = $query->get();
+
+            $files = $validInDB;
+
+            if ($files && count($files) > 0) {
+
+                for ($i = 0; $i < count($files); $i++) {
+                    $dirFile = $files[$i]->modelo_id.'/'.'layout'.'/'.$files[$i]->nombre_archivo;
+
+                    if (Storage::disk("categorias_vehiculos")->exists($dirFile) === false) {
+                        continue;
+                    }
+                    $fileData = Storage::disk("categorias_vehiculos")->get($dirFile);
+
+                    $encodedFile = base64_encode($fileData);
+
+                    $mimeType = Storage::disk("categorias_vehiculos")->mimeType($dirFile);
+
+                    array_push($response, [
+                        'etiqueta' => $files[$i]->etiqueta,
+                        'position' => $files[$i]->posicion,
+                        'success' => true,
+                        'file_id' => $files[$i]->id,
+                        'doc_type' => $files[$i]->tipo_archivo,
+                        'model' => $files[$i]->modelo,
+                        'model_id' => $files[$i]->modelo_id,
+                        //'model_id_value' => $request->model_id_value,
+                        'mime_type' => $mimeType,
+                        'file' => 'data:'.$mimeType.';base64,'.$encodedFile
+                    ]);
+                }
+            }
+
+
+
+            return (object)  ['ok' => true, 'total' => count($response), 'data' => $response];
+        } else  {
+            return (object)  ['ok' => false, 'total' => 0, 'data' => null];
+        }
+
+
     }
 }

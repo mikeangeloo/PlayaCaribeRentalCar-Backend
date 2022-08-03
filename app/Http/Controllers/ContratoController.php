@@ -6,6 +6,7 @@ use App\Enums\CobranzaStatusEnum;
 use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
 use App\Enums\VehiculoStatusEnum;
+use App\Helpers\DocsManagmentHelper;
 use App\Models\Clientes;
 use App\Models\Cobranza;
 use App\Models\Contrato;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use PDF;
 use App\Helpers\GenerateUniqueAlphCodesHelper;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ContratoController extends Controller
 {
@@ -434,13 +436,16 @@ class ContratoController extends Controller
             'check_form_list'
             )->where('id', $id)->first();
 
+            $getClientDocs = self::getClientDocs($getContract->cliente->id);
+
             // return response()->json([
             //     'ok' => true,
             //     'data' => $getContract
             // ], JsonResponse::OK);
             // dd($getContract );
             $data = [
-                'contrato'=>  $getContract
+                'contrato'=>  $getContract,
+                'docs' => $getClientDocs
             ];
             $pdf = PDF::loadView('pdfs.contract-pdf', $data)->setPaper('a4','portrait');
 
@@ -543,14 +548,19 @@ class ContratoController extends Controller
             'check_form_list'
             )->where('id', $id)->first();
 
+            $getClientDocs = self::getClientDocs($getContract->cliente->id);
+
+
+            $data = [
+                'contrato'=>  $getContract,
+                'docs' => $getClientDocs
+            ];
+
             // return response()->json([
             //     'ok' => true,
-            //     'data' => $getContract
+            //     'data' => $data
             // ], JsonResponse::OK);
-            // dd($getContract );
-            $data = [
-                'contrato'=>  $getContract
-            ];
+
             $pdf = PDF::loadView('pdfs.contract-pdf', $data)->setPaper('a4','portrait');
 
         } catch(\Throwable $e) {
@@ -558,8 +568,8 @@ class ContratoController extends Controller
                 'ok' => false,
                 'errors' => ['Hubo un error al generar el pdf del contrato, intenta de nuevo']
             ], JsonResponse::BAD_REQUEST);
-        }
-        // dd($sendMail);
+        };
+
         return $pdf->download();
     }
 
@@ -645,5 +655,54 @@ class ContratoController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
+    }
+
+    private static function getClientDocs($cliente_id) {
+        $response = [];
+
+        $query =  DB::table('modelos_docs')
+            ->where('modelo', 'clientes')
+            ->where('modelo_id', '=', $cliente_id)
+            ->where('estatus', '=', 1)
+            ->orderBy('posicion', 'ASC');
+
+        $validInDB = $query->get();
+
+        $files = $validInDB;
+
+
+
+        if ($files && count($files) > 0) {
+
+            for ($i = 0; $i < count($files); $i++) {
+                $dirFile = $cliente_id.'/'.'licencia_conducir'.'/'.$files[$i]->nombre_archivo;
+
+                if (Storage::disk("clientes")->exists($dirFile) === false) {
+                    continue;
+                }
+                $fileData = Storage::disk("clientes")->get($dirFile);
+
+                $encodedFile = base64_encode($fileData);
+
+                $mimeType = Storage::disk("clientes")->mimeType($dirFile);
+
+                array_push($response, [
+                    'etiqueta' => $files[$i]->etiqueta,
+                    'position' => $files[$i]->posicion,
+                    'success' => true,
+                    'file_id' => $files[$i]->id,
+                    'doc_type' => $files[$i]->tipo_archivo,
+                    'model' => $files[$i]->modelo,
+                    'model_id' => $files[$i]->modelo_id,
+                    //'model_id_value' => $request->model_id_value,
+                    'mime_type' => $mimeType,
+                    'file' => 'data:'.$mimeType.';base64,'.$encodedFile
+                ]);
+            }
+        }
+
+
+
+        return (object)  ['ok' => true, 'total' => count($response), 'data' => $response];
     }
 }
