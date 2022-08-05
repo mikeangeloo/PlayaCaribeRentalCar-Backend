@@ -407,7 +407,7 @@
                         </div>
                         <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
                             <div style="display: table-row">
-                                <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS ESTIMADOS TOTALES INICIALES </b></p> </div>
+                                <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS TOTALES INICIALES </b></p> </div>
                                 <div style="display: table-cell; text-align:right; width:20%;"> <p><b>${{$contrato->total}}</b></p> </div>
 
                             </div>
@@ -479,7 +479,7 @@
                             </div>
                             <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
                                 <div style="display: table-row">
-                                    <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS EXTRA ESTIMADOS TOTALES </b></p> </div>
+                                    <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS EXTRA TOTALES </b></p> </div>
                                     <div style="display: table-cell; text-align:right; width:20%;"> <p><b>${{$contrato->total_retorno}}</b></p> </div>
 
                                 </div>
