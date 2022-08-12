@@ -55,7 +55,16 @@
         border-left-width: 7px;
         border-bottom: 13px solid black;
     }
+    div.docs {
+        margin: 5px;
+        float: left;
+        width: 300px;
+    }
 
+    div.docs img {
+        width: 100%;
+        height: auto;
+    }
 
 </style>
 
@@ -490,6 +499,19 @@
                                 </div>
                             </div>
                             <br>
+                        @elseif ($contrato->estatus == 3)
+                            <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS TOTALES </b></p> </div>
+                                    <div style="display: table-cell; text-align:right; width:20%;"> <p><b>${{$contrato->total}}</b></p> </div>
+
+                                </div>
+                                <div style="display: table-row">
+                                    <div style="display: table-cell; text-align:left; width:100%;">
+                                        <p style="font-size: 6px;">*TODAS LAS CANTIDADES REFLEJADAS SON EN MONEDA NACIONAL (MXN)</p>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </td> <!-- END INFO CARGOS -->
                 </tr>
@@ -718,7 +740,7 @@
                 <div style="display: table-row;">
                     <div style="display: table-cell;">
                         <div >
-                            <img style="width: 680px; height: 500px; object-fit: contain;" src="{{$contrato->check_form_list->check_list_img}}">
+                            <img style="width: 680px; height: 500px; object-fit: cover;" src="{{$contrato->check_form_list->check_list_img}}">
                         </div>
                     </div>
                 </div>
@@ -838,13 +860,37 @@
         <br>
         @if($docs->total > 0)
 
-            <h4 style="width: 100%; text-align: center;">Licencia cliente</h4>
-            @foreach ($docs->data as $doc)
-            <div style="width: 100%; text-align:center">
+            <h4 style="width: 100%; text-align: center;">Documentos del cliente</h4>
 
-                <img style="width:35%;" src="{{ $doc['file'] }}" />
-            </div>
-            @endforeach
+            <table style="">
+                @php
+                    $i = 1;
+                @endphp
+
+                @foreach ($docs->data as $doc)
+                    @if($i % 2 == 1)
+
+                        <tr style="">
+                    @endif
+                            <td style="padding:3px;">
+                                <div style="width:350px; height:400px; ">
+                                    <img style="height:400px; width:350px;" src="{{ $doc['file'] }}" />
+                                </div>
+                            </td>
+                        @if($i % 2 == 0)
+                            </tr>
+                        @endif
+                    @php
+                        $i++;
+                    @endphp
+
+                @endforeach
+
+            </table>
+
+
+
+
         @endif
     </div>
 

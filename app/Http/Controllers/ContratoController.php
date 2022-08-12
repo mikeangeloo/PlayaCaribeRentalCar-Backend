@@ -44,8 +44,13 @@ class ContratoController extends Controller
         $contrato = new Contrato();
 
         if ($request->has('num_contrato') && isset($request->num_contrato)) {
+
             $message = 'Avance actualizado correctamente';
             $contrato = Contrato::where('num_contrato', $request->num_contrato)->first();
+            if($request->seccion == 'retorno' && $request->total_retorno == 0){
+                $message = 'Contrato ha sido cerrado correctamente';
+            }
+
         }
 
         DB::beginTransaction();
@@ -301,6 +306,11 @@ class ContratoController extends Controller
                 $contrato->iva_monto_retorno = $request->iva_monto_retorno;
                 $contrato->total_retorno = $request->total_retorno;
                 $contrato->cobranza_calc_retorno = $request->cobranza_calc_retorno;
+
+                if($request->total_retorno == 0) {
+                    $contrato->estatus = ContratoStatusEnum::CERRADO;
+                    $contrato->vehiculo()->update(['estatus' => VehiculoStatusEnum::DISPONIBLE]);
+                }
                 break;
             case 'cobranza_retorno':
                 $validate = Cobranza::validateBeforeSave($request->all());
@@ -345,7 +355,8 @@ class ContratoController extends Controller
                         'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
                     ], JsonResponse::BAD_REQUEST);
                 }
-                $contrato->estatus = ContratoStatusEnum::RETORNO;
+                $contrato->estatus = ContratoStatusEnum::CERRADO;
+                $contrato->vehiculo()->update(['estatus' => VehiculoStatusEnum::DISPONIBLE]);
              break;
         }
 
