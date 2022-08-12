@@ -873,8 +873,8 @@
                         <tr style="">
                     @endif
                             <td style="padding:3px;">
-                                <div style="width:350px; height:400px; ">
-                                    <img style="height:400px; width:350px; object-fit: contain;" src="{{ $doc['file'] }}" />
+                                <div style="width:350px; height:400px; background-image: url({{ $doc['file']  }}); background-size: contain; background-repeat: no-repeat; background-position: center; ">
+                                    {{-- <img style="height:400px; width:350px; object-fit: contain;" src="{{ $doc['file'] }}" /> --}}
                                 </div>
                             </td>
                         @if($i % 2 == 0)
