@@ -24,6 +24,7 @@ class Cobranza extends Model
             'monto' => 'nullable|numeric',
             'moneda' => 'required|string',
             'tipo' => 'required|numeric',
+            'cobranza_seccion'  => 'required|string',
             'cod_banco' => 'nullable',
             'fecha_procesado' => 'nullable'
         ]);

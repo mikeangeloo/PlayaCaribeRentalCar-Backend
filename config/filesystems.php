@@ -58,6 +58,11 @@ return [
             'root' => storage_path('app/clientes'),
         ],
 
+        'categorias_vehiculos' => [
+            'driver' => 'local',
+            'root' => storage_path('app/categorias_vehiculos'),
+        ],
+
         'contratos' => [
             'driver' => 'local',
             'root' => storage_path('app/contratos'),

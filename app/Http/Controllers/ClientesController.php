@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\JsonResponse;
 use App\Models\Clientes;
 use Illuminate\Http\Request;
+use App\Helpers\GenerateUniqueAlphCodesHelper;
 
 class ClientesController extends Controller
 {
@@ -63,6 +64,7 @@ class ClientesController extends Controller
         $cliente->licencia_mes = $request->licencia_mes;
         $cliente->licencia_ano = $request->licencia_ano;
         $cliente->activo = true;
+        $cliente->num_cliente = GenerateUniqueAlphCodesHelper::random_strings(6);
 
 
         if ($cliente->save()) {

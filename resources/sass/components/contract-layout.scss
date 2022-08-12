@@ -1,0 +1,105 @@
+
+.page-container {
+    width: 28cm;
+    height: 28cm;
+    //border: 1px solid rgb(110, 168, 62);
+    padding: 5px;
+    font-size: 11px;
+
+    p {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        font-weight: initial;
+    }
+
+    .subhead-contract {
+        margin-top: 12px;
+        .column {
+            border: 2px solid black;
+            border-right: none;
+            &:last-of-type {
+                border-right: 2px solid black;
+            }
+
+            flex: 0 1 20%
+        }
+        .date-time {
+            p {
+                text-align: center;
+            }
+        }
+
+        .office-name {
+            display: flex;
+            justify-content: space-around;
+            font-weight: bold;
+        }
+    }
+
+    .contract-content {
+        text-transform: uppercase;
+        border: 2px solid black;
+        border-top: none;
+
+    }
+
+}
+.border-arround {
+    border: 2px solid black;
+}
+
+.items-table {
+    thead {
+        th {
+            font-weight: bold;
+            &:nth-child(1) {
+                width: 50%;
+                text-align: left;
+            }
+            &:nth-child(2) {
+                width: 20%;
+                text-align: right;
+            }
+            &:nth-child(3) {
+                width: 10%;
+                text-align: right;
+            }
+            &:nth-child(4) {
+                width: 20%;
+                text-align: right;
+            }
+        }
+    }
+    tbody {
+        td {
+
+            font-weight: bold;
+            &:nth-child(1) {
+                width: 50%;
+                text-align: left;
+            }
+            &:nth-child(2) {
+                width: 20%;
+                text-align: right;
+            }
+            &:nth-child(3) {
+                width: 10%;
+                text-align: right;
+            }
+            &:nth-child(4) {
+                width: 20%;
+                text-align: right;
+                padding-right: 14px;
+            }
+        }
+    }
+}
+.policy-console {
+    font-family: 'Inconsolata', monospace;
+    text-transform: none;
+    padding-right: 1.5rem !important;
+    text-align: justify;
+}

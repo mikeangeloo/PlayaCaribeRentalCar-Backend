@@ -16,9 +16,9 @@ class DocsTypeEnum
 
 class DocsValidParams
 {
-    const VALIDMODELS = ['clientes', 'contratos', 'cobranza', 'check_list'];
+    const VALIDMODELS = ['clientes', 'contratos', 'cobranza', 'check_list','categorias_vehiculos'];
     //const VALIDMODELIDS = ['cliente_id', 'contrato_id', 'cobranza_id'];
-    const validDocTypes = ['licencia_conducir', 'ine', 'cupon', 'voucher', 'check_indicator'];
+    const validDocTypes = ['licencia_conducir', 'ine', 'cupon', 'voucher', 'check_indicator','layout'];
 }
 
 class DocsStatusEnum
@@ -120,6 +120,7 @@ class DocsManagmentHelper
                     $mimeType = Storage::disk($request->model)->mimeType($dirFile);
 
                     array_push($response, [
+                        'nombre_archivo' => $files[$i]->nombre_archivo,
                         'etiqueta' => $files[$i]->etiqueta,
                         'position' => $files[$i]->posicion,
                         'success' => true,

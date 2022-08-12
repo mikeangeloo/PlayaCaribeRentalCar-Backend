@@ -21,16 +21,23 @@ Route::post('activate-usr-token', 'SessionController@activateUserByCode');
 Route::post('recovery-psw', 'SessionController@generateRecoveryPswToken');
 Route::post('review-recovery-token', 'SessionController@reviewToken');
 Route::post('change-pwd-token', 'SessionController@changePwdByToken');
+Route::get('contratos/pdf/{id}', 'ContratoController@viewReservaPDF');
+Route::get('test/pdf', 'ContratoController@viewReservaPDF');
 //endregion
 
 Route::prefix('dash')->group(function () {
     Route::post('login', 'SessionController@login');
-
     Route::middleware('verify.jwt')->group(function () {
 
         //region CONTRATOS
         Route::post('contratos/save-progress', 'ContratoController@saveProcess');
         Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
+        Route::get('contratos/pdf/{id}', 'ContratoController@getContractPDF');
+        Route::get('reservas/pdf/{id}/{idioma}', 'ContratoController@getReservaPDF');
+        Route::get('contratos/view/pdf/{id}', 'ContratoController@viewPDF');
+        Route::get('reservas/view/pdf/{id}/{idioma}', 'ContratoController@viewReservaPDF');
+        Route::delete('contratos/cancel/{id}', 'ContratoController@cancelContract');
+        Route::get('reservas', 'ContratoController@getReservas');
         //endregion
 
         //region CHECKLIST
@@ -60,6 +67,7 @@ Route::prefix('dash')->group(function () {
         Route::get('vehiculos/all', 'VehiculosController@getAll');
         Route::get('vehiculos/enable/{id}', 'VehiculosController@enable');
         Route::get('vehiculos/list', 'VehiculosController@getList');
+        Route::get('vehiculos/list-estatus-contract', 'VehiculosController@listWithContract');
         Route::resource('vehiculos', 'VehiculosController');
 
         //endregion
@@ -122,6 +130,13 @@ Route::prefix('dash')->group(function () {
             Route::get('tarifas-extras/enable/{id}', 'TarifasExtrasController@enable');
             Route::get('tarifas-extras/list', 'TarifasExtrasController@getList');
             Route::resource('tarifas-extras', 'TarifasExtrasController');
+            //endregion
+
+            //region CARGOS RETORNO EXTRAS
+            Route::get('cargos-extras/all', 'CargosRetornoExtrasController@getAll');
+            Route::get('cargos-extras/enable/{id}', 'CargosRetornoExtrasController@enable');
+            Route::get('cargos-extras/list', 'CargosRetornoExtrasController@getList');
+            Route::resource('cargos-extras', 'CargosRetornoExtrasController');
             //endregion
 
               //region TARIFAS APOLLO CONF

@@ -12,9 +12,13 @@ class CategoriasVehiculos extends Model
     protected $table = 'categorias_vehiculos';
     protected $primaryKey = 'id';
 
+    public function categoria_docs() {
+        return $this->hasOne(ModelosDocs::class, 'modelo_id', 'id')->where('modelo', 'categorias_vehiculos');
+    }
+
 
     public static function validateBeforeSave($request) {
-        $validateData = Validator::make($request, [
+        $validateData = Validator::make($request['categoria'], [
             'categoria' => 'required|string|max:100',
         ]);
 

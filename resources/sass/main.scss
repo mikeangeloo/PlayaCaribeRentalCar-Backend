@@ -1,0 +1,19 @@
+/*
+* Este archivo importa las dependencias de estilos ubicadas en la carpeta sytles
+*/
+// Directorio Abstracts (variables, functions, mixins, placeholders
+
+// Directorio Base (reset/normalize, typography rules)
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;500;600;700;800;900&display=swap');
+
+// Directorio Layout (body, navigation, grid system, header, footer, sidebar, forms, etc)
+
+// Directorio Vendors (bootstrap, jquery UI, etc)
+@import "vendors/_bootstrap";
+
+//Directorio themes
+
+//Directorio Components
+@import "components/contract-layout.scss";
+
+

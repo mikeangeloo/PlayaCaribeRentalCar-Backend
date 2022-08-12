@@ -5,17 +5,27 @@ namespace App\Http\Controllers;
 use App\Enums\CobranzaStatusEnum;
 use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
+use App\Enums\VehiculoStatusEnum;
+use App\Helpers\DocsManagmentHelper;
 use App\Models\Clientes;
 use App\Models\Cobranza;
 use App\Models\Contrato;
 use App\Models\Vehiculos;
+use App\Models\CheckFormList;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use PDF;
+use App\Helpers\GenerateUniqueAlphCodesHelper;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ContratoController extends Controller
 {
     public function saveProcess(Request $request) {
+
+        //dd($request);
 
         $validateInit = Contrato::validateBeforeSaveProgress($request->all());
         if ($validateInit !== true) {
@@ -25,7 +35,7 @@ class ContratoController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $contractInitials = 'AP';
+        $contractInitials = ($request->reserva) ? 'RS': 'AP';
         //dd($contractInitials.sprintf('%03d', '33333'));
         $message = 'Avance guardado correctamente';
         $user = $request->user;
@@ -34,12 +44,52 @@ class ContratoController extends Controller
         $contrato = new Contrato();
 
         if ($request->has('num_contrato') && isset($request->num_contrato)) {
+
             $message = 'Avance actualizado correctamente';
             $contrato = Contrato::where('num_contrato', $request->num_contrato)->first();
+            if($request->seccion == 'retorno' && $request->total_retorno == 0){
+                $message = 'Contrato ha sido cerrado correctamente';
+            }
+
         }
 
         DB::beginTransaction();
         switch ($request->seccion) {
+            case 'datos_cliente':
+                $validate = Clientes::validateBeforeSave($request->all());
+                if ($validate !== true) {
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => $validate
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+                $cliente = new Clientes();
+                if ($request->has('cliente_id') && isset($request->cliente_id)) {
+                    $cliente = Clientes::where('id', $request->cliente_id)->first();
+                }
+                $cliente->nombre = $request->nombre;
+                //$cliente->apellidos = $request->apellidos;
+                $cliente->telefono = $request->telefono;
+                $cliente->email = $request->email;
+                $cliente->num_licencia = $request->num_licencia;
+                $cliente->licencia_mes = $request->licencia_mes;
+                $cliente->licencia_ano = $request->licencia_ano;
+                $cliente->direccion = (isset($request->direccion)) ? $request->direccion : null;
+                $cliente->activo = true;
+                $cliente->num_cliente = GenerateUniqueAlphCodesHelper::random_strings(6);
+
+                if ($cliente->save() === false) {
+                    DB::rollBack();
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+                $contrato->cliente_id = $cliente->id;
+                $contrato->estatus = ContratoStatusEnum::BORRADOR;
+                break;
             case 'datos_generales':
                 $validate = Contrato::validateDatosGeneralesBeforeSave($request->all());
 
@@ -49,7 +99,7 @@ class ContratoController extends Controller
                         'errors' => $validate
                     ], JsonResponse::BAD_REQUEST);
                 }
-                $contrato->vehiculo_id = $request->vehiculo_id;
+                //$contrato->vehiculo_id = $request->vehiculo_id;
                 $contrato->tipo_tarifa_id = $request->tipo_tarifa_id;
                 $contrato->tipo_tarifa = $request->tipo_tarifa;
                 $contrato->modelo_id = $request->modelo_id;
@@ -95,39 +145,7 @@ class ContratoController extends Controller
 
                 $contrato->user_create_id = $user->id;
                 break;
-            case 'datos_cliente':
-                $validate = Clientes::validateBeforeSave($request->all());
-                if ($validate !== true) {
-                    return response()->json([
-                        'ok' => false,
-                        'errors' => $validate
-                    ], JsonResponse::BAD_REQUEST);
-                }
 
-                $cliente = new Clientes();
-                if ($request->has('cliente_id') && isset($request->cliente_id)) {
-                    $cliente = Clientes::where('id', $request->cliente_id)->first();
-                }
-                $cliente->nombre = $request->nombre;
-                //$cliente->apellidos = $request->apellidos;
-                $cliente->telefono = $request->telefono;
-                $cliente->email = $request->email;
-                $cliente->num_licencia = $request->num_licencia;
-                $cliente->licencia_mes = $request->licencia_mes;
-                $cliente->licencia_ano = $request->licencia_ano;
-                $cliente->direccion = (isset($request->direccion)) ? $request->direccion : null;
-                $cliente->activo = true;
-
-                if ($cliente->save() === false) {
-                    DB::rollBack();
-                    return response()->json([
-                        'ok' => false,
-                        'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
-                    ], JsonResponse::BAD_REQUEST);
-                }
-
-                $contrato->cliente_id = $cliente->id;
-                break;
             case 'datos_vehiculo':
                 $validateVehiculo = Contrato::validateDatosVehiculo($request->all());
                 if ($validateVehiculo !== true) {
@@ -173,7 +191,148 @@ class ContratoController extends Controller
                 if(!$cobranza->fecha_cargo) {
                     $cobranza->fecha_cargo =  Carbon::now(); //TODO: por el momento en duro
                 }
+                $cobranza->cobranza_seccion = $request->cobranza_seccion;
+                $cobranza->monto = $request->monto;
+                $cobranza->moneda = $request->moneda;
+                $cobranza->tipo = $request->tipo;
+                $cobranza->estatus = CobranzaStatusEnum::COBRADO;
+                if (!$cobranza->fecha_procesado) {
+                    $cobranza->fecha_procesado = Carbon::now(); //TODO: por el momento en duro
+                }
 
+
+                $cobranza->cod_banco = $request->cod_banco;
+                $cobranza->res_banco = null; //TODO: agregar catálogo de respuestas
+
+                if (!$cobranza->fecha_reg) {
+                    $cobranza->fecha_reg = Carbon::now();
+                }
+
+                // si viene reserva: true se cambia status a reserva
+                if ($request->reserva) {
+                    $contrato->estatus = 4;
+                }
+
+                if ($cobranza->save() === false) {
+                    DB::rollBack();
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
+                    ], JsonResponse::BAD_REQUEST);
+                }
+                break;
+            case 'check_in_salida':
+                $checkInCtrl = new CheckListController();
+                $response = $checkInCtrl->saveUpdate($request);
+                //dd($response);
+                if($response->original['ok'] !== true) {
+                    return $response;
+                }
+                break;
+            case 'check_form_list':
+                $validate = CheckFormList::validateBeforeSave($request->all());
+
+                if ($validate !== true) {
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => $validate
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+                $checkFormList = new CheckFormList();
+
+                if ($request->has('check_form_list_id') && isset($request->check_form_list_id)) {
+                    $checkFormList = CheckFormList::where('id', $request->check_form_list_id)->first();
+                }
+
+                $checkFormList->contrato_id = $request->contrato_id;
+                $checkFormList->tarjeta_circulacion  = $request->tarjeta_circulacion;
+                $checkFormList->tapetes  = $request->tapetes;
+                $checkFormList->silla_bebes = $request->silla_bebes;
+                $checkFormList->espejos = $request->espejos;
+                $checkFormList->tapones_rueda = $request->tapones_rueda;
+                $checkFormList->tapon_gas = $request->tapon_gas;
+                $checkFormList->senalamientos = $request->senalamientos;
+                $checkFormList->gato = $request->gato;
+                $checkFormList->llave_rueda = $request->llave_rueda;
+                $checkFormList->limpiadores = $request->limpiadores;
+                $checkFormList->antena = $request->antena;
+                $checkFormList->navegador = $request->navegador;
+                $checkFormList->placas = $request->placas;
+                $checkFormList->radio = $request->radio;
+                $checkFormList->llantas = $request->llantas;
+                $checkFormList->observaciones = $request->observaciones;
+                $checkFormList->check_list_img = $request->check_list_img;
+
+
+                if ($checkFormList->save() === false) {
+                    DB::rollBack();
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => ['Algo salio mal al guardar la inforamción, intente de nuevo']
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+                $contrato->check_form_list_id = $checkFormList->id;
+
+                break;
+            case 'firma':
+                $contrato->firma_cliente = $request->signature_img;
+                $contrato->firma_matrix = json_encode($request->signature_matrix);
+                $contrato->estatus = ContratoStatusEnum::RENTADO;
+                $contrato->vehiculo()->update(['estatus' => VehiculoStatusEnum::RENTADO]);
+                break;
+            case 'retorno':
+                $validate = Contrato::validateDatosReronoBeforeSave($request->all());
+
+                if ($validate !== true) {
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => $validate
+                    ], JsonResponse::BAD_REQUEST);
+                }
+
+                $contrato->km_final = $request->km_final;
+                $contrato->cant_combustible_retorno = $request->cant_combustible_retorno;
+                $contrato->cargos_retorno_extras_ids = $request->cargos_extras_retorno_ids;
+                $contrato->cargos_retorno_extras = $request->cargos_extras_retorno;
+
+                $contrato->frecuencia_extra = $request->frecuencia_extra;
+                $contrato->cobranzaExtraPor = $request->cobranzaExtraPor;
+
+                $contrato->subtotal_retorno = $request->subtotal_retorno;
+                $contrato->con_iva_retorno = $request->con_iva_retorno;
+                $contrato->iva_retorno = $request->iva_retorno;
+                $contrato->iva_monto_retorno = $request->iva_monto_retorno;
+                $contrato->total_retorno = $request->total_retorno;
+                $contrato->cobranza_calc_retorno = $request->cobranza_calc_retorno;
+
+                if($request->total_retorno == 0) {
+                    $contrato->estatus = ContratoStatusEnum::CERRADO;
+                    $contrato->vehiculo()->update(['estatus' => VehiculoStatusEnum::DISPONIBLE]);
+                }
+                break;
+            case 'cobranza_retorno':
+                $validate = Cobranza::validateBeforeSave($request->all());
+                if ($validate !== true) {
+                    return response()->json([
+                        'ok' => false,
+                        'errors' => $validate
+                    ], JsonResponse::BAD_REQUEST);
+                }
+                $cobranza = new Cobranza();
+                if ($request->has('cobranza_id') && isset($request->cobranza_id)) {
+                    $cobranza = Cobranza::where('id', $request->cobranza_id)->first();
+                }
+
+                $cobranza->contrato_id = $request->contrato_id;
+                $cobranza->tarjeta_id = $request->tarjeta_id;
+                $cobranza->cliente_id = $request->cliente_id;
+
+                if(!$cobranza->fecha_cargo) {
+                    $cobranza->fecha_cargo =  Carbon::now(); //TODO: por el momento en duro
+                }
+                $cobranza->cobranza_seccion = $request->cobranza_seccion;
                 $cobranza->monto = $request->monto;
                 $cobranza->moneda = $request->moneda;
                 $cobranza->tipo = $request->tipo;
@@ -196,19 +355,13 @@ class ContratoController extends Controller
                         'errors' => ['Hubo un error al guardar la información, intenta de nuevo']
                     ], JsonResponse::BAD_REQUEST);
                 }
-                break;
-            case 'check_in_salida':
-                $checkInCtrl = new CheckListController();
-                $response = $checkInCtrl->saveUpdate($request);
-                //dd($response);
-                if($response->original['ok'] !== true) {
-                    return $response;
-                }
-                break;
+                $contrato->estatus = ContratoStatusEnum::CERRADO;
+                $contrato->vehiculo()->update(['estatus' => VehiculoStatusEnum::DISPONIBLE]);
+             break;
         }
 
 
-        $contrato->estatus = ContratoStatusEnum::BORRADOR;
+
         if (!$contrato->hora_elaboracion) {
             $contrato->hora_elaboracion = Carbon::now()->toTimeString();
         }
@@ -227,8 +380,17 @@ class ContratoController extends Controller
 
             if (!$contrato->num_contrato) {
                 $contrato->num_contrato = $contractInitials.sprintf('%03d', $contrato->id);
+                $contrato->confirmacion = GenerateUniqueAlphCodesHelper::random_strings(13);
+                $contrato->res_local = GenerateUniqueAlphCodesHelper::random_strings(6);
                 $contrato->save();
             }
+
+            //Revisamos si es una reserva que ya esta en estatus rentado
+           if ($contractInitials === 'AP' && $contrato->estatus === ContratoStatusEnum::RENTADO) {
+                $contrato->num_reserva = $contrato->num_contrato;
+                $contrato->num_contrato = $contractInitials.sprintf('%03d', $contrato->id);
+                $contrato->save();
+           }
 
             Contrato::setEtapasGuardadas($contrato->num_contrato);
 
@@ -260,5 +422,298 @@ class ContratoController extends Controller
             'ok' => true,
             'data' => $getData->data
         ], JsonResponse::OK);
+    }
+
+    public function getContractPDF(Request $request, $id) {
+
+        try {
+            $getContract = Contrato::with(
+            'cliente'
+            ,'cliente.cliente_docs'
+            ,'vehiculo'
+            ,'vehiculo.tarifas'
+            ,'vehiculo.marca'
+            ,'vehiculo.categoria'
+            ,'vehiculo.clase'
+            ,'vehiculo.tarifa_categoria'
+            ,'salida'
+            ,'retorno'
+            ,'cobranza_reserva'
+            ,'cobranza_salida'
+            ,'cobranza_salida.tarjeta'
+            ,'cobranza_retorno'
+            ,'cobranza_retorno.tarjeta'
+            ,'usuario',
+            'check_form_list'
+            )->where('id', $id)->first();
+
+            $getClientDocs = self::getClientDocs($getContract->cliente->id);
+
+            // return response()->json([
+            //     'ok' => true,
+            //     'data' => $getContract
+            // ], JsonResponse::OK);
+            // dd($getContract );
+            $data = [
+                'contrato'=>  $getContract,
+                'docs' => $getClientDocs
+            ];
+            $pdf = PDF::loadView('pdfs.contract-pdf', $data)->setPaper('a4','portrait');
+
+
+            $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
+                $mail->from('apolloDev@mail.mx','Apollo');
+                $mail->subject('Contrato de arrendamiento');
+                $mail->to('danywolfslife@gmail.com');
+                $mail->attachData($pdf->output(), 'APOLLO_Contrato_'.$getContract->num_contrato.'.pdf');
+            });
+        } catch(\Throwable $e) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Hubo un error al generar el pdf del contrato, intenta de nuevo']
+            ], JsonResponse::BAD_REQUEST);
+        }
+        // dd($sendMail);
+        return $pdf->download();
+    }
+
+    public function getReservaPDF(Request $request, $id, $idioma) {
+
+        try {
+            $getContract = Contrato::with(
+                'cliente'
+                ,'cliente.cliente_docs'
+                ,'salida'
+                ,'retorno'
+                ,'cobranza_reserva'
+                ,'cobranza_reserva.tarjeta'
+                ,'usuario',
+                )->where('id', $id)->first();
+
+            // return response()->json([
+            //     'ok' => true,
+            //     'data' => $getContract
+            // ], JsonResponse::OK);
+            // dd($getContract );
+            $data = [
+                'contrato'=>  $getContract
+            ];
+            if ($idioma === 'es') {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
+            } else if ($idioma === 'en') {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_en', $data)->setPaper('a4','portrait');
+            } else {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
+            }
+            $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
+                $mail->from('apolloDev@mail.mx','Apollo');
+                $mail->subject('Reserva de arrendamiento');
+                $mail->to('danywolfslife@gmail.com');
+                $mail->attachData($pdf->output(), 'APOLLO_Reserva_'.$getContract->num_contrato.'.pdf');
+            });
+        } catch(\Throwable $e) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Hubo un error al generar el pdf del contrato, intenta de nuevo']
+            ], JsonResponse::BAD_REQUEST);
+        }
+        // dd($sendMail);
+        return $pdf->download();
+    }
+
+    public function getReservas(Request $request) {
+        $reservas = Contrato::where('estatus', 4)->orderBy('id', 'ASC')->get();
+        $reservas->load('cliente'
+        ,'cliente.cliente_docs'
+        ,'salida'
+        ,'retorno'
+        ,'cobranza_reserva'
+        ,'cobranza_reserva.tarjeta'
+        ,'usuario');
+
+        return response()->json([
+            'ok' => true,
+            'reservas' => $reservas
+        ], JsonResponse::OK);
+    }
+
+    public function viewPDF(Request $request, $id) {
+
+        try {
+            $getContract = Contrato::with(
+            'cliente'
+            ,'cliente.cliente_docs'
+            ,'vehiculo'
+            ,'vehiculo.tarifas'
+            ,'vehiculo.marca'
+            ,'vehiculo.categoria'
+            ,'vehiculo.clase'
+            ,'vehiculo.tarifa_categoria'
+            ,'salida'
+            ,'retorno'
+            ,'cobranza_salida'
+            ,'cobranza_salida.tarjeta'
+            ,'cobranza_retorno'
+            ,'cobranza_retorno.tarjeta'
+            ,'usuario',
+            'check_form_list'
+            )->where('id', $id)->first();
+
+            $getClientDocs = self::getClientDocs($getContract->cliente->id);
+
+
+            $data = [
+                'contrato'=>  $getContract,
+                'docs' => $getClientDocs
+            ];
+
+            // return response()->json([
+            //     'ok' => true,
+            //     'data' => $data
+            // ], JsonResponse::OK);
+
+            $pdf = PDF::loadView('pdfs.contract-pdf', $data)->setPaper('a4','portrait');
+
+        } catch(\Throwable $e) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Hubo un error al generar el pdf del contrato, intenta de nuevo']
+            ], JsonResponse::BAD_REQUEST);
+        };
+
+        return $pdf->download();
+    }
+
+    public function viewReservaPDF(Request $request, $id, $idioma) {
+
+        try {
+            $getContract = Contrato::with(
+            'cliente'
+            ,'cliente.cliente_docs'
+            ,'salida'
+            ,'retorno'
+            ,'cobranza_reserva'
+            ,'cobranza_reserva.tarjeta'
+            ,'usuario',
+            )->where('id', $id)->first();
+
+            // return response()->json([
+            //     'ok' => true,
+            //     'data' => $getContract
+            // ], JsonResponse::OK);
+            // dd($getContract );
+            $data = [
+                'contrato'=>  $getContract
+            ];
+            if ($idioma === 'es') {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
+            } else if ($idioma === 'en') {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_en', $data)->setPaper('a4','portrait');
+            } else {
+                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
+            }
+
+
+        } catch(\Throwable $e) {
+            Log::debug($e);
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Hubo un error al generar el pdf del contrato, intenta de nuevo']
+            ], JsonResponse::BAD_REQUEST);
+        }
+        // dd($sendMail);
+        return $pdf->download();
+    }
+
+    public function cancelContract(Request $request, $id) {
+        //$validStatus = [ContratoStatusEnum::BORRADOR];
+        $getContract = Contrato::where('id', $id)->first();
+        $msg = 'Contrato';
+
+        if(!$getContract) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['No se encontro la información solicitada']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        if (substr($getContract->num_contrato, 0 ,2) === 'RS') {
+            $msg = 'Reserva';
+        }
+        try {
+            if($getContract->cobranza() != null){
+                $getContract->cobranza()->update(['estatus' => CobranzaStatusEnum::CANCELADO]);
+            }
+            if($getContract->vehiculo() != null){
+                $getContract->vehiculo()->update(['estatus'=> VehiculoStatusEnum::DISPONIBLE]);
+            }
+            if($getContract->check_list_salida() != null){
+                $getContract->check_list_salida()->update(['activo' => false]);
+            }
+
+            $getContract->estatus = ContratoStatusEnum::CANCELADO;
+            if ($getContract->save()) {
+                return response()->json([
+                    'ok' => true,
+                    'message' => ''.$msg.' cancelado correctamente'
+                ], JsonResponse::OK);
+            }
+        } catch (\Throwable $e) {
+            Log::debug($e);
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Este '.$msg.' no puede ser cancelado']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+    }
+
+    private static function getClientDocs($cliente_id) {
+        $response = [];
+
+        $query =  DB::table('modelos_docs')
+            ->where('modelo', 'clientes')
+            ->where('modelo_id', '=', $cliente_id)
+            ->where('estatus', '=', 1)
+            ->orderBy('posicion', 'ASC');
+
+        $validInDB = $query->get();
+
+        $files = $validInDB;
+
+
+
+        if ($files && count($files) > 0) {
+
+            for ($i = 0; $i < count($files); $i++) {
+                $dirFile = $cliente_id.'/'.'licencia_conducir'.'/'.$files[$i]->nombre_archivo;
+
+                if (Storage::disk("clientes")->exists($dirFile) === false) {
+                    continue;
+                }
+                $fileData = Storage::disk("clientes")->get($dirFile);
+
+                $encodedFile = base64_encode($fileData);
+
+                $mimeType = Storage::disk("clientes")->mimeType($dirFile);
+
+                array_push($response, [
+                    'etiqueta' => $files[$i]->etiqueta,
+                    'position' => $files[$i]->posicion,
+                    'success' => true,
+                    'file_id' => $files[$i]->id,
+                    'doc_type' => $files[$i]->tipo_archivo,
+                    'model' => $files[$i]->modelo,
+                    'model_id' => $files[$i]->modelo_id,
+                    //'model_id_value' => $request->model_id_value,
+                    'mime_type' => $mimeType,
+                    'file' => 'data:'.$mimeType.';base64,'.$encodedFile
+                ]);
+            }
+        }
+
+
+
+        return (object)  ['ok' => true, 'total' => count($response), 'data' => $response];
     }
 }
