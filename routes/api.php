@@ -72,6 +72,11 @@ Route::prefix('dash')->group(function () {
 
         //endregion
 
+        //region REPORTES
+        Route::get('reportes/estatus-vehiculos', 'ReportesController@getEstatusVehiculosReport');
+        Route::get('reportes/mantenimiento-vehiculos', 'ReportesController@getMantenimientoVehiculosReport');
+        //endregion
+
         //region CONTROL ACCESO
         Route::get('usuarios/all', 'UsersController@getAll');
         Route::get('usuarios/enable/{id}', 'UsersController@enable');
