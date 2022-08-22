@@ -499,7 +499,7 @@
                                 </div>
                             </div>
                             <br>
-                        @elseif ($contrato->estatus == 3)
+                        @elseif ($contrato->cargos_retorno_extras == null && $contrato->estatus == 3)
                             <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
                                 <div style="display: table-row">
                                     <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS TOTALES </b></p> </div>
@@ -739,9 +739,12 @@
             <div style="width: 100%; display: table;">
                 <div style="display: table-row;">
                     <div style="display: table-cell;">
-                        <div >
-                            <img style="width: 680px; height: 500px; object-fit: cover;" src="{{$contrato->check_form_list->check_list_img}}">
+                        <div style="width:680px; height:500px; background-image: url({{ $contrato->check_form_list->check_list_img }}); background-size: contain; background-repeat: no-repeat; background-position: center; ">
+                            {{-- <img style="height:400px; width:350px; object-fit: contain;" src="{{ $doc['file'] }}" /> --}}
                         </div>
+                        {{-- <div >
+                            <img style="width: 680px; height: 500px; object-fit: cover;" src="{{$contrato->check_form_list->check_list_img}}">
+                        </div> --}}
                     </div>
                 </div>
             </div>
