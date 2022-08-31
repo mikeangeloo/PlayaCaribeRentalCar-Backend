@@ -76,6 +76,7 @@ Route::prefix('dash')->group(function () {
         //region REPORTES
         Route::get('reportes/estatus-vehiculos', 'ReportesController@getEstatusVehiculosReport');
         Route::get('reportes/mantenimiento-vehiculos', 'ReportesController@getMantenimientoVehiculosReport');
+        Route::get('reportes/exedente-kilometraje-gasolina', 'ReportesController@getExedenteKilometrajeGasolinaReport');
         //endregion
 
         //region CONTROL ACCESO
