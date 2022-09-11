@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
 use App\Enums\VehiculoStatusEnum;
+use App\Models\CambioEstatusVehiculo;
 use App\Models\TarifasApollo;
 use App\Models\TarifasApolloConf;
 use App\Models\Vehiculos;
@@ -431,5 +432,48 @@ class VehiculosController extends Controller
             'data' => $_vehiculos,
             'fullData' => $vehiculos
         ], JsonResponse::OK);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $validateData = CambioEstatusVehiculo::validateBeforeSave($request->all(), true);
+
+        if ($validateData !== true) {
+            return response()->json([
+                'ok' => false,
+                'errors' => $validateData
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $vehiculo = Vehiculos::where('id', $id)->first();
+        if (!$vehiculo) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['No se encontro la información solicitada']
+            ], JsonResponse::BAD_REQUEST);
+        }
+        $vehiculo->estatus = $request->estatus;
+
+
+        if ($vehiculo->save()) {
+
+            $cambioEstatusVehiculo = new CambioEstatusVehiculo();
+
+            $cambioEstatusVehiculo->vehiculo_id = $id;
+            $cambioEstatusVehiculo->estatus = $request->estatus;
+            $cambioEstatusVehiculo->observaciones = $request->observaciones;
+
+            $cambioEstatusVehiculo->save();
+
+            return response()->json([
+                'ok' => true,
+                'message' => 'Véhiculo actualizado correctamente'
+            ], JsonResponse::OK);
+        } else {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Algo salio mal, intente nuevamente']
+            ], JsonResponse::BAD_REQUEST);
+        }
     }
 }

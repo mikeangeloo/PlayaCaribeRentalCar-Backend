@@ -452,7 +452,7 @@
                                 </div>
 
                                 @foreach ($contrato->cobranza_calc_retorno as $cargoExtra)
-                                    @if($cargoExtra['element'] == 'cargoExtra')
+                                    @if($cargoExtra['element'] == 'horas_extra' || $cargoExtra['element'] == 'dias_extra' || $cargoExtra['element'] == 'cargoExtra')
                                         <div style="display: table-row; text-transform: uppercase">
                                             <div style="display: table-cell; width:43%;"> {{$cargoExtra['element_label']}}</div>
                                             <div style="display: table-cell; text-align:right; width:14%; ">${{$cargoExtra['value']}}</div>
@@ -499,7 +499,7 @@
                                 </div>
                             </div>
                             <br>
-                        @elseif ($contrato->estatus == 3)
+                        @elseif ($contrato->cargos_retorno_extras == null && $contrato->estatus == 3)
                             <div style="width: 90%; display: table; border: 1px solid black; padding: 10px;">
                                 <div style="display: table-row">
                                     <div style="display: table-cell; text-align:left; width:70%;"> <p><b>CARGOS TOTALES </b></p> </div>
@@ -739,9 +739,12 @@
             <div style="width: 100%; display: table;">
                 <div style="display: table-row;">
                     <div style="display: table-cell;">
-                        <div >
-                            <img style="width: 680px; height: 500px; object-fit: cover;" src="{{$contrato->check_form_list->check_list_img}}">
+                        <div style="width:680px; height:500px; background-image: url({{ $contrato->check_form_list->check_list_img }}); background-size: contain; background-repeat: no-repeat; background-position: center; ">
+                            {{-- <img style="height:400px; width:350px; object-fit: contain;" src="{{ $doc['file'] }}" /> --}}
                         </div>
+                        {{-- <div >
+                            <img style="width: 680px; height: 500px; object-fit: cover;" src="{{$contrato->check_form_list->check_list_img}}">
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -873,8 +876,8 @@
                         <tr style="">
                     @endif
                             <td style="padding:3px;">
-                                <div style="width:350px; height:400px; ">
-                                    <img style="height:400px; width:350px;" src="{{ $doc['file'] }}" />
+                                <div style="width:350px; height:400px; background-image: url({{ $doc['file']  }}); background-size: contain; background-repeat: no-repeat; background-position: center; ">
+                                    {{-- <img style="height:400px; width:350px; object-fit: contain;" src="{{ $doc['file'] }}" /> --}}
                                 </div>
                             </td>
                         @if($i % 2 == 0)
