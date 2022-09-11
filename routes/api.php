@@ -172,6 +172,13 @@ Route::prefix('dash')->group(function () {
         Route::get('notas/delete/{id}', 'NotasController@remove');
         //endregion
 
+        //region POLIZAS
+        Route::get('polizas/all', 'PolizasController@getAll');
+        Route::get('polizas/enable/{id}', 'PolizasController@enable');
+        Route::get('polizas/list', 'PolizasController@getList');
+        Route::resource('polizas', 'PolizasController');
+        //endregion
+
     });
 });
 
