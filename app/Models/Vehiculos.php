@@ -44,7 +44,7 @@ class Vehiculos extends Model
             'marca_id' => 'required|exists:marcas_vehiculos,id',
             'estatus' => 'nullable|string',
             'placas' => 'required|string|max:100',
-            'num_poliza_seg' => 'required|string|max:100',
+            'poliza_id' => 'required|numeric',
             'km_recorridos' => 'required|numeric',
             'prox_servicio' => 'nullable',
             'categoria_vehiculo_id' => 'required|exists:categorias_vehiculos,id',

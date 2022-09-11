@@ -81,7 +81,7 @@ class VehiculosController extends Controller
         $vehiculo->modelo_ano = $request->modelo_ano;
         $vehiculo->marca_id = $request->marca_id;
         $vehiculo->placas = $request->placas;
-        $vehiculo->num_poliza_seg = $request->num_poliza_seg;
+        $vehiculo->poliza_id = $request->poliza_id;
         $vehiculo->km_recorridos = $request->km_recorridos;
         $vehiculo->categoria_vehiculo_id = $request->categoria_vehiculo_id;
         $vehiculo->color = $request->color;
@@ -232,7 +232,7 @@ class VehiculosController extends Controller
         $vehiculo->modelo_ano = $request->modelo_ano;
         $vehiculo->marca_id = $request->marca_id;
         $vehiculo->placas = $request->placas;
-        $vehiculo->num_poliza_seg = $request->num_poliza_seg;
+        $vehiculo->poliza_id = $request->poliza_id;
         $vehiculo->km_recorridos = $request->km_recorridos;
         $vehiculo->categoria_vehiculo_id = $request->categoria_vehiculo_id;
         $vehiculo->color = $request->color;

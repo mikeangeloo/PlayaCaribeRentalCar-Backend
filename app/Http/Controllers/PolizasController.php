@@ -72,6 +72,7 @@ class PolizasController extends Controller
                 DB::commit();
                 return response()->json([
                     'ok' => true,
+                    'message' => 'Pólzia guardada correctamente.',
                     'data' => [
                         'poliza_id' => $poliza->id,
                         'no_poliza' => $poliza->no_poliza
