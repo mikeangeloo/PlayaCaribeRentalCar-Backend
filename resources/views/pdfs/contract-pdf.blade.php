@@ -74,7 +74,7 @@
         <table style="width: 100%;">
             <th>
             <td style="width: 50%;">
-                <img src="{{ 'assets/img/PDF-Logo.png' }}">
+                <img style="width: 300px" src="{{ 'assets/img/Price-Logo.png' }}">
             </td>
             <td style="width: 20%; vertical-align:middle">
                 <p style="font-size:14px;">
@@ -693,7 +693,7 @@
         <table style="width: 100%;">
             <th>
             <td style="width: 50%;">
-                <img src="{{ 'assets/img/PDF-Logo.png' }}">
+                <img style="width: 300px" src="{{ 'assets/img/Price-Logo.png' }}">
             </td>
             <td style="width: 50%; vertical-align:middle">
                 <p style="font-size:14px;">
@@ -849,7 +849,7 @@
          <table style="width: 100%;">
             <th>
                 <td style="width: 50%;">
-                    <img src="{{ 'assets/img/PDF-Logo.png' }}">
+                    <img style="width: 300px" src="{{ 'assets/img/Price-Logo.png' }}">
                 </td>
                 <td style="width: 50%; vertical-align:middle">
                     <p style="font-size:14px;">

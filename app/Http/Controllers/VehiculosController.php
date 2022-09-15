@@ -397,6 +397,10 @@ class VehiculosController extends Controller
             }
         }
 
+        if ($request->has('estatus')) {
+            $query->where('estatus', $request->estatus);
+        }
+
         // if ($request->has('tarifa_categoria_id')) {
         //     $query->where('tarifa_categoria_id', '=', $request->tarifa_categoria_id);
         // }

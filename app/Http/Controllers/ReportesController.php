@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CobranzaStatusEnum;
+use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
 use App\Models\Contrato;
 use App\Models\Vehiculos;
@@ -29,10 +31,23 @@ class ReportesController extends Controller
     }
 
     public function getExedenteKilometrajeGasolinaReport(Request $request) {
-        $contratos = Contrato::with(
+        $contratos = Contrato::with([
             'vehiculo'
-            ,'usuario',
-            )->whereIn('estatus', [2,3])->orderBy('id', 'ASC')->get();
+            ,'usuario'
+            ])->whereHas('vehiculo')
+            ->whereIn('estatus', [0,2,3])->orderBy('id', 'ASC')->get();
+
+        for ($i = 0; $i < count($contratos); $i++) {
+            if (is_null($contratos[$i]->vehiculo->km_final)) {
+                $contratos[$i]->vehiculo->km_final = $contratos[$i]->vehiculo->km_recorridos;
+            }
+            if (is_null($contratos[$i]->km_final)) {
+                $contratos[$i]->km_final = $contratos[$i]->km_inicial;
+            }
+            if(is_null($contratos[$i]->cant_combustible_retorno)) {
+                $contratos[$i]->cant_combustible_retorno = $contratos[$i]->cant_combustible_salida;
+            }
+        }
 
         return response()->json([
             'ok' => true,

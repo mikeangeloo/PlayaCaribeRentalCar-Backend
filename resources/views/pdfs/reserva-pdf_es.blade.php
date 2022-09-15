@@ -14,6 +14,7 @@
 
     * {
         font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
     }
 
     .policy-console {
@@ -43,7 +44,7 @@
     .x {
         text-decoration-style: solid;
         font-weight: bold;
-        font-size: 13px;
+        font-size: 11px;
     }
     .triangulo {
         margin: 0;
@@ -53,7 +54,7 @@
         border: 0 solid transparent;
         border-right-width: 7px;
         border-left-width: 7px;
-        border-bottom: 13px solid black;
+        border-bottom: 11px solid black;
     }
 
 </style>
@@ -65,7 +66,7 @@
         <table style="width: 100%;">
             <th>
             <td style="width: 40%;">
-                <img style="width: 300px" src="{{ 'assets/img/Price-Logo.png' }}">
+                <img style="width: 200px" src="{{ 'assets/img/Price-Logo.png' }}">
             </td>
             <td style="width: 70%; text-align:right">
                 <p >
@@ -144,13 +145,13 @@
             <div style="display: table-row">
                 <div style="display: table-cell; ">
                     @if ($contrato->con_descuento != null || $contrato->con_iva == 1 )
-                        <p style="font-size:16px; text-align: right"> <strong>Subtotal</strong> $ {{number_format(intval($contrato->subtotal))}} MXN</p>
+                        <p style="font-size:14px; text-align: right"> <strong>Subtotal</strong> $ {{number_format(intval($contrato->subtotal))}} MXN</p>
                     @endif
                     @if ($contrato->con_descuento != null)
-                       <p style="font-size:16px; text-align: right"> <strong>Descuento</strong> $ {{number_format($contrato->cobranza_calc[1]["amount"])}} MXN</p>
+                       <p style="font-size:14px; text-align: right"> <strong>Descuento</strong> $ {{number_format($contrato->cobranza_calc[1]["amount"])}} MXN</p>
                     @endif
                     @if ( $contrato->con_iva == 1 )
-                        <p style="font-size:16px; text-align: right"> <strong>IVA</strong> $ {{number_format(intval($contrato->iva_monto))}} MXN</p>
+                        <p style="font-size:14px; text-align: right"> <strong>IVA</strong> $ {{number_format(intval($contrato->iva_monto))}} MXN</p>
                     @endif
                 </div>
             </div>
@@ -163,7 +164,7 @@
         <br>
         <div>
             <div style="width: 100%;">
-                <p style="font-size: 16px; font-weight: bold">DESCRIPCION DE CARGOS: </p>
+                <p style="font-size: 14px; font-weight: bold">DESCRIPCION DE CARGOS: </p>
             </div>
             <div style="width: 100%;">
                 @foreach ($contrato->cobranza_reserva as $cobranza)
