@@ -10,6 +10,40 @@ use Illuminate\Support\Facades\Validator;
 
 class CobranzaController extends Controller
 {
+
+    public function getCobranza(Request $request) {
+        $validate = Validator::make($request->all(), [
+            'contrato_id' => 'required|exists:contratos,id',
+            'cliente_id' => 'required|exists:clientes,id',
+            'tipo' => 'required|numeric'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'ok' => false,
+                'errors' => $validate->errors()->all()
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $cobro = Cobranza::with(['tarjeta'])
+                    ->where('contrato_id', $request->contrato_id)
+                    ->where('cliente_id', $request->cliente_id)
+                    ->where('tipo', 1)
+                    ->where('estatus', CobranzaStatusEnum::COBRADO)->get();
+
+        $total = 0;
+        for($i = 0; $i < count($cobro); $i++) {
+            $total = $total + $cobro[$i]->monto;
+        }
+
+
+        return response()->json([
+            'ok' => true,
+            'data' => $cobro,
+            'total' => $total
+        ], JsonResponse::OK);
+    }
+
     public function cancel(Request $request) {
         $validate = Validator::make($request->all(), [
             'cobranza_id' => 'required|exists:cobranza,id'

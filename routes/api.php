@@ -126,6 +126,7 @@ Route::prefix('dash')->group(function () {
 
         //region COBRANZA
         Route::post('cobranza/cancel', 'CobranzaController@cancel');
+        Route::post('cobranza/get-cobranza', 'CobranzaController@getCobranza');
         //endregion
 
 
