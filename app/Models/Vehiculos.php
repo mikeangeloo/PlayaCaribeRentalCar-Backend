@@ -37,6 +37,10 @@ class Vehiculos extends Model
         return $this->hasOne(Contrato::class, 'vehiculo_id', 'id')->where('estatus','2')->with('cliente','usuario');
     }
 
+    public function poliza() {
+        return $this->belongsTo(Polizas::class, 'poliza_id','id');
+    }
+
     public static function validateBeforeSave($request, $isUpdate = null) {
         $validate = Validator::make($request, [
             'modelo' => 'required|string|max:100',

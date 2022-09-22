@@ -55,4 +55,34 @@ class ReportesController extends Controller
         ], JsonResponse::OK);
     }
 
+    public function getVehiculostWithPolizas(Request $request) {
+        $vehiculos = Vehiculos::where('activo', true)->WhereNotNull('poliza_id')->orderBy('id', 'ASC')->get();
+        $vehiculos->load('poliza');
+
+
+        // $_vehiculos = [];
+
+        // for ($i = 0; $i < count($vehiculos); $i++) {
+        //     if(isset($vehiculos[$i]->poliza)) {
+        //         array_push($_vehiculos, [
+        //             'id' => $vehiculos[$i]->id,
+        //             'nombre' => $vehiculos[$i]->modelo,
+        //             'placas' => $vehiculos[$i]->placas,
+        //             'aseguradora' => $vehiculos[$i]->poliza->aseguradora,
+        //             'no_poliza' => $vehiculos[$i]->poliza->no_poliza,
+        //             'tipo_poliza' => $vehiculos[$i]->poliza->tipo_poliza,
+        //             'tel_contacto' => $vehiculos[$i]->poliza->tel_contacto,
+        //             'titular' => $vehiculos[$i]->poliza->titular,
+        //             'desde' => $vehiculos[$i]->poliza->fecha_inicio,
+        //             'hasta' => $vehiculos[$i]->poliza->fecha_fin,
+        //         ]);
+        //     }
+
+        // }
+
+        return response()->json([
+            'ok' => true,
+            'vehiculos' => $vehiculos,
+        ], JsonResponse::OK);
+    }
 }
