@@ -29,14 +29,16 @@ class CobranzaController extends Controller
         $cobroQuery = Cobranza::with(['tarjeta'])
                     ->where('contrato_id', $request->contrato_id)
                     ->where('cliente_id', $request->cliente_id)
-                    ->where('tipo', 1)
+                    //->where('tipo', 1)
                     ->where('estatus', $request->estatus);
 
-        if ($request->has('cobranza_seccion')) {
-            $cobroQuery->where('cobranza_seccion', $request->cobranza_seccion);
-        }
+        // if ($request->has('cobranza_seccion')) {
+        //     $cobroQuery->where('cobranza_seccion', $request->cobranza_seccion);
+        // }
+
 
         $cobro = $cobroQuery->get();
+        $cobro->load('cobro_depositos');
 
         $total = 0;
         for($i = 0; $i < count($cobro); $i++) {

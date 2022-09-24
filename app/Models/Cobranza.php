@@ -15,6 +15,10 @@ class Cobranza extends Model
         return $this->hasOne(Tarjetas::class, 'id', 'tarjeta_id')->select('id', 'c_type', 'c_charge_method', 'c_cn1', 'c_cn4', 'c_month', 'c_year');
     }
 
+    public function cobro_depositos() {
+        return $this->hasMany(Cobranza::class, 'id', 'cobranza_id');
+    }
+
     public static function validateBeforeSave($request) {
         $validate = Validator::make($request, [
             'contrato_id' => 'required|exists:contratos,id',

@@ -351,8 +351,8 @@ class ContratoController extends Controller
                     $cobranza->fecha_reg = Carbon::now();
                 }
 
-                if($cobranza->tipo === CobranzaTipoEnum::PAGODEPOSITO && $request->has('cobranza_id')) {
-                    $cobranza->cobranza_id = $request->id;
+                if($cobranza->tipo === CobranzaTipoEnum::PAGODEPOSITO && $request->has('cobranzaAuth_id')) {
+                    $cobranza->cobranza_id = $request->cobranzaAuth_id;
                 }
 
                 if ($cobranza->save() === false) {
