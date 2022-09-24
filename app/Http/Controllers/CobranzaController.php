@@ -15,7 +15,8 @@ class CobranzaController extends Controller
         $validate = Validator::make($request->all(), [
             'contrato_id' => 'required|exists:contratos,id',
             'cliente_id' => 'required|exists:clientes,id',
-            'tipo' => 'required|numeric'
+            'tipo' => 'required|numeric',
+            'estatus' => 'required|numeric'
         ]);
 
         if ($validate->fails()) {
@@ -25,11 +26,17 @@ class CobranzaController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $cobro = Cobranza::with(['tarjeta'])
+        $cobroQuery = Cobranza::with(['tarjeta'])
                     ->where('contrato_id', $request->contrato_id)
                     ->where('cliente_id', $request->cliente_id)
                     ->where('tipo', 1)
-                    ->where('estatus', CobranzaStatusEnum::COBRADO)->get();
+                    ->where('estatus', $request->estatus);
+
+        if ($request->has('cobranza_seccion')) {
+            $cobroQuery->where('cobranza_seccion', $request->cobranza_seccion);
+        }
+
+        $cobro = $cobroQuery->get();
 
         $total = 0;
         for($i = 0; $i < count($cobro); $i++) {
