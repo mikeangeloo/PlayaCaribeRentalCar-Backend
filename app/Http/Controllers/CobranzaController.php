@@ -29,27 +29,30 @@ class CobranzaController extends Controller
         $cobroQuery = Cobranza::with(['tarjeta'])
                     ->where('contrato_id', $request->contrato_id)
                     ->where('cliente_id', $request->cliente_id)
-                    //->where('tipo', 1)
+                    ->where('tipo', $request->tipo)
                     ->where('estatus', $request->estatus);
 
-        // if ($request->has('cobranza_seccion')) {
-        //     $cobroQuery->where('cobranza_seccion', $request->cobranza_seccion);
-        // }
-
+        if ($request->has('cobranza_seccion')) {
+            $cobroQuery->where('cobranza_seccion', $request->cobranza_seccion);
+        }
 
         $cobro = $cobroQuery->get();
         $cobro->load('cobro_depositos');
 
-        $total = 0;
+        $totalDeposito = 0;
+        $totalDepositoCobrado = 0;
         for($i = 0; $i < count($cobro); $i++) {
-            $total = $total + $cobro[$i]->monto;
+            $totalDeposito = $totalDeposito + $cobro[$i]->monto;
+            for ($j = 0; $j < count($cobro[$i]->cobro_depositos); $j++) {
+                $totalDepositoCobrado = $totalDepositoCobrado + $cobro[$i]->cobro_depositos[$j]->monto;
+            }
         }
-
 
         return response()->json([
             'ok' => true,
-            'data' => $cobro,
-            'total' => $total
+            'totalDeposito' => $totalDeposito,
+            'totalDepositoCobrado' => $totalDepositoCobrado,
+            'data' => $cobro
         ], JsonResponse::OK);
     }
 

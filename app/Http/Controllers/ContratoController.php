@@ -328,6 +328,10 @@ class ContratoController extends Controller
                     $cobranza = Cobranza::where('id', $request->cobranza_id)->first();
                 }
 
+                if ($request->has('cobroDeposito_id') && isset($request->cobroDeposito_id)) {
+                    $cobranza = Cobranza::where('id', $request->cobroDeposito_id)->first();
+                }
+
                 $cobranza->contrato_id = $request->contrato_id;
                 $cobranza->tarjeta_id = $request->tarjeta_id;
                 $cobranza->cliente_id = $request->cliente_id;

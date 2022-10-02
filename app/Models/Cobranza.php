@@ -16,7 +16,7 @@ class Cobranza extends Model
     }
 
     public function cobro_depositos() {
-        return $this->hasMany(Cobranza::class, 'id', 'cobranza_id');
+        return $this->hasMany(Cobranza::class, 'cobranza_id', 'id');
     }
 
     public static function validateBeforeSave($request) {
