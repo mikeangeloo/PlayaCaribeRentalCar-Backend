@@ -15,7 +15,8 @@ class CobranzaController extends Controller
         $validate = Validator::make($request->all(), [
             'contrato_id' => 'required|exists:contratos,id',
             'cliente_id' => 'required|exists:clientes,id',
-            'tipo' => 'required|numeric'
+            'tipo' => 'required|numeric',
+            'estatus' => 'required|numeric'
         ]);
 
         if ($validate->fails()) {
@@ -25,22 +26,33 @@ class CobranzaController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $cobro = Cobranza::with(['tarjeta'])
+        $cobroQuery = Cobranza::with(['tarjeta'])
                     ->where('contrato_id', $request->contrato_id)
                     ->where('cliente_id', $request->cliente_id)
-                    ->where('tipo', 1)
-                    ->where('estatus', CobranzaStatusEnum::COBRADO)->get();
+                    ->where('tipo', $request->tipo)
+                    ->where('estatus', $request->estatus);
 
-        $total = 0;
-        for($i = 0; $i < count($cobro); $i++) {
-            $total = $total + $cobro[$i]->monto;
+        if ($request->has('cobranza_seccion')) {
+            $cobroQuery->where('cobranza_seccion', $request->cobranza_seccion);
         }
 
+        $cobro = $cobroQuery->get();
+        $cobro->load('cobro_depositos');
+
+        $totalDeposito = 0;
+        $totalDepositoCobrado = 0;
+        for($i = 0; $i < count($cobro); $i++) {
+            $totalDeposito = $totalDeposito + $cobro[$i]->monto;
+            for ($j = 0; $j < count($cobro[$i]->cobro_depositos); $j++) {
+                $totalDepositoCobrado = $totalDepositoCobrado + $cobro[$i]->cobro_depositos[$j]->monto;
+            }
+        }
 
         return response()->json([
             'ok' => true,
-            'data' => $cobro,
-            'total' => $total
+            'totalDeposito' => $totalDeposito,
+            'totalDepositoCobrado' => $totalDepositoCobrado,
+            'data' => $cobro
         ], JsonResponse::OK);
     }
 

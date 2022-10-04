@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\CobranzaStatusEnum;
+use App\Enums\CobranzaTipoEnum;
 use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
 use App\Enums\VehiculoStatusEnum;
@@ -327,6 +328,10 @@ class ContratoController extends Controller
                     $cobranza = Cobranza::where('id', $request->cobranza_id)->first();
                 }
 
+                if ($request->has('cobroDeposito_id') && isset($request->cobroDeposito_id)) {
+                    $cobranza = Cobranza::where('id', $request->cobroDeposito_id)->first();
+                }
+
                 $cobranza->contrato_id = $request->contrato_id;
                 $cobranza->tarjeta_id = $request->tarjeta_id;
                 $cobranza->cliente_id = $request->cliente_id;
@@ -348,6 +353,10 @@ class ContratoController extends Controller
 
                 if (!$cobranza->fecha_reg) {
                     $cobranza->fecha_reg = Carbon::now();
+                }
+
+                if($cobranza->tipo === CobranzaTipoEnum::PAGODEPOSITO && $request->has('cobranzaAuth_id')) {
+                    $cobranza->cobranza_id = $request->cobranzaAuth_id;
                 }
 
                 if ($cobranza->save() === false) {
