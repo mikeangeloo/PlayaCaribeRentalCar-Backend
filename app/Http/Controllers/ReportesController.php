@@ -9,6 +9,7 @@ use App\Enums\JsonResponse;
 use App\Models\Contrato;
 use App\Models\Vehiculos;
 use GrahamCampbell\ResultType\Success;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -128,6 +129,71 @@ class ReportesController extends Controller
             $contratos[$i]->total_final = $contratos[$i]->total_salida + $contratos[$i]->total_retorno;
             $totalCobrado += $contratos[$i]->total_final;
         }
+
+        return response()->json([
+            'ok' => true,
+            'total_cobrado' => $totalCobrado,
+            'data' => $contratos
+        ], JsonResponse::OK);
+    }
+
+    public function _rentasPorVehiculo(Request $request) {
+        $rangoFechas = 'Historico';
+        if ($request->has('rango_fechas')) {
+            $rangoFechas = $request->rango_fechas;
+        }
+        $vehiculosQ = Vehiculos::select('id','modelo','modelo_ano','placas','color')
+        ->with(
+            [
+                'contratos' => function ($query) {
+                    $query->where('estatus', ContratoStatusEnum::CERRADO)->select('id','created_at','num_contrato','vehiculo_id','estatus','total','total_retorno', 'ub_salida_id');
+                },
+                'contratos.salida:id,alias'
+            ]
+        );
+        $vehiculos = $vehiculosQ
+        ->withCount(
+            [
+                'contratos as total_cobrado' => function($query) {
+                    $query->select(DB::raw("COALESCE(SUM(total), 0) + COALESCE(SUM(total_retorno), 0) as total_sales"))->groupBy('vehiculo_id');
+                }
+            ]
+        )->get();
+
+        $totalCobrado = 0;
+
+        for($i = 0; $i < count($vehiculos); $i++) {
+            $vehiculos[$i]->rango_fechas = $rangoFechas;
+            $totalCobrado += $vehiculos[$i]->total_cobrado;
+        }
+
+
+        return response()->json([
+            'ok' => true,
+            'total_cobrado' => $totalCobrado,
+            'data' => $vehiculos
+        ], JsonResponse::OK);
+    }
+
+    public function rentasPorVehiculo(Request $request) {
+        $rangoFechas = 'Historico';
+        if ($request->has('rango_fechas')) {
+            $rangoFechas = $request->rango_fechas;
+        }
+        $contratoQ =  Contrato::select('id', 'created_at', 'num_contrato', 'ub_salida_id', 'vehiculo_id', 'user_create_id', 'user_close_id', 'total as total_salida', 'total_retorno')
+                     ->with(['salida:id,alias','vehiculo:id,modelo,modelo_ano,placas,color',  'usuario:id,username,nombre', 'usuario_close:id,username,nombre'])
+                     ->where('estatus', ContratoStatusEnum::CERRADO)
+                     ->orderBy('created_at', 'DESC');
+        $contratos = $contratoQ->get();
+
+        $totalCobrado = 0;
+
+        for($i = 0; $i < count($contratos); $i++) {
+            $contratos[$i]->rango_fechas = $rangoFechas;
+            $contratos[$i]->total_cobrado = $contratos[$i]->total_salida + $contratos[$i]->total_retorno;
+            $totalCobrado += $contratos[$i]->total_cobrado;
+        }
+
 
         return response()->json([
             'ok' => true,

@@ -37,6 +37,10 @@ class Vehiculos extends Model
         return $this->hasOne(Contrato::class, 'vehiculo_id', 'id')->where('estatus','2')->with('cliente','usuario');
     }
 
+    public function contratos() {
+        return $this->hasMany(Contrato::class, 'vehiculo_id', 'id');
+    }
+
     public function poliza() {
         return $this->belongsTo(Polizas::class, 'poliza_id','id');
     }

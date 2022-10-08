@@ -80,6 +80,7 @@ Route::prefix('dash')->group(function () {
         Route::get('reportes/exedente-kilometraje-gasolina', 'ReportesController@getExedenteKilometrajeGasolinaReport');
         Route::get('reportes/polizas-seguros', 'ReportesController@getVehiculostWithPolizas');
         Route::get('reportes/detalle-pagos', 'ReportesController@detallePagos');
+        Route::get('reportes/rentas-por-vehiculo', 'ReportesController@rentasPorVehiculo');
         //endregion
 
         //region CONTROL ACCESO
