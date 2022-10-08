@@ -367,6 +367,7 @@ class ContratoController extends Controller
                     ], JsonResponse::BAD_REQUEST);
                 }
                 $contrato->estatus = ContratoStatusEnum::CERRADO;
+                $contrato->user_close_id = $user->id;
                 $contrato->vehiculo()->update(['estatus' => VehiculoStatusEnum::DISPONIBLE]);
              break;
         }
@@ -638,6 +639,7 @@ class ContratoController extends Controller
 
     public function cancelContract(Request $request, $id) {
         //$validStatus = [ContratoStatusEnum::BORRADOR];
+        $user = $request->user;
         $getContract = Contrato::where('id', $id)->first();
         $msg = 'Contrato';
 
@@ -663,6 +665,7 @@ class ContratoController extends Controller
             }
 
             $getContract->estatus = ContratoStatusEnum::CANCELADO;
+            $getContract->user_close_id = $user->id;
             if ($getContract->save()) {
                 return response()->json([
                     'ok' => true,

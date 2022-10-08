@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Enums\CobranzaStatusEnum;
+use App\Enums\CobranzaTipoEnum;
 use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
 use App\Models\Contrato;
 use App\Models\Vehiculos;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportesController extends Controller
 {
@@ -83,6 +85,54 @@ class ReportesController extends Controller
         return response()->json([
             'ok' => true,
             'vehiculos' => $vehiculos,
+        ], JsonResponse::OK);
+    }
+
+    public function detallePagos(Request $request) {
+        $contratosQ = Contrato::select('id', 'created_at', 'num_contrato', 'ub_salida_id', 'vehiculo_id', 'user_create_id', 'user_close_id', 'total as total_salida', 'total_retorno')
+                     ->with(['salida:id,alias','vehiculo:id,modelo,modelo_ano,placas,color',  'usuario:id,username,nombre', 'usuario_close:id,username,nombre'])
+                     ->where('estatus', ContratoStatusEnum::CERRADO)
+                     ->orderBy('created_at', 'DESC');
+        $contratos = $contratosQ->withCount(
+            [
+                'cobranza as cobranza_tarjeta_mxn' => function($query) {
+                    $query->select(DB::raw("SUM(monto) as total"))->where('tipo', CobranzaTipoEnum::PAGOTARJETA)->where('moneda', 'MXN');
+                },
+                'cobranza as cobranza_tarjeta_usd' => function($query) {
+                    $query->select(DB::raw("SUM(monto) as total"))->where('tipo', CobranzaTipoEnum::PAGOTARJETA)->where('moneda', 'USD');
+                },
+                'cobranza as cobranza_efectivo_mxn' => function($query) {
+                    $query->select(DB::raw("SUM(monto) as total"))->where('tipo', CobranzaTipoEnum::PAGOEFECTIVO)->where('moneda', 'MXN');
+                },
+                'cobranza as cobranza_efectivo_usd' => function($query) {
+                    $query->select(DB::raw("SUM(monto) as total"))->where('tipo', CobranzaTipoEnum::PAGOEFECTIVO)->where('moneda', 'USD');
+                },
+                'cobranza as cobranza_pre_auth_mxn' => function($query) {
+                    $query->select(DB::raw("SUM(monto) as total"))->where('tipo', CobranzaTipoEnum::PREAUTORIZACION)->where('moneda', 'MXN');
+                },
+                'cobranza as cobranza_pre_auth_usd' => function($query) {
+                    $query->select(DB::raw("SUM(monto) as total"))->where('tipo', CobranzaTipoEnum::PREAUTORIZACION)->where('moneda', 'USD');
+                },
+                'cobranza as cobranza_deposito_mxn' => function($query) {
+                    $query->select(DB::raw("SUM(monto) as total"))->where('tipo', CobranzaTipoEnum::PAGODEPOSITO)->where('moneda', 'MXN');
+                },
+                'cobranza as cobranza_deposito_usd' => function($query) {
+                    $query->select(DB::raw("SUM(monto) as total"))->where('tipo', CobranzaTipoEnum::PAGODEPOSITO)->where('moneda', 'USD');
+                }
+            ]
+        )->get();
+
+        $totalCobrado = 0;
+
+        for($i = 0; $i < count($contratos); $i++) {
+            $contratos[$i]->total_final = $contratos[$i]->total_salida + $contratos[$i]->total_retorno;
+            $totalCobrado += $contratos[$i]->total_final;
+        }
+
+        return response()->json([
+            'ok' => true,
+            'total_cobrado' => $totalCobrado,
+            'data' => $contratos
         ], JsonResponse::OK);
     }
 }

@@ -32,6 +32,10 @@ class Contrato extends Model
         return $this->hasOne(User::class, 'id', 'user_create_id');
     }
 
+    public function usuario_close() {
+        return $this->hasOne(User::class, 'id', 'user_close_id');
+    }
+
 
     public function vehiculo() {
         return $this->hasOne(Vehiculos::class, 'id', 'vehiculo_id');
