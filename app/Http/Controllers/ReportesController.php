@@ -201,4 +201,82 @@ class ReportesController extends Controller
             'data' => $contratos
         ], JsonResponse::OK);
     }
+
+    public function rentasPorComisionista(Request $request) {
+        $fechaInicio = null;
+        $fechaFin = null;
+        $userSearch = null;
+
+
+        $contratoQ =  Contrato::select('id', 'created_at', 'fecha_retorno', 'num_contrato', 'ub_salida_id', 'vehiculo_id', 'total_dias', 'user_create_id', 'user_close_id', 'cliente_id', 'total as total_salida', 'total_retorno', 'modelo_id')
+                     ->with(['salida:id,alias','vehiculo:id,modelo,modelo_ano,placas,color',  'usuario:id,username,nombre', 'usuario_close:id,username,nombre', 'cliente:id,nombre', 'comisionista:id,nombre,apellidos,comisiones_pactadas'])
+                     ->where('estatus', ContratoStatusEnum::CERRADO)
+                     ->orderBy('created_at', 'DESC');
+
+        if ($request->has('rango_fechas')) {
+            if ($request->rango_fechas['start'] !== 'Invalid date') {
+                $fechaInicio = $request->rango_fechas['start'];
+
+                $contratoQ->whereDate('created_at', '>=', $fechaInicio);
+            }
+
+            if ($request->rango_fechas['end'] !== 'Invalid date') {
+                $fechaFin = $request->rango_fechas['end'];
+                $contratoQ->where('created_at', '>=', $fechaFin);
+            }
+        }
+        if ($request->has('usuario_data') && $request->usuario_data !== null) {
+            if ($request->usuario_data['tipo'] === 'usuarios') {
+                $contratoQ->usuario()->where('id', $request->usuario_data['user_id']);
+            }
+
+            if ($request->usuario_data['tipo'] === '"comisionistas"') {
+                $contratoQ->comisionista()->where('id', $request->usuario_data['user_id']);
+            }
+        }
+
+        $contratos = $contratoQ->get();
+        //dd($contratos);
+
+        $collection = collect($contratos);
+
+        $usersCollect = $collection->filter(function ($item) {
+            return $item->usuario != null;
+        })
+        ->unique(function ($item) {
+            return $item->usuario->id;
+        })->mapToGroups(function($item) {
+            return [$item->usuario];
+        });
+
+        $comisionistasCollect = $collection->filter(function ($item) {
+            return $item->comisionista != null;
+        })
+        ->unique(function ($item) {
+            return $item->comisionista->id;
+        })->mapToGroups(function($item) {
+            return [$item->comisionista];
+        });
+
+        // return response()->json([
+        //     'ok' => true,
+        //     'data' => $comisionistasCollect
+        // ], JsonResponse::OK);
+
+        $totalCobrado = 0;
+
+        for($i = 0; $i < count($contratos); $i++) {
+            $contratos[$i]->total_cobrado = $contratos[$i]->total_salida + $contratos[$i]->total_retorno;
+            $totalCobrado += $contratos[$i]->total_cobrado;
+        }
+
+
+        return response()->json([
+            'ok' => true,
+            'usuarios_sistema' => $usersCollect[0],
+            'comisionistas' => $comisionistasCollect[0],
+            'total_cobrado' => $totalCobrado,
+            'data' => $contratos
+        ], JsonResponse::OK);
+    }
 }
