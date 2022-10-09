@@ -91,8 +91,11 @@ class VehiculosController extends Controller
         $vehiculo->clase_id = $request->clase_id;
         $vehiculo->tarifa_categoria_id = $request->tarifa_categoria_id;
 
-        if ($request->has('prox_servicio')) {
-            $vehiculo->prox_servicio = $request->prox_servicio;
+        if ($request->has('prox_km_servicio')) {
+            $vehiculo->prox_km_servicio = $request->prox_km_servicio;
+        }
+        if ($request->has('fecha_prox_servicio')) {
+            $vehiculo->fecha_prox_servicio = $request->fecha_prox_servicio;
         }
         if ($request->has('cant_combustible')) {
             $vehiculo->cant_combustible = $request->cant_combustible;
@@ -240,8 +243,11 @@ class VehiculosController extends Controller
         $vehiculo->clase_id = $request->clase_id;
         $vehiculo->tarifa_categoria_id = $request->tarifa_categoria_id;
 
-        if ($request->has('prox_servicio')) {
-            $vehiculo->prox_servicio = $request->prox_servicio;
+        if ($request->has('prox_km_servicio')) {
+            $vehiculo->prox_km_servicio = $request->prox_km_servicio;
+        }
+        if ($request->has('fecha_prox_servicio')) {
+            $vehiculo->fecha_prox_servicio = $request->fecha_prox_servicio;
         }
         if ($request->has('cant_combustible')) {
             $vehiculo->cant_combustible = $request->cant_combustible;

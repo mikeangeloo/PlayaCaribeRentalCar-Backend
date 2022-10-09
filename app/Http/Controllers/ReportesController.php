@@ -25,7 +25,7 @@ class ReportesController extends Controller
     }
 
     public function getMantenimientoVehiculosReport(Request $request) {
-        $vehiculos = Vehiculos::select('id','modelo','placas','km_recorridos','prox_servicio','estatus')->where('activo', true)->orderBy('id', 'ASC')->get();
+        $vehiculos = Vehiculos::select('id','modelo','placas','km_recorridos','fecha_prox_servicio','prox_km_servicio','estatus')->where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
