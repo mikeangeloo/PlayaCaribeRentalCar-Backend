@@ -205,35 +205,54 @@ class ReportesController extends Controller
     public function rentasPorComisionista(Request $request) {
         $fechaInicio = null;
         $fechaFin = null;
+
         $userSearch = null;
+        $comisionistaSearch = null;
 
+        if ($request->has('search_users') && isset($request->search_users)) {
+            $userSearch = array_values(array_filter($request->search_users, function($item) {
+                if ($item['tipo'] === 'usuarios') {
+                    return $item;
+                }
+            }))[0] ?? null;
 
-        $contratoQ =  Contrato::select('id', 'created_at', 'fecha_retorno', 'num_contrato', 'ub_salida_id', 'vehiculo_id', 'total_dias', 'user_create_id', 'user_close_id', 'cliente_id', 'total as total_salida', 'total_retorno', 'modelo_id')
-                     ->with(['salida:id,alias','vehiculo:id,modelo,modelo_ano,placas,color',  'usuario:id,username,nombre', 'usuario_close:id,username,nombre', 'cliente:id,nombre', 'comisionista:id,nombre,apellidos,comisiones_pactadas'])
+            $comisionistaSearch = array_values(array_filter($request->search_users, function($item) {
+                if ($item['tipo'] === 'comisionistas') {
+                    return $item;
+                }
+            }))[0] ?? null;
+        }
+
+        $contratoQ =  Contrato::select('id', 'created_at', 'fecha_retorno', 'num_contrato', 'ub_salida_id', 'vehiculo_id', 'total_dias', 'user_create_id', 'user_close_id', 'cliente_id', 'total as total_salida', 'total_retorno', 'modelo_id', 'comision')
+                     ->with(['salida:id,alias','vehiculo:id,modelo,modelo_ano,placas,color',  'usuario:id,username,nombre,apellidos','usuario_close:id,username,nombre', 'cliente:id,nombre', 'comisionista:id,nombre,apellidos,comisiones_pactadas'])
                      ->where('estatus', ContratoStatusEnum::CERRADO)
                      ->orderBy('created_at', 'DESC');
 
-        if ($request->has('rango_fechas')) {
-            if ($request->rango_fechas['start'] !== 'Invalid date') {
+        if ($request->has('rango_fechas') && isset($request->rango_fechas)) {
+            if ($request->rango_fechas['start'] && $request->rango_fechas['start'] !== 'Invalid date') {
                 $fechaInicio = $request->rango_fechas['start'];
 
                 $contratoQ->whereDate('created_at', '>=', $fechaInicio);
             }
 
-            if ($request->rango_fechas['end'] !== 'Invalid date') {
+            if ($request->rango_fechas['end'] && $request->rango_fechas['end'] !== 'Invalid date') {
                 $fechaFin = $request->rango_fechas['end'];
-                $contratoQ->where('created_at', '>=', $fechaFin);
+                $contratoQ->whereDate('created_at', '<=', $fechaFin);
             }
         }
-        if ($request->has('usuario_data') && $request->usuario_data !== null) {
-            if ($request->usuario_data['tipo'] === 'usuarios') {
-                $contratoQ->usuario()->where('id', $request->usuario_data['user_id']);
-            }
 
-            if ($request->usuario_data['tipo'] === '"comisionistas"') {
-                $contratoQ->comisionista()->where('id', $request->usuario_data['user_id']);
+        if ($comisionistaSearch && count($comisionistaSearch) > 0) {
+            if ($comisionistaSearch['tipo'] === "comisionistas") {
+                $contratoQ->where('modelo_id', $comisionistaSearch['user_id']);
             }
         }
+
+        if ($userSearch && count($userSearch) > 0) {
+            if ($userSearch['tipo'] === "usuarios") {
+                $contratoQ->where('user_create_id', $userSearch['user_id']);
+            }
+        }
+
 
         $contratos = $contratoQ->get();
         //dd($contratos);
@@ -258,24 +277,22 @@ class ReportesController extends Controller
             return [$item->comisionista];
         });
 
-        // return response()->json([
-        //     'ok' => true,
-        //     'data' => $comisionistasCollect
-        // ], JsonResponse::OK);
-
         $totalCobrado = 0;
+        $totalComisiones = 0;
 
         for($i = 0; $i < count($contratos); $i++) {
             $contratos[$i]->total_cobrado = $contratos[$i]->total_salida + $contratos[$i]->total_retorno;
             $totalCobrado += $contratos[$i]->total_cobrado;
+            $totalComisiones += $contratos[$i]->comision;
         }
 
 
         return response()->json([
             'ok' => true,
-            'usuarios_sistema' => $usersCollect[0],
-            'comisionistas' => $comisionistasCollect[0],
+            'usuarios_sistema' => isset($usersCollect[0]) ? $usersCollect[0] : [],
+            'comisionistas' => isset($comisionistasCollect[0]) ? $comisionistasCollect[0] : [],
             'total_cobrado' => $totalCobrado,
+            'total_comisiones' => $totalComisiones,
             'data' => $contratos
         ], JsonResponse::OK);
     }
