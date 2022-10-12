@@ -289,7 +289,7 @@
                                     @foreach ($contrato->cobranza_retorno as $cobranza)
                                         <p>
                                             @if ($cobranza->tarjeta != null)
-                                                <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : ($cobranza->tipo == 4) ? "CARGO-DEPOSITIO" : "CARGO"}}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}}</span>
+                                                <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1 ? "PRE-AUT" : $cobranza->tipo == 4) ? "CARGO-DEPOSITIO" : "CARGO"}}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}}</span>
                                             @else
                                                 <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}} </span>
                                             @endif
