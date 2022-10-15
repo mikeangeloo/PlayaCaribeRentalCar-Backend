@@ -305,7 +305,17 @@ class ReportesController extends Controller
                         'id', 'created_at', 'fecha_salida', 'hora_salida', 'fecha_retorno', 'hora_retorno', 'num_contrato', 'num_reserva', 'ub_salida_id', 'ub_retorno_id', 'vehiculo_id',
                         'user_create_id', 'user_close_id','total as total_salida', 'total_retorno', 'cliente_id', 'km_inicial', 'km_final', 'cant_combustible_salida', 'cant_combustible_retorno','estatus'
                       )
-                     ->with(['salida:id,alias','retorno:id,alias', 'vehiculo:id,modelo,modelo_ano,placas,color', 'cliente:id,nombre,telefono,num_licencia,licencia_mes,licencia_ano,email,direccion', 'usuario:id,username,nombre', 'usuario_close:id,username,nombre'])
+                     ->with(
+                        [
+                            'salida:id,alias',
+                            'retorno:id,alias',
+                            'vehiculo:id,modelo,modelo_ano,placas,color',
+                            'cliente:id,nombre,telefono,num_licencia,licencia_mes,licencia_ano,email,direccion',
+                            'usuario:id,username,nombre',
+                            'usuario_close:id,username,nombre',
+                            'cobranza.cobro_depositos',
+                            'cobranza.tarjeta'
+                        ])
                      ->orderBy('created_at', 'DESC');
 
         if($request->has('estatus') && isset($request->estatus)) {
@@ -325,6 +335,8 @@ class ReportesController extends Controller
                 $contratosQ->whereDate('created_at', '<=', $fechaFin);
             }
         }
+
+        //$contratosQ->where('id', 26);
 
         $contratos = $contratosQ->withCount(
             [
@@ -363,8 +375,8 @@ class ReportesController extends Controller
                                             $contratos[$i]->cobranza_tarjeta_usd +
                                             $contratos[$i]->cobranza_efectivo_mxn +
                                             $contratos[$i]->cobranza_efectivo_usd +
-                                            $contratos[$i]->cobranza_pre_auth_mxn +
-                                            $contratos[$i]->cobranza_pre_auth_usd +
+                                            // $contratos[$i]->cobranza_pre_auth_mxn +
+                                            // $contratos[$i]->cobranza_pre_auth_usd +
                                             $contratos[$i]->cobranza_deposito_mxn +
                                             $contratos[$i]->cobranza_deposito_usd;
             $totalCobrado += $contratos[$i]->total_final;
