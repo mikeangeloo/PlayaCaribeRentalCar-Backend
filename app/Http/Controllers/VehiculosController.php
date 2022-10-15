@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
 use App\Enums\VehiculoStatusEnum;
 use App\Models\CambioEstatusVehiculo;
+use App\Models\Contrato;
 use App\Models\TarifasApollo;
 use App\Models\TarifasApolloConf;
 use App\Models\Vehiculos;
@@ -37,7 +39,7 @@ class VehiculosController extends Controller
      */
     public function listWithContract()
     {
-        $vehiculos = Vehiculos::where('activo', true)->orderBy('id', 'ASC')->get();
+        $vehiculos = Vehiculos::orderBy('id', 'ASC')->get();
         $vehiculos->load('marca', 'categoria', 'tarifa_categoria', 'clase','contrato');
 
         return response()->json([
@@ -337,6 +339,16 @@ class VehiculosController extends Controller
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $contratoEstatus = [ContratoStatusEnum::BORRADOR, ContratoStatusEnum::RENTADO];
+        $hasContratoOn = Contrato::where('vehiculo_id', $vehiculo->id)->whereIn('estatus', $contratoEstatus)->first();
+
+        if($hasContratoOn) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['No es posibile deshabilitar este vehículo esta ligado al contrato # '. $hasContratoOn->num_contrato]
             ], JsonResponse::BAD_REQUEST);
         }
 
