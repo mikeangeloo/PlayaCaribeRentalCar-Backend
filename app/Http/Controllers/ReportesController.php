@@ -336,8 +336,6 @@ class ReportesController extends Controller
             }
         }
 
-        //$contratosQ->where('id', 26);
-
         $contratos = $contratosQ->withCount(
             [
                 'cobranza as cobranza_tarjeta_mxn' => function($query) {
