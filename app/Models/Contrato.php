@@ -62,7 +62,8 @@ class Contrato extends Model
     }
 
     public function cobranza_retorno() {
-        return $this->hasMany(Cobranza::class, 'contrato_id', 'id')->where('estatus', 2)->where('cobranza_seccion', 'retorno');
+        return $this->hasMany(Cobranza::class, 'contrato_id', 'id')->where('estatus', 2)
+                    ->where('cobranza_seccion', 'retorno');
     }
 
     public function cobranza_reserva() {

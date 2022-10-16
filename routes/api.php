@@ -82,6 +82,7 @@ Route::prefix('dash')->group(function () {
         Route::get('reportes/detalle-pagos', 'ReportesController@detallePagos');
         Route::get('reportes/rentas-por-vehiculo', 'ReportesController@rentasPorVehiculo');
         Route::post('reportes/rentas-comisionistas', 'ReportesController@rentasPorComisionista');
+        Route::post('reportes/general', 'ReportesController@reporteGeneral');
         //endregion
 
         //region CONTROL ACCESO
