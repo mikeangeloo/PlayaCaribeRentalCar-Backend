@@ -365,7 +365,11 @@ class ReportesController extends Controller
             ]
         )->get();
 
-        $totalCobrado = 0;
+        $totalRentados = 0;
+        $totalCerrados = 0;
+        $totalCancelados = 0;
+        $totalReservados = 0;
+        $totalBorradores = 0;
 
         for($i = 0; $i < count($contratos); $i++) {
             $contratos[$i]->total_final = $contratos[$i]->total_salida + $contratos[$i]->total_retorno;
@@ -377,12 +381,35 @@ class ReportesController extends Controller
                                             // $contratos[$i]->cobranza_pre_auth_usd +
                                             $contratos[$i]->cobranza_deposito_mxn +
                                             $contratos[$i]->cobranza_deposito_usd;
-            $totalCobrado += $contratos[$i]->total_final;
+
+            if ($contratos[$i]->estatus === ContratoStatusEnum::RENTADO) {
+                $totalRentados += $contratos[$i]->total_final;
+            }
+
+            if ($contratos[$i]->estatus === ContratoStatusEnum::CERRADO) {
+                $totalCerrados += $contratos[$i]->total_final;
+            }
+
+            if ($contratos[$i]->estatus === ContratoStatusEnum::CANCELADO) {
+                $totalCancelados += $contratos[$i]->total_final;
+            }
+
+            if ($contratos[$i]->estatus === ContratoStatusEnum::RESERVA) {
+                $totalReservados += $contratos[$i]->total_final;
+            }
+
+            if ($contratos[$i]->estatus === ContratoStatusEnum::BORRADOR) {
+                $totalBorradores += $contratos[$i]->total_final;
+            }
         }
 
         return response()->json([
             'ok' => true,
-            'total_cobrado' => $totalCobrado,
+            'total_rentados' => $totalRentados,
+            'total_cerrados' => $totalCerrados,
+            'total_cancelados' => $totalCancelados,
+            'total_reservados' => $totalReservados,
+            'total_borradores' => $totalBorradores,
             'data' => $contratos
         ], JsonResponse::OK);
     }
