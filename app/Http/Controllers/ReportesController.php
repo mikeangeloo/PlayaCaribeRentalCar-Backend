@@ -336,6 +336,10 @@ class ReportesController extends Controller
             }
         }
 
+        if ($request->has('status') && isset($request->status) && count($request->status) > 0) {
+            $contratosQ->whereIn('estatus', $request->status);
+        }
+
         $contratos = $contratosQ->withCount(
             [
                 'cobranza as cobranza_tarjeta_mxn' => function($query) {
@@ -383,23 +387,23 @@ class ReportesController extends Controller
                                             $contratos[$i]->cobranza_deposito_usd;
 
             if ($contratos[$i]->estatus === ContratoStatusEnum::RENTADO) {
-                $totalRentados += $contratos[$i]->total_final;
+                $totalRentados += $contratos[$i]->total_cobrado;
             }
 
             if ($contratos[$i]->estatus === ContratoStatusEnum::CERRADO) {
-                $totalCerrados += $contratos[$i]->total_final;
+                $totalCerrados += $contratos[$i]->total_cobrado;
             }
 
             if ($contratos[$i]->estatus === ContratoStatusEnum::CANCELADO) {
-                $totalCancelados += $contratos[$i]->total_final;
+                $totalCancelados += $contratos[$i]->total_cobrado;
             }
 
             if ($contratos[$i]->estatus === ContratoStatusEnum::RESERVA) {
-                $totalReservados += $contratos[$i]->total_final;
+                $totalReservados += $contratos[$i]->total_cobrado;
             }
 
             if ($contratos[$i]->estatus === ContratoStatusEnum::BORRADOR) {
-                $totalBorradores += $contratos[$i]->total_final;
+                $totalBorradores += $contratos[$i]->total_cobrado;
             }
         }
 
