@@ -95,7 +95,7 @@ class CategoriasVehiculosController extends Controller
 
         $layout = null;
 
-        if($getCategoriaDoc->ok == true) {
+        if($getCategoriaDoc->ok == true && isset($getCategoriaDoc->data[0])) {
             $layout = $getCategoriaDoc->data[0];
         }
 

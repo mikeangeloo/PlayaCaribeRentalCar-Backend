@@ -282,7 +282,7 @@ class SessionController extends Controller
             $userId = $request->user->id;
 
             $userData = User::where('id', '=', $userId)
-            ->where('active', '=', true)
+            ->where('activo', '=', true)
             ->first();
         } else if ($request->audience === AudienceEnum::AGENTS) {
             return response()->json([
