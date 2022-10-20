@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
+use App\Models\Cobranza;
 use App\Models\Divisas;
 use App\Models\TiposCambio;
 use Illuminate\Http\Request;
@@ -56,7 +57,9 @@ class ConversionMonedaController extends Controller
         $validate = Validator::make($request->all(), [
             'id' => 'nullable|numeric|exists:tipos_cambio,id',
             'tipo_cambio' => 'required|numeric',
+            'divisa_base_id' => 'required|numeric|exists:divisas,id',
             'divisa_base' => 'required|string',
+            'divisa_conversion_id' => 'required|numeric|exists:divisas,id',
             'divisa_conversion' => 'required|string',
         ]);
 
@@ -68,7 +71,7 @@ class ConversionMonedaController extends Controller
         }
         $message = '';
 
-        if ($request->has('id')) {
+        if ($request->has('id') && $request->id > 0) {
             $tipoCambio = TiposCambio::where('id', $request->id)->first();
             $message = 'Tipo de cambio actualizado correctamente';
         } else {
@@ -78,8 +81,10 @@ class ConversionMonedaController extends Controller
 
 
         $tipoCambio->tipo_cambio = $request->tipo_cambio;
+        $tipoCambio->divisa_base_id = $request->divisa_base_id;
         $tipoCambio->divisa_base = $request->divisa_base;
-        $tipoCambio->divisa_base = $request->divisa_base;
+        $tipoCambio->divisa_conversion_id = $request->divisa_conversion_id;
+        $tipoCambio->divisa_conversion = $request->divisa_conversion;
 
         if ($tipoCambio->save()) {
             return response()->json([
@@ -103,5 +108,29 @@ class ConversionMonedaController extends Controller
             'ok' => true,
             'data' => $divisas,
         ], JsonResponse::OK);
+    }
+
+    public function deleteTipoCambio($id) {
+        $tipoCambio = TiposCambio::where('id', $id)->first();
+        $cobranza = Cobranza::where('tipo_cambio_id', $id)->first();
+
+        if ($cobranza) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Existen contratos relacionados a este tipo de cambio, no es posible borrar la configuración']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        if($tipoCambio->delete()) {
+            return response()->json([
+                'ok' => true,
+                'message' => 'Información eliminada correctamente'
+            ], JsonResponse::OK);
+        } else {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['Algo salio mal al momento de eliminar la información']
+            ], JsonResponse::BAD_REQUEST);
+        }
     }
 }

@@ -176,6 +176,7 @@ Route::prefix('dash')->group(function () {
               Route::get('tipo-cambio/all', 'ConversionMonedaController@getAllTiposCambio');
               Route::post('tipo-cambio/save-update', 'ConversionMonedaController@saveUpdate');
               Route::get('tipo-cambio/divisas', 'ConversionMonedaController@getDivisas');
+              Route::delete('tipo-cambio/{id}', 'ConversionMonedaController@deleteTipoCambio');
               //endregion
 
         //endregion
