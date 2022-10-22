@@ -19,14 +19,21 @@ class Cobranza extends Model
         return $this->hasMany(Cobranza::class, 'cobranza_id', 'id');
     }
 
+    public function tipo_cambio_usado() {
+        return $this->belongsTo(TiposCambio::class, 'tipo_cambio_id', 'id');
+    }
+
     public static function validateBeforeSave($request) {
         $validate = Validator::make($request, [
             'contrato_id' => 'required|exists:contratos,id',
             'cliente_id' => 'required|exists:clientes,id',
             'tarjeta_id' => 'nullable|exists:tarjetas,id',
             'fecha_cargo' => 'nullable',
+            'tipo_cambio_id' => 'nullable|numeric',
             'monto' => 'nullable|numeric',
+            'monto_cobrado' => 'nullable|numeric',
             'moneda' => 'required|string',
+            'moneda_cobrada' => 'required|string',
             'tipo' => 'required|numeric',
             'cobranza_seccion'  => 'required|string',
             'cod_banco' => 'nullable',

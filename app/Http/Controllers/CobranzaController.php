@@ -40,18 +40,25 @@ class CobranzaController extends Controller
         $cobro->load('cobro_depositos');
 
         $totalDeposito = 0;
+        $totalDepositoCapturado = 0;
         $totalDepositoCobrado = 0;
+        $totalDepositoCobradoCapturado = 0;
+
         for($i = 0; $i < count($cobro); $i++) {
             $totalDeposito = $totalDeposito + $cobro[$i]->monto;
+            $totalDepositoCapturado = $totalDepositoCapturado + $cobro[$i]->monto_cobrado;
             for ($j = 0; $j < count($cobro[$i]->cobro_depositos); $j++) {
                 $totalDepositoCobrado = $totalDepositoCobrado + $cobro[$i]->cobro_depositos[$j]->monto;
+                $totalDepositoCobradoCapturado = $totalDepositoCobradoCapturado + $cobro[$i]->cobro_depositos[$j]->monto_cobrado;
             }
         }
 
         return response()->json([
             'ok' => true,
             'totalDeposito' => $totalDeposito,
+            'totalDepositoCapturado' => $totalDepositoCapturado,
             'totalDepositoCobrado' => $totalDepositoCobrado,
+            'totalDepositoCobradoCapturado' => $totalDepositoCobradoCapturado,
             'data' => $cobro
         ], JsonResponse::OK);
     }

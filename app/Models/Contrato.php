@@ -193,12 +193,15 @@ class Contrato extends Model
     public static function setEtapasGuardadas($num_contrato) {
         $contract = Contrato::where('num_contrato', $num_contrato)
                     ->with(
-                        ['cobranza' => function($q) {
-                            $validCobranzaEstatus = [CobranzaStatusEnum::PROGRAMADO, CobranzaStatusEnum::COBRADO];
-                            $q->whereIn('estatus', $validCobranzaEstatus);
-                        },
-                        'cobranza.tarjeta'
-                        ])
+                            [
+                                'cobranza' => function($q) {
+                                    $validCobranzaEstatus = [CobranzaStatusEnum::PROGRAMADO, CobranzaStatusEnum::COBRADO];
+                                    $q->whereIn('estatus', $validCobranzaEstatus);
+                                },
+                            'cobranza.tarjeta',
+                            'cobranza.tipo_cambio_usado'
+                            ]
+                        )
                     ->first();
 
         if (!$contract) {

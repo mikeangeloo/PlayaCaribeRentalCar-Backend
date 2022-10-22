@@ -17,10 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 //region RUTAS GLOBALES
-Route::post('activate-usr-token', 'SessionController@activateUserByCode');
-Route::post('recovery-psw', 'SessionController@generateRecoveryPswToken');
-Route::post('review-recovery-token', 'SessionController@reviewToken');
-Route::post('change-pwd-token', 'SessionController@changePwdByToken');
+
 Route::get('contratos/pdf/{id}', 'ContratoController@viewReservaPDF');
 Route::get('test/pdf', 'ContratoController@viewReservaPDF');
 //endregion
@@ -103,6 +100,15 @@ Route::prefix('dash')->group(function () {
         Route::get('sucursales/enable/{id}', 'SucursalesController@enable');
         Route::get('sucursales/list', 'SucursalesController@getList');
         Route::resource('sucursales', 'SucursalesController');
+
+            //region SESION DE USUARIO
+            Route::post('change-password', 'SessionController@changePwd');
+            Route::post('change-pwd-token', 'SessionController@changePwdByToken');
+            Route::post('activate-usr-token', 'SessionController@activateUserByCode');
+            Route::post('recovery-psw', 'SessionController@generateRecoveryPswToken');
+            Route::post('review-recovery-token', 'SessionController@reviewToken');
+            //endregion
+
         //endregion
 
         //region HOTELES
@@ -137,7 +143,7 @@ Route::prefix('dash')->group(function () {
 
 
         //region CONFIGURACIÓN APP
-        Route::resource('tipos-tarifas', 'TiposTarifasController');
+            Route::resource('tipos-tarifas', 'TiposTarifasController');
 
             //region TARIFAS EXTRAS
             Route::get('tarifas-extras/all', 'TarifasExtrasController@getAll');
@@ -163,6 +169,14 @@ Route::prefix('dash')->group(function () {
               Route::get('tarifas-categorias/all', 'TarifasCategoriasController@getAll');
               Route::get('tarifas-categorias/enable/{id}', 'TarifasCategoriasController@enable');
               Route::resource('tarifas-categorias', 'TarifasCategoriasController');
+              //endregion
+
+              //region TIPO DE CAMBIO
+              Route::post('tipo-cambio', 'ConversionMonedaController@getTipoCambio');
+              Route::get('tipo-cambio/all', 'ConversionMonedaController@getAllTiposCambio');
+              Route::post('tipo-cambio/save-update', 'ConversionMonedaController@saveUpdate');
+              Route::get('tipo-cambio/divisas', 'ConversionMonedaController@getDivisas');
+              Route::delete('tipo-cambio/{id}', 'ConversionMonedaController@deleteTipoCambio');
               //endregion
 
         //endregion
