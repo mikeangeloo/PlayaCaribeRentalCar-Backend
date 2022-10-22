@@ -262,18 +262,18 @@
                                 @foreach ($contrato->cobranza_reserva as $cobranza)
                                     <p>
                                         @if ($cobranza->tarjeta != null)
-                                            <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}}</span> - RESERVA
+                                            <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }}  {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }}</span> - RESERVA
                                         @else
-                                            <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}} </span> - RESERVA
+                                            <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{ $cobranza->moneda_cobrada }} {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }}</span> - RESERVA
                                         @endif
                                     </p>
                                 @endforeach
                                 @foreach ($contrato->cobranza_salida as $cobranza)
                                     <p>
                                         @if ($cobranza->tarjeta != null)
-                                            <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}}</span>
+                                            <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }}  {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }}</span>
                                         @else
-                                            <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}} </span>
+                                            <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }} {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }}</span>
                                         @endif
                                     </p>
                                 @endforeach

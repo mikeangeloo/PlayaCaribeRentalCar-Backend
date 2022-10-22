@@ -19,6 +19,10 @@ class Cobranza extends Model
         return $this->hasMany(Cobranza::class, 'cobranza_id', 'id');
     }
 
+    public function tipo_cambio_usado() {
+        return $this->belongsTo(TiposCambio::class, 'tipo_cambio_id', 'id');
+    }
+
     public static function validateBeforeSave($request) {
         $validate = Validator::make($request, [
             'contrato_id' => 'required|exists:contratos,id',

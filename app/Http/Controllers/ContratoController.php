@@ -203,8 +203,12 @@ class ContratoController extends Controller
                     $cobranza->fecha_procesado = Carbon::now(); //TODO: por el momento en duro
                 }
 
-                if($request->has('tipo_cambio_id') && $request->tipo_cambio_id > 0) {
+                if($request->has('tipo_cambio_id')) {
                     $cobranza->tipo_cambio_id = $request->tipo_cambio_id;
+                }
+
+                if($request->has('tipo_cambio')) {
+                    $cobranza->tipo_cambio = $request->tipo_cambio;
                 }
 
 
