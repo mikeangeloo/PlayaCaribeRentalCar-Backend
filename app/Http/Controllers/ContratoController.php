@@ -351,11 +351,21 @@ class ContratoController extends Controller
                 }
                 $cobranza->cobranza_seccion = $request->cobranza_seccion;
                 $cobranza->monto = $request->monto;
+                $cobranza->monto_cobrado = $request->monto_cobrado;
                 $cobranza->moneda = $request->moneda;
+                $cobranza->moneda_cobrada = $request->moneda_cobrada;
                 $cobranza->tipo = $request->tipo;
                 $cobranza->estatus = CobranzaStatusEnum::COBRADO;
                 if (!$cobranza->fecha_procesado) {
                     $cobranza->fecha_procesado = Carbon::now(); //TODO: por el momento en duro
+                }
+
+                if($request->has('tipo_cambio_id')) {
+                    $cobranza->tipo_cambio_id = $request->tipo_cambio_id;
+                }
+
+                if($request->has('tipo_cambio')) {
+                    $cobranza->tipo_cambio = $request->tipo_cambio;
                 }
 
                 $cobranza->cod_banco = $request->cod_banco;
