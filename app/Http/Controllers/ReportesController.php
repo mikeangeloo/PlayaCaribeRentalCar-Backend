@@ -89,29 +89,30 @@ class ReportesController extends Controller
     }
 
     public function getVehiculostWithPolizas(Request $request) {
-        $vehiculos = Vehiculos::where('activo', true)->WhereNotNull('poliza_id')->orderBy('id', 'ASC')->get();
+        $fechaInicio = null;
+        $fechaFin = null;
+
+        $vehiculosQ = Vehiculos::where('activo', true)->WhereNotNull('poliza_id')->orderBy('id', 'ASC');
+
+        if ($request->has('rango_fechas') && isset($request->rango_fechas)) {
+            if ($request->rango_fechas['start'] && $request->rango_fechas['start'] !== 'Invalid date') {
+                $fechaInicio = $request->rango_fechas['start'];
+
+                $vehiculosQ->whereHas('poliza', function(Builder $query) use($fechaInicio) {
+                    $query->where('created_at', '>=', $fechaInicio);
+                });
+            }
+
+            if ($request->rango_fechas['end'] && $request->rango_fechas['end'] !== 'Invalid date') {
+                $fechaFin = $request->rango_fechas['end'];
+                $vehiculosQ->whereHas('poliza', function(Builder $query) use($fechaFin) {
+                    $query->where('created_at', '<=', $fechaFin);
+                });
+            }
+        }
+
+        $vehiculos = $vehiculosQ->get();
         $vehiculos->load('poliza');
-
-
-        // $_vehiculos = [];
-
-        // for ($i = 0; $i < count($vehiculos); $i++) {
-        //     if(isset($vehiculos[$i]->poliza)) {
-        //         array_push($_vehiculos, [
-        //             'id' => $vehiculos[$i]->id,
-        //             'nombre' => $vehiculos[$i]->modelo,
-        //             'placas' => $vehiculos[$i]->placas,
-        //             'aseguradora' => $vehiculos[$i]->poliza->aseguradora,
-        //             'no_poliza' => $vehiculos[$i]->poliza->no_poliza,
-        //             'tipo_poliza' => $vehiculos[$i]->poliza->tipo_poliza,
-        //             'tel_contacto' => $vehiculos[$i]->poliza->tel_contacto,
-        //             'titular' => $vehiculos[$i]->poliza->titular,
-        //             'desde' => $vehiculos[$i]->poliza->fecha_inicio,
-        //             'hasta' => $vehiculos[$i]->poliza->fecha_fin,
-        //         ]);
-        //     }
-
-        // }
 
         return response()->json([
             'ok' => true,
@@ -120,10 +121,26 @@ class ReportesController extends Controller
     }
 
     public function detallePagos(Request $request) {
+        $fechaInicio = null;
+        $fechaFin = null;
+
         $contratosQ = Contrato::select('id', 'created_at', 'num_contrato', 'ub_salida_id', 'vehiculo_id', 'user_create_id', 'user_close_id', 'total as total_salida', 'total_retorno')
                      ->with(['salida:id,alias','vehiculo:id,modelo,modelo_ano,placas,color',  'usuario:id,username,nombre', 'usuario_close:id,username,nombre'])
                      ->where('estatus', ContratoStatusEnum::CERRADO)
                      ->orderBy('created_at', 'DESC');
+
+        if ($request->has('rango_fechas') && isset($request->rango_fechas)) {
+            if ($request->rango_fechas['start'] && $request->rango_fechas['start'] !== 'Invalid date') {
+                $fechaInicio = $request->rango_fechas['start'];
+
+                $contratosQ->whereDate('created_at', '>=', $fechaInicio);
+            }
+
+            if ($request->rango_fechas['end'] && $request->rango_fechas['end'] !== 'Invalid date') {
+                $fechaFin = $request->rango_fechas['end'];
+                $contratosQ->whereDate('created_at', '<=', $fechaFin);
+            }
+        }
         $contratos = $contratosQ->withCount(
             [
                 'cobranza as cobranza_tarjeta_mxn' => function($query) {
@@ -206,6 +223,9 @@ class ReportesController extends Controller
     }
 
     public function rentasPorVehiculo(Request $request) {
+        $fechaInicio = null;
+        $fechaFin = null;
+
         $rangoFechas = 'Historico';
         if ($request->has('rango_fechas')) {
             $rangoFechas = $request->rango_fechas;
@@ -214,6 +234,26 @@ class ReportesController extends Controller
                      ->with(['salida:id,alias','vehiculo:id,modelo,modelo_ano,placas,color',  'usuario:id,username,nombre', 'usuario_close:id,username,nombre'])
                      ->where('estatus', ContratoStatusEnum::CERRADO)
                      ->orderBy('created_at', 'DESC');
+
+        if ($request->has('rango_fechas') && isset($request->rango_fechas)) {
+            if ($request->rango_fechas['start'] && $request->rango_fechas['start'] !== 'Invalid date') {
+                $fechaInicio = $request->rango_fechas['start'];
+
+                $contratoQ->whereDate('created_at', '>=', $fechaInicio);
+            }
+
+            if ($request->rango_fechas['end'] && $request->rango_fechas['end'] !== 'Invalid date') {
+                $fechaFin = $request->rango_fechas['end'];
+                $contratoQ->whereDate('created_at', '<=', $fechaFin);
+            }
+        }
+
+        if ($request->has('vehiculoId') && $request->vehiculoId > 0) {
+            $contratoQ->whereHas('vehiculo', function(Builder $query) use($request) {
+                $query->where('id', $request->vehiculoId);
+            });
+        }
+
         $contratos = $contratoQ->get();
 
         $totalCobrado = 0;

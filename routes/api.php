@@ -75,9 +75,9 @@ Route::prefix('dash')->group(function () {
         Route::get('reportes/estatus-vehiculos', 'ReportesController@getEstatusVehiculosReport');
         Route::get('reportes/mantenimiento-vehiculos', 'ReportesController@getMantenimientoVehiculosReport');
         Route::post('reportes/exedente-kilometraje-gasolina', 'ReportesController@getExedenteKilometrajeGasolinaReport');
-        Route::get('reportes/polizas-seguros', 'ReportesController@getVehiculostWithPolizas');
-        Route::get('reportes/detalle-pagos', 'ReportesController@detallePagos');
-        Route::get('reportes/rentas-por-vehiculo', 'ReportesController@rentasPorVehiculo');
+        Route::post('reportes/polizas-seguros', 'ReportesController@getVehiculostWithPolizas');
+        Route::post('reportes/detalle-pagos', 'ReportesController@detallePagos');
+        Route::post('reportes/rentas-por-vehiculo', 'ReportesController@rentasPorVehiculo');
         Route::post('reportes/rentas-comisionistas', 'ReportesController@rentasPorComisionista');
         Route::post('reportes/general', 'ReportesController@reporteGeneral');
         //endregion

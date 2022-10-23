@@ -637,12 +637,13 @@ class ContratoController extends Controller
             $data = [
                 'contrato'=>  $getContract
             ];
+
             if ($idioma === 'es') {
-                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a5','portrait');
+                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
             } else if ($idioma === 'en') {
-                $pdf = PDF::loadView('pdfs.reserva-pdf_en', $data)->setPaper('a5','portrait');
+                $pdf = PDF::loadView('pdfs.reserva-pdf_en', $data)->setPaper('letter','portrait');
             } else {
-                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a5','portrait');
+                $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
             }
 
 

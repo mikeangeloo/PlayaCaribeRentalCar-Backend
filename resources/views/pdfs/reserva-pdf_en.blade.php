@@ -59,7 +59,7 @@
 
 </style>
 
-<body style="width: 100%;">
+<body style="width: 100%; height: 10px;">
     <div  class="contrato" style="max-width: 100%;">
 
         <!-- HEADER -->
@@ -181,12 +181,7 @@
             <br>
         </div>
         <br>
-        <br>
-        <br>
-        <br>
         <p style="color:red; font-style:italic">The reservation is non-refundable. It is not possible to change the dates of the reservation. </p>
-
-
     </div>
 </body>
 </html>
