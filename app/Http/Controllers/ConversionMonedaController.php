@@ -13,7 +13,16 @@ class ConversionMonedaController extends Controller
 {
 
     public function getAllTiposCambio() {
-        $tiposCambio = TiposCambio::orderBy('id', 'ASC')->get();
+        $tiposCambio = TiposCambio::whereRaw('created_at IN (select MAX(created_at) FROM tipos_cambio GROUP BY divisa_base_id)')->get();
+
+        return response()->json([
+            'ok' => true,
+            'data' => $tiposCambio
+        ], JsonResponse::OK);
+    }
+
+    public function getAllHistory() {
+        $tiposCambio = TiposCambio::orderBy('id', 'DESC')->get();
 
         return response()->json([
             'ok' => true,
@@ -35,7 +44,7 @@ class ConversionMonedaController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $tipoCambioQ = TiposCambio::orderBy('id', 'DESC');
+        $tipoCambioQ = TiposCambio::whereRaw('created_at IN (select MAX(created_at) FROM tipos_cambio GROUP BY divisa_base_id)');
 
         if ($request->has('id')) {
             $tipoCambioQ->where('id', $request->id);
@@ -53,9 +62,10 @@ class ConversionMonedaController extends Controller
         ], JsonResponse::OK);
     }
 
-    public function saveUpdate(Request $request) {
+    public function save(Request $request) {
+        $user = $request->user;
+
         $validate = Validator::make($request->all(), [
-            'id' => 'nullable|numeric|exists:tipos_cambio,id',
             'tipo_cambio' => 'required|numeric',
             'divisa_base_id' => 'required|numeric|exists:divisas,id',
             'divisa_base' => 'required|string',
@@ -71,13 +81,8 @@ class ConversionMonedaController extends Controller
         }
         $message = '';
 
-        if ($request->has('id') && $request->id > 0) {
-            $tipoCambio = TiposCambio::where('id', $request->id)->first();
-            $message = 'Tipo de cambio actualizado correctamente';
-        } else {
-            $tipoCambio = new TiposCambio();
-            $message = 'Tipo de cambio creado correctamente';
-        }
+        $tipoCambio = new TiposCambio();
+        $message = 'Tipo de cambio guardado correctamente';
 
 
         $tipoCambio->tipo_cambio = $request->tipo_cambio;
@@ -85,6 +90,8 @@ class ConversionMonedaController extends Controller
         $tipoCambio->divisa_base = $request->divisa_base;
         $tipoCambio->divisa_conversion_id = $request->divisa_conversion_id;
         $tipoCambio->divisa_conversion = $request->divisa_conversion;
+        $tipoCambio->created_id = $user->id;
+        $tipoCambio->created_by = $user->username;
 
         if ($tipoCambio->save()) {
             return response()->json([

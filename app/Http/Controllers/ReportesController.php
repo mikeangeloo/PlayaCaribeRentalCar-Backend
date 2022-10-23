@@ -34,11 +34,41 @@ class ReportesController extends Controller
     }
 
     public function getExedenteKilometrajeGasolinaReport(Request $request) {
-        $contratos = Contrato::with([
+        $fechaInicio = null;
+        $fechaFin = null;
+
+        $contratosQ = Contrato::with([
             'vehiculo'
             ,'usuario'
             ])->whereHas('vehiculo')
-            ->whereIn('estatus', [0,2,3])->orderBy('id', 'ASC')->get();
+            ->whereIn('estatus', [0,2,3])->orderBy('id', 'ASC');
+
+        if ($request->has('rango_fechas') && isset($request->rango_fechas)) {
+            if ($request->rango_fechas['start'] && $request->rango_fechas['start'] !== 'Invalid date') {
+                $fechaInicio = $request->rango_fechas['start'];
+
+                $contratosQ->whereDate('created_at', '>=', $fechaInicio);
+            }
+
+            if ($request->rango_fechas['end'] && $request->rango_fechas['end'] !== 'Invalid date') {
+                $fechaFin = $request->rango_fechas['end'];
+                $contratosQ->whereDate('created_at', '<=', $fechaFin);
+            }
+        }
+
+        if ($request->has('vehiculoId') && $request->vehiculoId > 0) {
+            $contratosQ->whereHas('vehiculo', function(Builder $query) use($request) {
+                $query->where('id', $request->vehiculoId);
+            });
+        }
+
+        if ($request->has('num_contrato') && isset($request->num_contrato)) {
+            $contratosQ->where('num_contrato', $request->num_contrato)->orWhere('num_reserva', $request->num_contrato);
+        }
+
+
+
+        $contratos = $contratosQ->get();
 
         for ($i = 0; $i < count($contratos); $i++) {
             if (is_null($contratos[$i]->vehiculo->km_final)) {

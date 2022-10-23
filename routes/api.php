@@ -74,7 +74,7 @@ Route::prefix('dash')->group(function () {
         //region REPORTES
         Route::get('reportes/estatus-vehiculos', 'ReportesController@getEstatusVehiculosReport');
         Route::get('reportes/mantenimiento-vehiculos', 'ReportesController@getMantenimientoVehiculosReport');
-        Route::get('reportes/exedente-kilometraje-gasolina', 'ReportesController@getExedenteKilometrajeGasolinaReport');
+        Route::post('reportes/exedente-kilometraje-gasolina', 'ReportesController@getExedenteKilometrajeGasolinaReport');
         Route::get('reportes/polizas-seguros', 'ReportesController@getVehiculostWithPolizas');
         Route::get('reportes/detalle-pagos', 'ReportesController@detallePagos');
         Route::get('reportes/rentas-por-vehiculo', 'ReportesController@rentasPorVehiculo');
@@ -174,7 +174,8 @@ Route::prefix('dash')->group(function () {
               //region TIPO DE CAMBIO
               Route::post('tipo-cambio', 'ConversionMonedaController@getTipoCambio');
               Route::get('tipo-cambio/all', 'ConversionMonedaController@getAllTiposCambio');
-              Route::post('tipo-cambio/save-update', 'ConversionMonedaController@saveUpdate');
+              Route::get('tipo-cambio/all-history', 'ConversionMonedaController@getAllHistory');
+              Route::post('tipo-cambio/save', 'ConversionMonedaController@save');
               Route::get('tipo-cambio/divisas', 'ConversionMonedaController@getDivisas');
               Route::delete('tipo-cambio/{id}', 'ConversionMonedaController@deleteTipoCambio');
               //endregion
