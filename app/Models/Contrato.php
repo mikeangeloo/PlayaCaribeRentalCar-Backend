@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\CobranzaStatusEnum;
+use App\Enums\CobranzaTipoEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class Contrato extends Model
@@ -56,6 +58,14 @@ class Contrato extends Model
     public function cobranza() {
         return $this->hasMany(Cobranza::class, 'contrato_id', 'id')->where('estatus', 2);
     }
+
+    public function cobranza_tipo($tipo, $moneda) {
+        return $this->hasMany(Cobranza::class, 'contrato_id', 'id')
+                ->where('estatus', 2)
+                ->where('tipo', $tipo)
+                ->where('moneda_cobrada', $moneda);
+    }
+
 
     public function cobranza_salida() {
         return $this->hasMany(Cobranza::class, 'contrato_id', 'id')->where('estatus', 2)->where('cobranza_seccion', 'salida');
