@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CobranzaTipoEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
@@ -43,7 +44,9 @@ class Cobranza extends Model
         if ($validate->fails()) {
             return $validate->errors()->all();
         } else {
-
+            if ($request['tipo'] === CobranzaTipoEnum::PAGOEFECTIVO) {
+                return true;
+            }
             // validamos que la tarjeta le pertenezca al cliente
             $validTarjeta = Tarjetas::where('cliente_id', $request['cliente_id'])->first();
             if (!$validTarjeta) {
