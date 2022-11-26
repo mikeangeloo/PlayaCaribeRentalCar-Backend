@@ -423,6 +423,10 @@ class VehiculosController extends Controller
         //     $query->where('tarifa_categoria_id', '=', $request->tarifa_categoria_id);
         // }
 
+        if($request->has('vehicle_id')) {
+            $query->where('id', $request->vehicle_id);
+        }
+
         $vehiculos = $query->get();
         $vehiculos->load('marca', 'categoria', 'clase', 'tarifa_categoria');
 

@@ -9,4 +9,5 @@ class VehiculoStatusEnum
     const ENTALLER = 'en_taller';
     const USOPERSONAL = 'uso_personal';
     const RESERVADO = 'reservado';
+    const CORRALON = 'corralon';
 }

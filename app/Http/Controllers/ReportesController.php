@@ -6,8 +6,12 @@ use App\Enums\CobranzaStatusEnum;
 use App\Enums\CobranzaTipoEnum;
 use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
+use App\Enums\VehiculoStatusEnum;
 use App\Models\Cobranza;
+use App\Models\Comisionistas;
 use App\Models\Contrato;
+use App\Models\TiposCambio;
+use App\Models\User;
 use App\Models\Vehiculos;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Database\Eloquent\Builder;
@@ -578,6 +582,23 @@ class ReportesController extends Controller
             'total_reservados' => $totalReservados,
             'total_borradores' => $totalBorradores,
             'data' => $contratos
+        ], JsonResponse::OK);
+    }
+
+    public function dashboardInfo(Request $request) {
+        $activeUsers = User::where('activo', true)->count();
+        $activeComisionistas = Comisionistas::where('activo', true)->count();
+        $vehiculosDisponibles = Vehiculos::where('estatus', VehiculoStatusEnum::DISPONIBLE)->count();
+        $vehiculosTaller = Vehiculos::where('estatus', VehiculoStatusEnum::ENTALLER)->count();
+        $vehiculosCorralon = Vehiculos::where('estatus', VehiculoStatusEnum::CORRALON)->count();
+
+        return response()->json([
+            'ok' => true,
+            'activeUsers' => $activeUsers,
+            'activeComisionistas' => $activeComisionistas,
+            'vehiculosDisponibles' => $vehiculosDisponibles,
+            'vehiculosTaller' => $vehiculosTaller,
+            'vehiculosCorralon' => $vehiculosCorralon
         ], JsonResponse::OK);
     }
 }

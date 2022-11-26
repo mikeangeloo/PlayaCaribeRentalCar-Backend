@@ -26,6 +26,10 @@ Route::prefix('dash')->group(function () {
     Route::post('login', 'SessionController@login');
     Route::middleware('verify.jwt')->group(function () {
 
+        //region DASHBOARD
+        Route::get('dashboard-info', 'ReportesController@dashboardInfo');
+        //endregion
+
         //region CONTRATOS
         Route::post('contratos/save-progress', 'ContratoController@saveProcess');
         Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
