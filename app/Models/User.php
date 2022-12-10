@@ -61,7 +61,8 @@ class User extends Authenticatable
     public static function validateBeforeSave($request, $isUpdate = null) {
         $validate = Validator::make($request, [
             'area_trabajo_id' => 'required|exists:areas_trabajo,id',
-            'role_id' => 'required|exists:roles,id',
+            'role_id' => 'nullable|exists:roles,id',
+            'levelScope' => 'required|numeric',
             'nombre' => 'required|string',
             'apellidos' => 'required|string',
             'email' => 'required|email',

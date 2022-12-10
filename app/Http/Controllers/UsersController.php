@@ -57,7 +57,8 @@ class UsersController extends Controller
         $user = new User();
 
         $user->area_trabajo_id = $request->area_trabajo_id;
-        $user->role_id = $request->role_id;
+        $user->levelScope = $request->levelScope;
+        //$user->role_id = $request->role_id;
         $user->nombre = $request->nombre;
         $user->apellidos = $request->apellidos;
         $user->email = $request->email;
@@ -145,7 +146,8 @@ class UsersController extends Controller
         }
 
         $user->area_trabajo_id = $request->area_trabajo_id;
-        $user->role_id = $request->role_id;
+        $user->levelScope = $request->levelScope;
+        //$user->role_id = $request->role_id;
         $user->nombre = $request->nombre;
         $user->apellidos = $request->apellidos;
         $user->email = $request->email;
