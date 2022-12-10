@@ -88,7 +88,7 @@ Route::prefix('dash')->group(function () {
 
         //region CONTROL ACCESO
         Route::get('usuarios/all', 'UsersController@getAll');
-        Route::get('usuarios/enable/{id}', 'UsersController@enable');
+        Route::post('usuarios/enable-disable', 'UsersController@enableDisable');
         Route::post('usuarios/change-psw', 'SessionController@changePwdAdmin');
         Route::resource('usuarios', 'UsersController');
 

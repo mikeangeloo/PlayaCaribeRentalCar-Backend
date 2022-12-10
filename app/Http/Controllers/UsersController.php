@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UsersController extends Controller
 {
@@ -16,7 +18,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $usuarios = User::where('activo', true)->orderBy('id', 'ASC')->get();
+        $usuarios = User::where('activo', true)->where('eliminado', false)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
@@ -182,7 +184,7 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         if (!$id) {
             return response()->json([
@@ -200,12 +202,14 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $usuario->activo = false;
+        $usuario->eliminado = true;
+        $usuario->fecha_eliminado = Carbon::now();
+        $usuario->eliminado_por = $request->user->id;
 
         if ($usuario->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Usuario dado de baja correctamente'
+                'message' => 'Usuario eliminado correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -217,7 +221,7 @@ class UsersController extends Controller
 
     public function getAll(Request $request) {
         $user = $request->user;
-        $users = User::orderBy('id', 'ASC')->where('id', '!=', $user->id)->get();
+        $users = User::orderBy('id', 'ASC')->where('id', '!=', $user->id)->where('eliminado', false)->get();
         $users->load('area_trabajo', 'rol', 'sucursal');
 
         return response()->json([
@@ -226,8 +230,25 @@ class UsersController extends Controller
         ], JsonResponse::OK);
     }
 
-    public function enable($id) {
+    public function enableDisable(Request $request) {
+        $validateData = Validator::make($request->all(), [
+            'id' => 'required|exists:usuarios,id',
+            'activo' => 'required'
+        ]);
+
+
+        if($validateData->fails()) {
+            return response()->json([
+                'ok' => false,
+                'errors' => $validateData->errors()->all()
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $id = $request->id;
+
         $data = User::where('id', $id)->first();
+
+
         if (!$data) {
             return response()->json([
                 'ok' => false,
@@ -235,19 +256,12 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        if ($data->activo === 1 || $data->activo == true) {
-            return response()->json([
-                'ok' => false,
-                'errors' => ['El registro ya fue activado']
-            ], JsonResponse::BAD_REQUEST);
-        }
-
-        $data->activo = true;
+        $data->activo = $request->activo;
 
         if ($data->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Registro habilitado correctamente'
+                'message' => 'Evento registrado correctamente'
             ], JsonResponse::OK);
         }
     }
