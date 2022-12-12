@@ -494,9 +494,8 @@ class ContratoController extends Controller
 
 
             $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
-                $mail->from('apolloDev@mail.mx','Apollo');
                 $mail->subject('Contrato de arrendamiento');
-                $mail->to('danywolfslife@gmail.com');
+                $mail->to($getContract->cliente->email);
                 $mail->attachData($pdf->output(), 'APOLLO_Contrato_'.$getContract->num_contrato.'.pdf');
             });
         } catch(\Throwable $e) {
@@ -509,7 +508,7 @@ class ContratoController extends Controller
         return $pdf->download();
     }
 
-    public function getReservaPDF(Request $request, $id, $idioma) {
+    public function getReservaPDF(Request $request, $id, $idioma, $sendMailToClient) {
 
         try {
             $getContract = Contrato::with(
@@ -537,12 +536,14 @@ class ContratoController extends Controller
             } else {
                 $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
             }
-            $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
-                $mail->from('apolloDev@mail.mx','Apollo');
-                $mail->subject('Reserva de arrendamiento');
-                $mail->to('danywolfslife@gmail.com');
-                $mail->attachData($pdf->output(), 'APOLLO_Reserva_'.$getContract->num_contrato.'.pdf');
-            });
+            if($sendMailToClient) {
+                $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
+                    $mail->subject('Reserva de arrendamiento');
+                    $mail->to($getContract->cliente->email);
+                    $mail->attachData($pdf->output(), 'APOLLO_Reserva_'.$getContract->num_contrato.'.pdf');
+                });
+            }
+
         } catch(\Throwable $e) {
             return response()->json([
                 'ok' => false,
