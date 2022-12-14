@@ -99,8 +99,8 @@ class VehiculosController extends Controller
         if ($request->has('fecha_prox_servicio')) {
             $vehiculo->fecha_prox_servicio = $request->fecha_prox_servicio;
         }
-        if ($request->has('cant_combustible')) {
-            $vehiculo->cant_combustible = $request->cant_combustible;
+        if ($request->has('cant_combustible_anterior')) {
+            $vehiculo->cant_combustible_anterior = $request->cant_combustible_anterior;
         }
         if($request->has('cap_tanque')) {
             $vehiculo->cap_tanque = $request->cap_tanque;
@@ -251,8 +251,8 @@ class VehiculosController extends Controller
         if ($request->has('fecha_prox_servicio')) {
             $vehiculo->fecha_prox_servicio = $request->fecha_prox_servicio;
         }
-        if ($request->has('cant_combustible')) {
-            $vehiculo->cant_combustible = $request->cant_combustible;
+        if ($request->has('cant_combustible_anterior')) {
+            $vehiculo->cant_combustible_anterior = $request->cant_combustible_anterior;
         }
         if($request->has('cap_tanque')) {
             $vehiculo->cap_tanque = $request->cap_tanque;

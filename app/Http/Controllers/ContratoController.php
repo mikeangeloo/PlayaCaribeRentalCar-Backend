@@ -319,6 +319,7 @@ class ContratoController extends Controller
                 $contrato->cobranza_calc_retorno = $request->cobranza_calc_retorno;
 
                 $contrato->vehiculo()->update(['km_recorridos' => $request->km_final]);
+                $contrato->vehiculo()->update(['cant_combustible_anterior' => $request->cant_combustible_retorno]);
 
                 if($request->total_retorno == 0) {
                     $contrato->estatus = ContratoStatusEnum::CERRADO;

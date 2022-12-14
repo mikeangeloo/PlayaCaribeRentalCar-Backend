@@ -57,7 +57,7 @@ class Vehiculos extends Model
             'fecha_prox_servicio' => 'nullable',
             'prox_km_servicio' => 'nullable',
             'categoria_vehiculo_id' => 'required|exists:categorias_vehiculos,id',
-            'cant_combustible' => 'nullable|string',
+            'cant_combustible_anterior' => 'nullable|string',
             'color' => 'required|string|max:100',
             'cap_tanque' => 'nullable|string|max:100',
             'version' => 'required|numeric',
