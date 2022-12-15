@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 //region RUTAS GLOBALES
 
-Route::get('contratos/pdf/{id}', 'ContratoController@viewReservaPDF');
+Route::get('contratos/pdf/{id}', 'ContratoController@viewPDF');
 Route::get('test/pdf', 'ContratoController@viewReservaPDF');
 //endregion
 

@@ -454,9 +454,9 @@
                                 @foreach ($contrato->cobranza_calc_retorno as $cargoExtra)
                                     @if($cargoExtra['element'] == 'horas_extra' || $cargoExtra['element'] == 'dias_extra' || $cargoExtra['element'] == 'cargoExtra')
                                         <div style="display: table-row; text-transform: uppercase">
-                                            <div style="display: table-cell; width:43%;"> {{$cargoExtra['element_label']}}</div>
-                                            <div style="display: table-cell; text-align:right; width:14%; ">${{$cargoExtra['value']}}</div>
-                                            <div style="display: table-cell; text-align:center; width:12%;">X {{$cargoExtra['quantity']}}</div>
+                                            <div style="display: table-cell; width:20%;"> {{$cargoExtra['element_label']}}</div>
+                                            <div style="display: table-cell; text-align:right; width:20%; ">${{$cargoExtra['value']}}</div>
+                                            <div style="display: table-cell; text-align:right; width:25%;">X {{$cargoExtra['quantity']}}</div>
                                             <div style="display: table-cell; width:35%;  text-align:right;">${{$cargoExtra['amount']}}</div>
                                         </div>
                                     @endif
