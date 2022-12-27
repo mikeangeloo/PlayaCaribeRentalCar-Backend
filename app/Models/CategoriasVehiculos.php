@@ -48,7 +48,7 @@ class CategoriasVehiculos extends Model
     private static function categoriaExist($categoria) {
         $cat = trim($categoria);
         $cat = Str::upper($cat);
-        $foundCat = CategoriasVehiculos::where(DB::raw('upper("categoria"), "LIKE", "%'.$cat.'%"'))->get();
+        $foundCat = CategoriasVehiculos::where(DB::raw('upper(categoria), "LIKE", "%'.$cat.'%"'))->get();
         if($foundCat[0]) {
             return true;
         } else {
