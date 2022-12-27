@@ -17,7 +17,7 @@ class CategoriasVehiculos extends Model
     }
 
 
-    public static function validateBeforeSave($request) {
+    public static function validateBeforeSave($request, $edit = false) {
         $validateData = Validator::make($request['categoria'], [
             'categoria' => 'required|string|max:100',
         ]);
@@ -26,6 +26,29 @@ class CategoriasVehiculos extends Model
             return $validateData->errors()->all();
         }
 
+        if(!$edit) {
+            //Validamos que no se repita
+            if (self::categoriaExist($request['categoria'])) {
+                return ['Esta categoría ya se encuentra registrada'];
+            }
+        }
+
+        if($edit && isset($request['layout']) === false) {
+            if (self::categoriaExist($request['categoria'])) {
+                return ['Esta categoría ya se encuentra registrada'];
+            }
+        }
+
         return true;
+    }
+
+
+    private static function categoriaExist($categoria) {
+        $foundCat = CategoriasVehiculos::where('categoria', $categoria)->first();
+        if($foundCat) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
