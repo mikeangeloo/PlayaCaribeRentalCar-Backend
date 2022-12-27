@@ -28,13 +28,13 @@ class CategoriasVehiculos extends Model
 
         if(!$edit) {
             //Validamos que no se repita
-            if (self::categoriaExist($request['categoria'])) {
+            if (self::categoriaExist($request['categoria']['categoria'])) {
                 return ['Esta categoría ya se encuentra registrada'];
             }
         }
 
         if($edit && isset($request['layout']) === false) {
-            if (self::categoriaExist($request['categoria'])) {
+            if (self::categoriaExist($request['categoria']['categoria'])) {
                 return ['Esta categoría ya se encuentra registrada'];
             }
         }
