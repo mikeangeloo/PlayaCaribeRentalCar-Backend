@@ -146,7 +146,10 @@ class CategoriasVehiculosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
         $categoria->categoria = $request['categoria']['categoria'];
-        $categoria->imagen_url = $request['layout']['fileName'];
+        if($request->has('layout') && isset($request->layout)) {
+            $categoria->imagen_url = $request['layout']['fileName'];
+        }
+
 
         if ($categoria->save()) {
             return response()->json([
