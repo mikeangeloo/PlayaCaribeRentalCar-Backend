@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class CategoriasVehiculos extends Model
 {
@@ -44,8 +46,10 @@ class CategoriasVehiculos extends Model
 
 
     private static function categoriaExist($categoria) {
-        $foundCat = CategoriasVehiculos::where('categoria', $categoria)->first();
-        if($foundCat) {
+        $cat = trim($categoria);
+        $cat = Str::upper($cat);
+        $foundCat = CategoriasVehiculos::where(DB::raw('upper("categoria"), "LIKE", "%'.$cat.'%"'))->get();
+        if($foundCat[0]) {
             return true;
         } else {
             return false;
