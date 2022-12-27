@@ -28,9 +28,17 @@ class CategoriasVehiculos extends Model
             return $validateData->errors()->all();
         }
 
-         //Validamos que no se repita
-         if (self::categoriaExist($request['categoria']['categoria'])) {
-            return ['Esta categoría ya se encuentra registrada'];
+        if(!$edit) {
+            //Validamos que no se repita
+            if (self::categoriaExist($request['categoria']['categoria'])) {
+                return ['Esta categoría ya se encuentra registrada'];
+            }
+        }
+
+        if($edit && isset($request['layout']) === false) {
+            if (self::categoriaExist($request['categoria']['categoria'])) {
+                return ['Esta categoría ya se encuentra registrada'];
+            }
         }
 
         return true;
