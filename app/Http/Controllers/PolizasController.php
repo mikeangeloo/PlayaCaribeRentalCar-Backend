@@ -72,7 +72,7 @@ class PolizasController extends Controller
                 DB::commit();
                 return response()->json([
                     'ok' => true,
-                    'message' => 'Pólzia guardada correctamente.',
+                    'message' => 'Póliza guardada correctamente.',
                     'data' => [
                         'poliza_id' => $poliza->id,
                         'no_poliza' => $poliza->no_poliza
@@ -212,7 +212,7 @@ class PolizasController extends Controller
         if ($poliza->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Poliza dada de baja correctamente'
+                'message' => 'Póliza dada de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
