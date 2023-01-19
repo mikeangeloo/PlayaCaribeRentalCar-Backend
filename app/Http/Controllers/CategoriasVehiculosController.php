@@ -58,7 +58,10 @@ class CategoriasVehiculosController extends Controller
 
         $categoria = new CategoriasVehiculos();
         $categoria->categoria = $request['categoria']['categoria'];
-        $categoria->imagen_url = $request['layout']['fileName'];
+        if (isset($request['layout']) && isset($request['layout']['fileName'])) {
+            $categoria->imagen_url = $request['layout']['fileName'];
+        }
+
         $categoria->activo = true;
 
         if ($categoria->save()) {
