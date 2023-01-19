@@ -20,7 +20,7 @@ class CategoriasVehiculos extends Model
 
 
     public static function validateBeforeSave($request, $edit = false) {
-        $validateData = Validator::make($request, [
+        $validateData = Validator::make($request['categoria'], [
             'categoria' => 'required|string|max:100',
         ]);
 
