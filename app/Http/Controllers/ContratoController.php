@@ -476,8 +476,9 @@ class ContratoController extends Controller
             ,'cobranza_salida.tarjeta'
             ,'cobranza_retorno'
             ,'cobranza_retorno.tarjeta'
-            ,'usuario',
-            'check_form_list'
+            ,'usuario'
+            ,'check_form_list'
+            ,'usuario_close'
             )->where('id', $id)->first();
 
             $getClientDocs = self::getClientDocs($getContract->cliente->id);
@@ -590,7 +591,8 @@ class ContratoController extends Controller
             ,'cobranza_retorno'
             ,'cobranza_retorno.tarjeta'
             ,'usuario',
-            'check_form_list'
+            'check_form_list',
+            'usuario_close'
             )->where('id', $id)->first();
 
             $getClientDocs = self::getClientDocs($getContract->cliente->id);

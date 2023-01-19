@@ -748,7 +748,7 @@
                     </div>
                 </div>
             </div>
-            <table style="width: 100%; display: table; font-size:10px;">
+            <table style="width: 100%; display: table; font-size:10px; text-align: center;">
                 <tr>
                     <td style="border-bottom: solid; width:8%">{{$contrato->check_form_list->tarjeta_circulacion}}</td>
                     <td><p><span></span>&nbsp;<b> TARJETA DE CIRCULACIÓN / CAR PAPER</b></p></td>
@@ -800,11 +800,8 @@
                         <div>
                             <p>ENTREGADO POR / DELIVERED BY</p>
                         </div>
-                        <div > <!-- TODO: temporal aqui ira firma del agente -->
-
-                        </div>
                         <div>
-                            <p>{{$contrato->usuario->nombre. ' ' .$contrato->usuario->apellidos}}</p>
+                            <p style="font-size: 20px; padding: 0; margin: 0; margin-top: 14px;">{{$contrato->usuario->nombre. ' ' .$contrato->usuario->apellidos}}</p>
                         </div>
 
                     </td>
@@ -825,9 +822,11 @@
                         <div>
                             <p>RECIBIDO POR / RECEIVED BY</p>
                         </div>
-                        <div>
-                            <p></p>
-                        </div>
+                        @if($contrato->usuario_close)
+                            <div>
+                                <p style="font-size: 20px; padding: 0; margin: 0; margin-top: 14px; margin-bottom: 12px;">{{$contrato->usuario_close->nombre. ' ' .$contrato->usuario_close->apellidos}}</p>
+                            </div>
+                        @endif
 
                     </td>
                     <td style="width: 50%; border: solid; vertical-align:baseline;">
