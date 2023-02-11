@@ -24,7 +24,7 @@ class Hoteles extends Model
             'tarifas_hotel.*.activo' => 'required',
             'tarifas_hotel.*.clase_id' => 'required',
             'tarifas_hotel.*.clase' => 'required',
-            'tarifas_hotel.*.precio' => 'required',
+            'tarifas_hotel.*.precio_renta' => 'required',
             'tarifas_hotel.*.hotel_id' => 'required',
             'tarifas_hotel.*.hotel_id' => 'nullable',
         ]);

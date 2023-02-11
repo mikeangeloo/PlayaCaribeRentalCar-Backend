@@ -15,7 +15,7 @@ class CommonHelper
      */
     public static function syncWithTarifasApollo($model, $tarifa = null, $syncRestart = false) {
         // preparamos para insertar en tarifas_apollo
-        $modelData = DB::table($model)->get();
+        $modelData = DB::table($model)->where('activo', true)->get();
         if (!$modelData) {
             return response()->json([
                 'ok' => false,
