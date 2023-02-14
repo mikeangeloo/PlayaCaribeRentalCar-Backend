@@ -74,6 +74,8 @@ class HotelesController extends Controller
         $hotel->tel_contacto = $request->tel_contacto;
         $hotel->activo = true;
         $hotel->paga_cupon = $request->paga_cupon;
+        $hotel->activar_descuentos = $request->activar_descuentos;
+        $hotel->acceso_externo = $request->acceso_externo;
 
         if ($hotel->save()) {
             // Guardamos tarifas
@@ -195,16 +197,21 @@ class HotelesController extends Controller
         $hotel->tel_contacto = $request->tel_contacto;
         $hotel->activo = true;
         $hotel->paga_cupon = $request->paga_cupon;
+        $hotel->activar_descuentos = $request->activar_descuentos;
+        $hotel->acceso_externo = $request->acceso_externo;
 
         if ($hotel->save()) {
             // Guardamos tarifas
             DB::beginTransaction();
-            TarifasHoteles::where('hotel_id', $hotel->id)->update(['activo' => false]);
+
             for ($i = 0; $i < count($request->tarifas_hotel); $i++) {
                 try {
-                    $tarifa = new TarifasHoteles();
-                    if (isset($request->tarifas_hotel[$i]->id) && $request->tarifas_hotel[$i]->id > 0) {
-                        $tarifa = TarifasHoteles::where('id', $request->tarifas_hotel[$i]->id)->first();
+                    if (isset($request->tarifas_hotel[$i]['id']) && $request->tarifas_hotel[$i]['id'] > 0) {
+                        $tarifa = TarifasHoteles::where('id', $request->tarifas_hotel[$i]['id'])->first();
+                    }
+
+                    if (!$tarifa) {
+                        $tarifa = new TarifasHoteles();
                     }
 
                     $tarifa->hotel_id = $request->tarifas_hotel[$i]['hotel_id'];

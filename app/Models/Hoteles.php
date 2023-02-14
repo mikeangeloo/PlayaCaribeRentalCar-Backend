@@ -20,6 +20,8 @@ class Hoteles extends Model
             'direccion' => 'required|string',
             'tel_contacto' => 'required|string',
             'paga_cupon' => 'required',
+            'activar_descuentos' => 'required',
+            'acceso_externo' => 'required',
             'tarifas_hotel.*.hotel_id' => 'required',
             'tarifas_hotel.*.activo' => 'required',
             'tarifas_hotel.*.clase_id' => 'required',
