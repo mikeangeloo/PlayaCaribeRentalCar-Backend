@@ -222,7 +222,7 @@ class HotelesController extends Controller
 
                     if ($tarifa->save()) {
                         // Sincronizamos con TarifasApollo
-                        $res = CommonHelper::syncWithTarifasApollo('tarifas_hoteles');
+                        $res = CommonHelper::syncWithTarifasApollo('tarifas_hoteles', null, false, $hotel->activar_descuentos);
                         if ($res !== true) {
                             DB::rollBack();
                             return response()->json([
