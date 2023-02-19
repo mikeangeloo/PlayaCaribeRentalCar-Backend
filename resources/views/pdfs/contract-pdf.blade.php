@@ -352,6 +352,15 @@
                                     <div style="display: table-cell; width:45%;  text-align:right;">-${{$contrato->cobranza_calc[1]["amount"]}}</div>
                                 </div>
                             @endif
+                            @foreach ($contrato->cobranza_calc as $cobroCalc )
+                                @if($cobroCalc['element'] === 'descuento_cupon')
+                                <div style="display: table-cell; width:45%;"> DESCUENTO CUPÓN / DISCOUNT COUPON</div>
+                                    <div style="display: table-cell; text-align:right; "> {{ number_format($cobroCalc["quantity"]) }}%</div>
+                                    <div style="display: table-cell; text-align:center;"></div>
+                                    <div style="display: table-cell; width:45%;  text-align:right;">-${{$cobroCalc["amount"]}}</div>
+                                </div>
+                                @endif
+                            @endforeach
                             @if (false)
                                 <div style="display: table-row">
                                     <div style="display: table-cell; width: 50%; text-decoration: underline;"><p><b> CARGOS DE GAS</b></p></div>
