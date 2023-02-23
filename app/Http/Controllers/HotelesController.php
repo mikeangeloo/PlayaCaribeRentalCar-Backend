@@ -31,6 +31,8 @@ class HotelesController extends Controller
             }]);
          }
 
+         $hoteles->load('tipo_externo');
+
         return response()->json([
             'ok' => true,
             'hoteles' => $hoteles
@@ -76,6 +78,7 @@ class HotelesController extends Controller
         $hotel->paga_cupon = $request->paga_cupon;
         $hotel->activar_descuentos = $request->activar_descuentos;
         $hotel->acceso_externo = $request->acceso_externo;
+        $hotel->tipo_id = $request->tipo_id;
 
         if ($hotel->save()) {
             // Guardamos tarifas
@@ -146,6 +149,8 @@ class HotelesController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
+        $hotel->load('tipo_externo');
+
         return response()->json([
             'ok' => true,
             'hotel' => $hotel
@@ -199,6 +204,7 @@ class HotelesController extends Controller
         $hotel->paga_cupon = $request->paga_cupon;
         $hotel->activar_descuentos = $request->activar_descuentos;
         $hotel->acceso_externo = $request->acceso_externo;
+        $hotel->tipo_id = $request->tipo_id;
 
         if ($hotel->save()) {
             // Guardamos tarifas
@@ -306,6 +312,8 @@ class HotelesController extends Controller
                 ->orderBy('id', 'ASC');
             }]);
          }
+
+        $hoteles->load('tipo_externo');
 
         return response()->json([
             'ok' => true,

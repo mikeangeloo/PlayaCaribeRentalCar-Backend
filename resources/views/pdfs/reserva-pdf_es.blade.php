@@ -145,10 +145,10 @@
             <div style="display: table-row">
                 <div style="display: table-cell; ">
                     @if ($contrato->con_descuento != null || $contrato->con_iva == 1 )
-                        <p style="font-size:14px; text-align: right"> <strong>Subtotal</strong> $ {{number_format(intval($contrato->subtotal))}} MXN</p>
+                        <p style="font-size:14px; text-align: right"> <strong>Subtotal</strong> $ {{number_format(intval($contrato->cobranza_calc[0]["amount"]))}} MXN</p>
                     @endif
                     @if ($contrato->con_descuento != null)
-                       <p style="font-size:14px; text-align: right"> <strong>Descuento</strong> $ {{number_format($contrato->cobranza_calc[1]["amount"])}} MXN</p>
+                       <p style="font-size:14px; text-align: right"> <strong>Descuento</strong> - $ {{number_format($contrato->cobranza_calc[1]["amount"])}} MXN</p>
                     @endif
                     @if ( $contrato->con_iva == 1 )
                         <p style="font-size:14px; text-align: right"> <strong>IVA</strong> $ {{number_format(intval($contrato->iva_monto))}} MXN</p>
@@ -158,28 +158,36 @@
         </div>
         <div style="width: 100%; display: table; background: #E6E6E6; padding: 3px">
             <div style="display: table-row">
+
+                @if ($contrato->folio_cupon)
+                    <p style="margin: 0; padding: 0; float: left"><strong>Cupón Aplicado:</strong> {{ $contrato->folio_cupon }}</p>
+                @endif
+
                 <p style="font-size:16px; text-align: right"> <strong>Total</strong> $ {{number_format(intval($contrato->total))}} MXN</p>
             </div>
         </div>
         <br>
-        <div>
-            <div style="width: 100%;">
-                <p style="font-size: 14px; font-weight: bold">DESCRIPCION DE CARGOS: </p>
-            </div>
-            <div style="width: 100%;">
-                @foreach ($contrato->cobranza_reserva as $cobranza)
-                    <p>
-                        @if ($cobranza->tarjeta != null)
-                        <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }}  {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }}</span>
-                        @else
-                            <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }} {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }} </span>
-                        @endif
-                    </p>
-                @endforeach
+        @if(isset($contrato->cobranza_reserva) && count($contrato->cobranza_reserva) > 0)
+            <div>
+                <div style="width: 100%;">
+                    <p style="font-size: 14px; font-weight: bold">DESCRIPCION DE CARGOS: </p>
+                </div>
+                <div style="width: 100%;">
+                    @foreach ($contrato->cobranza_reserva as $cobranza)
+                        <p>
+                            @if ($cobranza->tarjeta != null)
+                            <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }}  {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }}</span>
+                            @else
+                                <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }} {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }} </span>
+                            @endif
+                        </p>
+                    @endforeach
 
+                </div>
+                <br>
             </div>
-            <br>
-        </div>
+        @endif
+
         <br>
         <p style="color:red; font-style:italic">La reservación no es reembolsable. No es posible cambiar las fechas de la reserva. </p>
     </div>
