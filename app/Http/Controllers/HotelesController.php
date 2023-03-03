@@ -214,9 +214,7 @@ class HotelesController extends Controller
                 try {
                     if (isset($request->tarifas_hotel[$i]['id']) && $request->tarifas_hotel[$i]['id'] > 0) {
                         $tarifa = TarifasHoteles::where('id', $request->tarifas_hotel[$i]['id'])->first();
-                    }
-
-                    if (!$tarifa) {
+                    } else {
                         $tarifa = new TarifasHoteles();
                     }
 
