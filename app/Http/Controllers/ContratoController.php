@@ -219,10 +219,7 @@ class ContratoController extends Controller
                     $cobranza->fecha_reg = Carbon::now();
                 }
 
-                // si viene reserva: true se cambia status a reserva
-                if ($request->reserva) {
-                    $contrato->estatus = 4;
-                }
+
 
                 if ($cobranza->save() === false) {
                     DB::rollBack();
@@ -405,6 +402,11 @@ class ContratoController extends Controller
 
         if (!$contrato->hora_retorno) {
             $contrato->hora_retorno = Carbon::now()->toTimeString();
+        }
+
+        // si viene reserva: true se cambia status a reserva
+        if ($request->reserva) {
+            $contrato->estatus = 4;
         }
 
         if ($contrato->save()) {

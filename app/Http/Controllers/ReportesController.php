@@ -131,7 +131,7 @@ class ReportesController extends Controller
         $fechaInicio = null;
         $fechaFin = null;
 
-        $contratosQ = Contrato::select('id', 'created_at', 'num_contrato', 'num_reserva', 'ub_salida_id', 'ub_retorno_id', 'vehiculo_id', 'user_create_id', 'user_close_id', 'total as total_salida', 'total_retorno')
+        $contratosQ = Contrato::select('id', 'created_at', 'num_contrato', 'num_reserva', 'folio_cupon', 'valor_cupon', 'ub_salida_id', 'ub_retorno_id', 'vehiculo_id', 'user_create_id', 'user_close_id', 'total as total_salida', 'total_retorno')
                      ->with(['salida:id,alias','retorno:id,alias','vehiculo:id,modelo,modelo_ano,placas,color',  'usuario:id,username,nombre', 'usuario_close:id,username,nombre', 'cobranza.cobro_depositos',
                      'cobranza.tarjeta'])
                      ->where('estatus', ContratoStatusEnum::CERRADO)
@@ -410,7 +410,7 @@ class ReportesController extends Controller
         $fechaFin = null;
 
         $contratosQ = Contrato::select(
-                        'id', 'created_at', 'fecha_salida', 'hora_salida', 'fecha_retorno', 'hora_retorno', 'num_contrato', 'num_reserva', 'ub_salida_id', 'ub_retorno_id', 'vehiculo_id',
+                        'id', 'created_at', 'fecha_salida', 'hora_salida', 'fecha_retorno', 'folio_cupon', 'valor_cupon', 'hora_retorno', 'num_contrato', 'num_reserva', 'ub_salida_id', 'ub_retorno_id', 'vehiculo_id',
                         'user_create_id', 'user_close_id','total as total_salida', 'total_retorno', 'cliente_id', 'km_inicial', 'km_final', 'cant_combustible_salida', 'cant_combustible_retorno','estatus'
                       )
                      ->with(

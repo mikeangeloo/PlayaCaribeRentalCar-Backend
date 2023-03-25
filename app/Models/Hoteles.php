@@ -12,6 +12,10 @@ class Hoteles extends Model
     protected $table = 'hoteles';
     protected $primaryKey = 'id';
 
+    public function tipo_externo() {
+        return $this->belongsTo(TipoExternos::class, 'tipo_id', 'id');
+    }
+
 
     public static function validateBeforeSave($request, $isUpdate = null) {
         $validateData = Validator::make($request, [
@@ -20,11 +24,14 @@ class Hoteles extends Model
             'direccion' => 'required|string',
             'tel_contacto' => 'required|string',
             'paga_cupon' => 'required',
+            'activar_descuentos' => 'required',
+            'acceso_externo' => 'required',
+            'tipo_id' => 'required',
             'tarifas_hotel.*.hotel_id' => 'required',
             'tarifas_hotel.*.activo' => 'required',
             'tarifas_hotel.*.clase_id' => 'required',
             'tarifas_hotel.*.clase' => 'required',
-            'tarifas_hotel.*.precio' => 'required',
+            'tarifas_hotel.*.precio_renta' => 'required',
             'tarifas_hotel.*.hotel_id' => 'required',
             'tarifas_hotel.*.hotel_id' => 'nullable',
         ]);

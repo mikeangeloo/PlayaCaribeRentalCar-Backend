@@ -22,7 +22,7 @@ class TarifasCategoriasController extends Controller
         $tarifasC = TarifasCategorias::where('activo', true)->orderBy('id', 'ASC')->get();
         $totalTarifasApolloConf = TarifasApolloConf::where('modelo', 'tarifas_categorias')->where('activo', true)->count();
         for ($i = 0; $i < count($tarifasC); $i++) {
-           $tarifasC[$i]->tarifas = TarifasApollo::where('modelo', 'tarifas_categorias')->where('modelo_id', $tarifasC[$i]->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();
+           $tarifasC[$i]->tarifas_apollo = TarifasApollo::where('modelo', 'tarifas_categorias')->where('modelo_id', $tarifasC[$i]->id)->latest()->take($totalTarifasApolloConf)->orderBy('id', 'ASC')->get();
         }
 
         return response()->json([

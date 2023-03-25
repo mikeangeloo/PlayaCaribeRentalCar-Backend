@@ -121,6 +121,10 @@ Route::prefix('dash')->group(function () {
         Route::resource('hoteles', 'HotelesController');
         //endregion
 
+        //region TIPOSEXTERNOS
+        Route::get('tipos-externos', 'TiposExternosController@index');
+        //endregion
+
         //region COMISIONISTAS
         Route::get('comisionistas/all', 'ComisionistasController@getAll');
         Route::get('comisionistas/enable/{id}', 'ComisionistasController@enable');
