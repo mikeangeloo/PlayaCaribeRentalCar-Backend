@@ -13,14 +13,21 @@ class CommonHelper
     /**
      *
      */
-    public static function syncWithTarifasApollo($model, $tarifa = null, $syncRestart = false) {
+    public static function syncWithTarifasApollo($model, $tarifa = null, $syncRestart = false, $active) {
         // preparamos para insertar en tarifas_apollo
-        $modelData = DB::table($model)->get();
+        $modelData = DB::table($model)->where('activo', true)->get();
         if (!$modelData) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No hay: '. $model. 'registrados']
             ], JsonResponse::BAD_REQUEST);
+        }
+
+        if ($active === false || $active == 0) {
+            TarifasApollo::where('modelo', $model)->update([
+                'activo' => false
+            ]);
+            return true;
         }
 
         if ($syncRestart === true) {

@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
-use App\Models\User;
-use Carbon\Carbon;
+use App\Models\Polizas;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
-class UsersController extends Controller
+class PolizasController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,11 +17,11 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $usuarios = User::where('activo', true)->where('eliminado', false)->orderBy('id', 'ASC')->get();
+        $polizas = Polizas::where('activo', true)->orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
-            'usuarios' => $usuarios
+            'data' => $polizas
         ], JsonResponse::OK);
     }
 
@@ -47,7 +46,7 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = User::validateBeforeSave($request->all());
+        $validateData = Polizas::validateBeforeSave($request->all());
 
         if ($validateData !== true) {
             return response()->json([
@@ -56,31 +55,37 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $user = new User();
+        //dd($request->all());
 
-        $user->area_trabajo_id = $request->area_trabajo_id;
-        $user->levelScope = $request->levelScope;
-        //$user->role_id = $request->role_id;
-        $user->nombre = $request->nombre;
-        $user->apellidos = $request->apellidos;
-        $user->email = $request->email;
-        $user->telefono = $request->telefono;
-        $user->password = Hash::make($request->password);
-        $user->username = $request->username;
-        $user->sucursal_id = $request->sucursal_id;
-        //$user->empresa_id = $request->empresa_id;
+        $poliza = new Polizas();
+        $poliza->aseguradora = $request->aseguradora;
+        $poliza->no_poliza = $request->no_poliza;
+        $poliza->tipo_poliza = $request->tipo_poliza;
+        $poliza->tel_contacto = $request->tel_contacto;
+        $poliza->titular = $request->titular;
+        $poliza->fecha_inicio = $request->fecha_inicio;
+        $poliza->fecha_fin = $request->fecha_fin;
 
-
-        if ($user->save()) {
-            return response()->json([
-                'ok' => true,
-                'message' => 'Usuario registrado correctamente'
-            ], JsonResponse::OK);
-        } else {
+        DB::beginTransaction();
+        try {
+            if ($poliza->save()) {
+                DB::commit();
+                return response()->json([
+                    'ok' => true,
+                    'message' => 'Póliza guardada correctamente.',
+                    'data' => [
+                        'poliza_id' => $poliza->id,
+                        'no_poliza' => $poliza->no_poliza
+                    ]
+                ], JsonResponse::OK);
+            }
+        } catch(\Throwable $e) {
+            DB::rollBack();
+            Log::debug($e);
             return response()->json([
                 'ok' => false,
-                'errors' => ['Algo salio mal al registrar el usuario, intente nuevamente']
-            ], JsonResponse::OK);
+                'errors' => ['Algo salio mal al guardar la información de la poliza.']
+            ], JsonResponse::BAD_REQUEST);
         }
     }
 
@@ -92,9 +97,9 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $usuario = User::where('id', $id)->first();
+        $poliza = Polizas::where('id', $id)->first();
 
-        if (!$usuario) {
+        if (!$poliza) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
@@ -103,7 +108,7 @@ class UsersController extends Controller
 
         return response()->json([
             'ok' => true,
-            'usuario' => $usuario
+            'data' => $poliza
         ], JsonResponse::OK);
     }
 
@@ -130,7 +135,7 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validateData = User::validateBeforeSave($request->all(), true);
+        $validateData = Polizas::validateBeforeSave($request->all(), true);
 
         if ($validateData !== true) {
             return response()->json([
@@ -139,42 +144,42 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $user = User::where('id', $id)->first();
-        if (!$user) {
+        $poliza = Polizas::where('id', $id)->first();
+        if (!$poliza) {
             return response()->json([
                 'ok' => false,
-                'errors' => ['No se pudo encontrar el usuario']
+                'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
+        $poliza->aseguradora = $request->aseguradora;
+        $poliza->no_poliza = $request->no_poliza;
+        $poliza->tipo_poliza = $request->tipo_poliza;
+        $poliza->tel_contacto = $request->tel_contacto;
+        $poliza->titular = $request->titular;
+        $poliza->fecha_inicio = $request->fecha_inicio;
+        $poliza->fecha_fin = $request->fecha_fin;
+        $poliza->activo = true;
 
-        $user->area_trabajo_id = $request->area_trabajo_id;
-        $user->levelScope = $request->levelScope;
-        //$user->role_id = $request->role_id;
-        $user->nombre = $request->nombre;
-        $user->apellidos = $request->apellidos;
-        $user->email = $request->email;
-        $user->telefono = $request->telefono;
-        if ($request->has('password')) {
-            $user->password = Hash::make($request->password);
-        }
-        if ($request->has('username')) {
-            $user->username = $request->username;
-        }
-
-        $user->sucursal_id = $request->sucursal_id;
-        //$user->empresa_id = $request->empresa_id;
-
-
-        if ($user->save()) {
-            return response()->json([
-                'ok' => true,
-                'message' => 'Usuario actualizado correctamente'
-            ], JsonResponse::OK);
-        } else {
+        DB::beginTransaction();
+        try {
+            if ($poliza->save()) {
+                DB::commit();
+                return response()->json([
+                    'ok' => true,
+                    'message' => 'Información actualizada correctamente.',
+                    'data' => [
+                        'poliza_id' => $poliza->id,
+                        'no_poliza' => $poliza->no_poliza
+                    ]
+                ], JsonResponse::OK);
+            }
+        } catch(\Throwable $e) {
+            DB::rollBack();
+            Log::debug($e);
             return response()->json([
                 'ok' => false,
-                'errors' => ['Algo salio mal al registrar el usuario, intente nuevamente']
-            ], JsonResponse::OK);
+                'errors' => ['Algo salio mal al guardar la información de la poliza.']
+            ], JsonResponse::BAD_REQUEST);
         }
     }
 
@@ -184,7 +189,7 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy($id)
     {
         if (!$id) {
             return response()->json([
@@ -193,23 +198,21 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $usuario = User::where('id', $id)->first();
+        $poliza = Polizas::where('id', $id)->first();
 
-        if (!$usuario) {
+        if (!$poliza) {
             return response()->json([
                 'ok' => false,
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $usuario->eliminado = true;
-        $usuario->fecha_eliminado = Carbon::now();
-        $usuario->eliminado_por = $request->user->id;
+        $poliza->activo = false;
 
-        if ($usuario->save()) {
+        if ($poliza->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Usuario eliminado correctamente'
+                'message' => 'Póliza dada de baja correctamente'
             ], JsonResponse::OK);
         } else {
             return response()->json([
@@ -220,35 +223,16 @@ class UsersController extends Controller
     }
 
     public function getAll(Request $request) {
-        $user = $request->user;
-        $users = User::orderBy('id', 'ASC')->where('id', '!=', $user->id)->where('eliminado', false)->get();
-        $users->load('area_trabajo', 'rol', 'sucursal');
+        $polizas = Polizas::orderBy('id', 'ASC')->get();
 
         return response()->json([
             'ok' => true,
-            'usuarios' => $users
+            'data' => $polizas
         ], JsonResponse::OK);
     }
 
-    public function enableDisable(Request $request) {
-        $validateData = Validator::make($request->all(), [
-            'id' => 'required|exists:usuarios,id',
-            'activo' => 'required'
-        ]);
-
-
-        if($validateData->fails()) {
-            return response()->json([
-                'ok' => false,
-                'errors' => $validateData->errors()->all()
-            ], JsonResponse::BAD_REQUEST);
-        }
-
-        $id = $request->id;
-
-        $data = User::where('id', $id)->first();
-
-
+    public function enable($id) {
+        $data = Polizas::where('id', $id)->first();
         if (!$data) {
             return response()->json([
                 'ok' => false,
@@ -256,12 +240,19 @@ class UsersController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
-        $data->activo = $request->activo;
+        if ($data->activo === 1 || $data->activo == true) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['El registro ya fue activado']
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $data->activo = true;
 
         if ($data->save()) {
             return response()->json([
                 'ok' => true,
-                'message' => 'Evento registrado correctamente'
+                'message' => 'Registro habilitado correctamente'
             ], JsonResponse::OK);
         }
     }

@@ -10,6 +10,59 @@ use Illuminate\Support\Facades\Validator;
 
 class CobranzaController extends Controller
 {
+
+    public function getCobranza(Request $request) {
+        $validate = Validator::make($request->all(), [
+            'contrato_id' => 'required|exists:contratos,id',
+            'cliente_id' => 'required|exists:clientes,id',
+            'tipo' => 'required|numeric',
+            'estatus' => 'required|numeric'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'ok' => false,
+                'errors' => $validate->errors()->all()
+            ], JsonResponse::BAD_REQUEST);
+        }
+
+        $cobroQuery = Cobranza::with(['tarjeta'])
+                    ->where('contrato_id', $request->contrato_id)
+                    ->where('cliente_id', $request->cliente_id)
+                    ->where('tipo', $request->tipo)
+                    ->where('estatus', $request->estatus);
+
+        if ($request->has('cobranza_seccion')) {
+            $cobroQuery->where('cobranza_seccion', $request->cobranza_seccion);
+        }
+
+        $cobro = $cobroQuery->get();
+        $cobro->load('cobro_depositos');
+
+        $totalDeposito = 0;
+        $totalDepositoCapturado = 0;
+        $totalDepositoCobrado = 0;
+        $totalDepositoCobradoCapturado = 0;
+
+        for($i = 0; $i < count($cobro); $i++) {
+            $totalDeposito = $totalDeposito + $cobro[$i]->monto;
+            $totalDepositoCapturado = $totalDepositoCapturado + $cobro[$i]->monto_cobrado;
+            for ($j = 0; $j < count($cobro[$i]->cobro_depositos); $j++) {
+                $totalDepositoCobrado = $totalDepositoCobrado + $cobro[$i]->cobro_depositos[$j]->monto;
+                $totalDepositoCobradoCapturado = $totalDepositoCobradoCapturado + $cobro[$i]->cobro_depositos[$j]->monto_cobrado;
+            }
+        }
+
+        return response()->json([
+            'ok' => true,
+            'totalDeposito' => $totalDeposito,
+            'totalDepositoCapturado' => $totalDepositoCapturado,
+            'totalDepositoCobrado' => $totalDepositoCobrado,
+            'totalDepositoCobradoCapturado' => $totalDepositoCobradoCapturado,
+            'data' => $cobro
+        ], JsonResponse::OK);
+    }
+
     public function cancel(Request $request) {
         $validate = Validator::make($request->all(), [
             'cobranza_id' => 'required|exists:cobranza,id'

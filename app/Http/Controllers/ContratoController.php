@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\CobranzaStatusEnum;
+use App\Enums\CobranzaTipoEnum;
 use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
 use App\Enums\VehiculoStatusEnum;
@@ -193,11 +194,21 @@ class ContratoController extends Controller
                 }
                 $cobranza->cobranza_seccion = $request->cobranza_seccion;
                 $cobranza->monto = $request->monto;
+                $cobranza->monto_cobrado = $request->monto_cobrado;
                 $cobranza->moneda = $request->moneda;
+                $cobranza->moneda_cobrada = $request->moneda_cobrada;
                 $cobranza->tipo = $request->tipo;
                 $cobranza->estatus = CobranzaStatusEnum::COBRADO;
                 if (!$cobranza->fecha_procesado) {
                     $cobranza->fecha_procesado = Carbon::now(); //TODO: por el momento en duro
+                }
+
+                if($request->has('tipo_cambio_id')) {
+                    $cobranza->tipo_cambio_id = $request->tipo_cambio_id;
+                }
+
+                if($request->has('tipo_cambio')) {
+                    $cobranza->tipo_cambio = $request->tipo_cambio;
                 }
 
 
@@ -208,10 +219,7 @@ class ContratoController extends Controller
                     $cobranza->fecha_reg = Carbon::now();
                 }
 
-                // si viene reserva: true se cambia status a reserva
-                if ($request->reserva) {
-                    $contrato->estatus = 4;
-                }
+
 
                 if ($cobranza->save() === false) {
                     DB::rollBack();
@@ -308,6 +316,7 @@ class ContratoController extends Controller
                 $contrato->cobranza_calc_retorno = $request->cobranza_calc_retorno;
 
                 $contrato->vehiculo()->update(['km_recorridos' => $request->km_final]);
+                $contrato->vehiculo()->update(['cant_combustible_anterior' => $request->cant_combustible_retorno]);
 
                 if($request->total_retorno == 0) {
                     $contrato->estatus = ContratoStatusEnum::CERRADO;
@@ -327,6 +336,10 @@ class ContratoController extends Controller
                     $cobranza = Cobranza::where('id', $request->cobranza_id)->first();
                 }
 
+                if ($request->has('cobroDeposito_id') && isset($request->cobroDeposito_id)) {
+                    $cobranza = Cobranza::where('id', $request->cobroDeposito_id)->first();
+                }
+
                 $cobranza->contrato_id = $request->contrato_id;
                 $cobranza->tarjeta_id = $request->tarjeta_id;
                 $cobranza->cliente_id = $request->cliente_id;
@@ -336,11 +349,21 @@ class ContratoController extends Controller
                 }
                 $cobranza->cobranza_seccion = $request->cobranza_seccion;
                 $cobranza->monto = $request->monto;
+                $cobranza->monto_cobrado = $request->monto_cobrado;
                 $cobranza->moneda = $request->moneda;
+                $cobranza->moneda_cobrada = $request->moneda_cobrada;
                 $cobranza->tipo = $request->tipo;
                 $cobranza->estatus = CobranzaStatusEnum::COBRADO;
                 if (!$cobranza->fecha_procesado) {
                     $cobranza->fecha_procesado = Carbon::now(); //TODO: por el momento en duro
+                }
+
+                if($request->has('tipo_cambio_id')) {
+                    $cobranza->tipo_cambio_id = $request->tipo_cambio_id;
+                }
+
+                if($request->has('tipo_cambio')) {
+                    $cobranza->tipo_cambio = $request->tipo_cambio;
                 }
 
                 $cobranza->cod_banco = $request->cod_banco;
@@ -348,6 +371,10 @@ class ContratoController extends Controller
 
                 if (!$cobranza->fecha_reg) {
                     $cobranza->fecha_reg = Carbon::now();
+                }
+
+                if($cobranza->tipo === CobranzaTipoEnum::PAGODEPOSITO && $request->has('cobranzaAuth_id')) {
+                    $cobranza->cobranza_id = $request->cobranzaAuth_id;
                 }
 
                 if ($cobranza->save() === false) {
@@ -358,6 +385,7 @@ class ContratoController extends Controller
                     ], JsonResponse::BAD_REQUEST);
                 }
                 $contrato->estatus = ContratoStatusEnum::CERRADO;
+                $contrato->user_close_id = $user->id;
                 $contrato->vehiculo()->update(['estatus' => VehiculoStatusEnum::DISPONIBLE]);
              break;
         }
@@ -374,6 +402,11 @@ class ContratoController extends Controller
 
         if (!$contrato->hora_retorno) {
             $contrato->hora_retorno = Carbon::now()->toTimeString();
+        }
+
+        // si viene reserva: true se cambia status a reserva
+        if ($request->reserva) {
+            $contrato->estatus = 4;
         }
 
         if ($contrato->save()) {
@@ -445,8 +478,9 @@ class ContratoController extends Controller
             ,'cobranza_salida.tarjeta'
             ,'cobranza_retorno'
             ,'cobranza_retorno.tarjeta'
-            ,'usuario',
-            'check_form_list'
+            ,'usuario'
+            ,'check_form_list'
+            ,'usuario_close'
             )->where('id', $id)->first();
 
             $getClientDocs = self::getClientDocs($getContract->cliente->id);
@@ -464,9 +498,8 @@ class ContratoController extends Controller
 
 
             $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
-                $mail->from('apolloDev@mail.mx','Apollo');
                 $mail->subject('Contrato de arrendamiento');
-                $mail->to('danywolfslife@gmail.com');
+                $mail->to($getContract->cliente->email);
                 $mail->attachData($pdf->output(), 'APOLLO_Contrato_'.$getContract->num_contrato.'.pdf');
             });
         } catch(\Throwable $e) {
@@ -479,7 +512,7 @@ class ContratoController extends Controller
         return $pdf->download();
     }
 
-    public function getReservaPDF(Request $request, $id, $idioma) {
+    public function getReservaPDF(Request $request, $id, $idioma, $sendMailToClient) {
 
         try {
             $getContract = Contrato::with(
@@ -507,12 +540,14 @@ class ContratoController extends Controller
             } else {
                 $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
             }
-            $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
-                $mail->from('apolloDev@mail.mx','Apollo');
-                $mail->subject('Reserva de arrendamiento');
-                $mail->to('danywolfslife@gmail.com');
-                $mail->attachData($pdf->output(), 'APOLLO_Reserva_'.$getContract->num_contrato.'.pdf');
-            });
+            if($sendMailToClient) {
+                $sendMail = Mail::send('mails.mail-pdf',$data, function ($mail) use ($pdf, $getContract) {
+                    $mail->subject('Reserva de arrendamiento');
+                    $mail->to($getContract->cliente->email);
+                    $mail->attachData($pdf->output(), 'APOLLO_Reserva_'.$getContract->num_contrato.'.pdf');
+                });
+            }
+
         } catch(\Throwable $e) {
             return response()->json([
                 'ok' => false,
@@ -558,7 +593,8 @@ class ContratoController extends Controller
             ,'cobranza_retorno'
             ,'cobranza_retorno.tarjeta'
             ,'usuario',
-            'check_form_list'
+            'check_form_list',
+            'usuario_close'
             )->where('id', $id)->first();
 
             $getClientDocs = self::getClientDocs($getContract->cliente->id);
@@ -607,10 +643,11 @@ class ContratoController extends Controller
             $data = [
                 'contrato'=>  $getContract
             ];
+
             if ($idioma === 'es') {
                 $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
             } else if ($idioma === 'en') {
-                $pdf = PDF::loadView('pdfs.reserva-pdf_en', $data)->setPaper('a4','portrait');
+                $pdf = PDF::loadView('pdfs.reserva-pdf_en', $data)->setPaper('letter','portrait');
             } else {
                 $pdf = PDF::loadView('pdfs.reserva-pdf_es', $data)->setPaper('a4','portrait');
             }
@@ -629,6 +666,7 @@ class ContratoController extends Controller
 
     public function cancelContract(Request $request, $id) {
         //$validStatus = [ContratoStatusEnum::BORRADOR];
+        $user = $request->user;
         $getContract = Contrato::where('id', $id)->first();
         $msg = 'Contrato';
 
@@ -654,6 +692,7 @@ class ContratoController extends Controller
             }
 
             $getContract->estatus = ContratoStatusEnum::CANCELADO;
+            $getContract->user_close_id = $user->id;
             if ($getContract->save()) {
                 return response()->json([
                     'ok' => true,

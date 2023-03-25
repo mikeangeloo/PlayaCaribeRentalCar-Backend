@@ -74,7 +74,7 @@
         <table style="width: 100%;">
             <th>
             <td style="width: 50%;">
-                <img src="{{ 'assets/img/PDF-Logo.png' }}">
+                <img style="width: 300px" src="{{ 'assets/img/Price-Logo.png' }}">
             </td>
             <td style="width: 20%; vertical-align:middle">
                 <p style="font-size:14px;">
@@ -262,18 +262,18 @@
                                 @foreach ($contrato->cobranza_reserva as $cobranza)
                                     <p>
                                         @if ($cobranza->tarjeta != null)
-                                            <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}}</span> - RESERVA
+                                            <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }}  {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }}</span> - RESERVA
                                         @else
-                                            <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}} </span> - RESERVA
+                                            <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}}  ${{$cobranza->monto_cobrado}} ${{ $cobranza->moneda_cobrada }} {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }}</span> - RESERVA
                                         @endif
                                     </p>
                                 @endforeach
                                 @foreach ($contrato->cobranza_salida as $cobranza)
                                     <p>
                                         @if ($cobranza->tarjeta != null)
-                                            <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}}</span>
+                                            <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }}  {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }}</span>
                                         @else
-                                            <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}} </span>
+                                            <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }} {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }}</span>
                                         @endif
                                     </p>
                                 @endforeach
@@ -289,9 +289,9 @@
                                     @foreach ($contrato->cobranza_retorno as $cobranza)
                                         <p>
                                             @if ($cobranza->tarjeta != null)
-                                                <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1) ? "PRE-AUT" : "CARGO" }}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}}</span>
+                                                <span>{{$cobranza->tarjeta->c_type}} *{{$cobranza->tarjeta->c_cn4}} {{($cobranza->tipo == 1 ? "PRE-AUT" : $cobranza->tipo == 4) ? "CARGO-DEPOSITO" : "CARGO"}}: {{$cobranza->cod_banco}} {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }}  {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }}</span>
                                             @else
-                                                <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto}} </span>
+                                                <span>PAGO EFECTIVO {{date_format(date_create($cobranza->fecha_cargo), 'd-F-Y')}} ${{$cobranza->monto_cobrado}} {{ $cobranza->moneda_cobrada }} {{ ($cobranza->tipo_cambio_id) ? "|| " .$cobranza->moneda_cobrada . "/" . $cobranza->moneda . "= $" .$cobranza->tipo_cambio : "" }} </span>
                                             @endif
                                         </p>
                                     @endforeach
@@ -352,6 +352,15 @@
                                     <div style="display: table-cell; width:45%;  text-align:right;">-${{$contrato->cobranza_calc[1]["amount"]}}</div>
                                 </div>
                             @endif
+                            @foreach ($contrato->cobranza_calc as $cobroCalc )
+                                @if($cobroCalc['element'] === 'descuento_cupon')
+                                <div style="display: table-cell; width:45%;"> DESCUENTO CUPÓN / DISCOUNT COUPON</div>
+                                    <div style="display: table-cell; text-align:right; "> {{ number_format($cobroCalc["quantity"]) }}%</div>
+                                    <div style="display: table-cell; text-align:center;"></div>
+                                    <div style="display: table-cell; width:45%;  text-align:right;">-${{$cobroCalc["amount"]}}</div>
+                                </div>
+                                @endif
+                            @endforeach
                             @if (false)
                                 <div style="display: table-row">
                                     <div style="display: table-cell; width: 50%; text-decoration: underline;"><p><b> CARGOS DE GAS</b></p></div>
@@ -454,9 +463,9 @@
                                 @foreach ($contrato->cobranza_calc_retorno as $cargoExtra)
                                     @if($cargoExtra['element'] == 'horas_extra' || $cargoExtra['element'] == 'dias_extra' || $cargoExtra['element'] == 'cargoExtra')
                                         <div style="display: table-row; text-transform: uppercase">
-                                            <div style="display: table-cell; width:43%;"> {{$cargoExtra['element_label']}}</div>
-                                            <div style="display: table-cell; text-align:right; width:14%; ">${{$cargoExtra['value']}}</div>
-                                            <div style="display: table-cell; text-align:center; width:12%;">X {{$cargoExtra['quantity']}}</div>
+                                            <div style="display: table-cell; width:20%;"> {{$cargoExtra['element_label']}}</div>
+                                            <div style="display: table-cell; text-align:right; width:20%; ">${{$cargoExtra['value']}}</div>
+                                            <div style="display: table-cell; text-align:right; width:25%;">X {{$cargoExtra['quantity']}}</div>
                                             <div style="display: table-cell; width:35%;  text-align:right;">${{$cargoExtra['amount']}}</div>
                                         </div>
                                     @endif
@@ -693,7 +702,7 @@
         <table style="width: 100%;">
             <th>
             <td style="width: 50%;">
-                <img src="{{ 'assets/img/PDF-Logo.png' }}">
+                <img style="width: 300px" src="{{ 'assets/img/Price-Logo.png' }}">
             </td>
             <td style="width: 50%; vertical-align:middle">
                 <p style="font-size:14px;">
@@ -748,7 +757,7 @@
                     </div>
                 </div>
             </div>
-            <table style="width: 100%; display: table; font-size:10px;">
+            <table style="width: 100%; display: table; font-size:10px; text-align: center;">
                 <tr>
                     <td style="border-bottom: solid; width:8%">{{$contrato->check_form_list->tarjeta_circulacion}}</td>
                     <td><p><span></span>&nbsp;<b> TARJETA DE CIRCULACIÓN / CAR PAPER</b></p></td>
@@ -800,11 +809,8 @@
                         <div>
                             <p>ENTREGADO POR / DELIVERED BY</p>
                         </div>
-                        <div > <!-- TODO: temporal aqui ira firma del agente -->
-
-                        </div>
                         <div>
-                            <p>{{$contrato->usuario->nombre. ' ' .$contrato->usuario->apellidos}}</p>
+                            <p style="font-size: 20px; padding: 0; margin: 0; margin-top: 14px;">{{$contrato->usuario->nombre. ' ' .$contrato->usuario->apellidos}}</p>
                         </div>
 
                     </td>
@@ -825,9 +831,11 @@
                         <div>
                             <p>RECIBIDO POR / RECEIVED BY</p>
                         </div>
-                        <div>
-                            <p></p>
-                        </div>
+                        @if($contrato->usuario_close)
+                            <div>
+                                <p style="font-size: 20px; padding: 0; margin: 0; margin-top: 14px; margin-bottom: 12px;">{{$contrato->usuario_close->nombre. ' ' .$contrato->usuario_close->apellidos}}</p>
+                            </div>
+                        @endif
 
                     </td>
                     <td style="width: 50%; border: solid; vertical-align:baseline;">
@@ -849,7 +857,7 @@
          <table style="width: 100%;">
             <th>
                 <td style="width: 50%;">
-                    <img src="{{ 'assets/img/PDF-Logo.png' }}">
+                    <img style="width: 300px" src="{{ 'assets/img/Price-Logo.png' }}">
                 </td>
                 <td style="width: 50%; vertical-align:middle">
                     <p style="font-size:14px;">

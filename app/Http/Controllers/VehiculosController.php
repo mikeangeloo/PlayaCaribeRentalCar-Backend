@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ContratoStatusEnum;
 use App\Enums\JsonResponse;
 use App\Enums\VehiculoStatusEnum;
 use App\Models\CambioEstatusVehiculo;
+use App\Models\Contrato;
 use App\Models\TarifasApollo;
 use App\Models\TarifasApolloConf;
 use App\Models\Vehiculos;
@@ -37,7 +39,7 @@ class VehiculosController extends Controller
      */
     public function listWithContract()
     {
-        $vehiculos = Vehiculos::where('activo', true)->orderBy('id', 'ASC')->get();
+        $vehiculos = Vehiculos::orderBy('id', 'ASC')->get();
         $vehiculos->load('marca', 'categoria', 'tarifa_categoria', 'clase','contrato');
 
         return response()->json([
@@ -81,7 +83,7 @@ class VehiculosController extends Controller
         $vehiculo->modelo_ano = $request->modelo_ano;
         $vehiculo->marca_id = $request->marca_id;
         $vehiculo->placas = $request->placas;
-        $vehiculo->num_poliza_seg = $request->num_poliza_seg;
+        $vehiculo->poliza_id = $request->poliza_id;
         $vehiculo->km_recorridos = $request->km_recorridos;
         $vehiculo->categoria_vehiculo_id = $request->categoria_vehiculo_id;
         $vehiculo->color = $request->color;
@@ -91,11 +93,14 @@ class VehiculosController extends Controller
         $vehiculo->clase_id = $request->clase_id;
         $vehiculo->tarifa_categoria_id = $request->tarifa_categoria_id;
 
-        if ($request->has('prox_servicio')) {
-            $vehiculo->prox_servicio = $request->prox_servicio;
+        if ($request->has('prox_km_servicio')) {
+            $vehiculo->prox_km_servicio = $request->prox_km_servicio;
         }
-        if ($request->has('cant_combustible')) {
-            $vehiculo->cant_combustible = $request->cant_combustible;
+        if ($request->has('fecha_prox_servicio')) {
+            $vehiculo->fecha_prox_servicio = $request->fecha_prox_servicio;
+        }
+        if ($request->has('cant_combustible_anterior')) {
+            $vehiculo->cant_combustible_anterior = $request->cant_combustible_anterior;
         }
         if($request->has('cap_tanque')) {
             $vehiculo->cap_tanque = $request->cap_tanque;
@@ -232,7 +237,7 @@ class VehiculosController extends Controller
         $vehiculo->modelo_ano = $request->modelo_ano;
         $vehiculo->marca_id = $request->marca_id;
         $vehiculo->placas = $request->placas;
-        $vehiculo->num_poliza_seg = $request->num_poliza_seg;
+        $vehiculo->poliza_id = $request->poliza_id;
         $vehiculo->km_recorridos = $request->km_recorridos;
         $vehiculo->categoria_vehiculo_id = $request->categoria_vehiculo_id;
         $vehiculo->color = $request->color;
@@ -240,11 +245,14 @@ class VehiculosController extends Controller
         $vehiculo->clase_id = $request->clase_id;
         $vehiculo->tarifa_categoria_id = $request->tarifa_categoria_id;
 
-        if ($request->has('prox_servicio')) {
-            $vehiculo->prox_servicio = $request->prox_servicio;
+        if ($request->has('prox_km_servicio')) {
+            $vehiculo->prox_km_servicio = $request->prox_km_servicio;
         }
-        if ($request->has('cant_combustible')) {
-            $vehiculo->cant_combustible = $request->cant_combustible;
+        if ($request->has('fecha_prox_servicio')) {
+            $vehiculo->fecha_prox_servicio = $request->fecha_prox_servicio;
+        }
+        if ($request->has('cant_combustible_anterior')) {
+            $vehiculo->cant_combustible_anterior = $request->cant_combustible_anterior;
         }
         if($request->has('cap_tanque')) {
             $vehiculo->cap_tanque = $request->cap_tanque;
@@ -334,6 +342,16 @@ class VehiculosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
 
+        $contratoEstatus = [ContratoStatusEnum::BORRADOR, ContratoStatusEnum::RENTADO];
+        $hasContratoOn = Contrato::where('vehiculo_id', $vehiculo->id)->whereIn('estatus', $contratoEstatus)->first();
+
+        if($hasContratoOn) {
+            return response()->json([
+                'ok' => false,
+                'errors' => ['No es posibile deshabilitar este vehículo esta ligado al contrato # '. $hasContratoOn->num_contrato]
+            ], JsonResponse::BAD_REQUEST);
+        }
+
         $vehiculo->activo = false;
 
         if ($vehiculo->save()) {
@@ -397,9 +415,17 @@ class VehiculosController extends Controller
             }
         }
 
+        if ($request->has('estatus')) {
+            $query->where('estatus', $request->estatus);
+        }
+
         // if ($request->has('tarifa_categoria_id')) {
         //     $query->where('tarifa_categoria_id', '=', $request->tarifa_categoria_id);
         // }
+
+        if($request->has('vehicle_id')) {
+            $query->where('id', $request->vehicle_id);
+        }
 
         $vehiculos = $query->get();
         $vehiculos->load('marca', 'categoria', 'clase', 'tarifa_categoria');
@@ -477,3 +503,5 @@ class VehiculosController extends Controller
         }
     }
 }
+
+

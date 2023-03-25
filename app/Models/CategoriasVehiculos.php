@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class CategoriasVehiculos extends Model
 {
@@ -17,7 +19,7 @@ class CategoriasVehiculos extends Model
     }
 
 
-    public static function validateBeforeSave($request) {
+    public static function validateBeforeSave($request, $edit = false) {
         $validateData = Validator::make($request['categoria'], [
             'categoria' => 'required|string|max:100',
         ]);
@@ -26,6 +28,31 @@ class CategoriasVehiculos extends Model
             return $validateData->errors()->all();
         }
 
+        if(!$edit) {
+            //Validamos que no se repita
+            if (self::categoriaExist($request['categoria']['categoria'])) {
+                return ['Esta categoría ya se encuentra registrada'];
+            }
+        }
+
+        if($edit && isset($request['layout']) === false) {
+            if (self::categoriaExist($request['categoria']['categoria'])) {
+                return ['Esta categoría ya se encuentra registrada'];
+            }
+        }
+
         return true;
+    }
+
+
+    private static function categoriaExist($categoria) {
+        $cat = trim($categoria);
+        $cat = Str::upper($cat);
+        $foundCat = CategoriasVehiculos::where(DB::raw('upper(categoria)'), 'LIKE', '%'.$cat.'%')->first();
+        if($foundCat) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

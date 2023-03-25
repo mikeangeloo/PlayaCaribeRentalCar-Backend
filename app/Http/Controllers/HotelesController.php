@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JsonResponse;
+use App\Helpers\CommonHelper;
 use App\Models\Hoteles;
 use App\Models\TarifasHoteles;
 use Illuminate\Http\Request;
@@ -22,8 +23,15 @@ class HotelesController extends Controller
         $hoteles = Hoteles::where('activo', true)->orderBy('id', 'ASC')->get();
 
         for ($i = 0; $i < count($hoteles); $i++) {
-            $hoteles[$i]->tarifas = TarifasHoteles::where('hotel_id', $hoteles[$i]->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
+            $totalTariasPorHotel = TarifasHoteles::where('hotel_id', $hoteles[$i]->id)->where('activo', true)->count();
+            $hoteles[$i]->tarifas = TarifasHoteles::where('hotel_id', $hoteles[$i]->id)->latest()->take($totalTariasPorHotel)->orderBy('id', 'ASC')->get();
+            $hoteles[$i]->tarifas->load(['tarifas_apollo' => function($q) {
+                $q->where('modelo', 'tarifas_hoteles')
+                ->orderBy('id', 'ASC');
+            }]);
          }
+
+         $hoteles->load('tipo_externo');
 
         return response()->json([
             'ok' => true,
@@ -68,10 +76,14 @@ class HotelesController extends Controller
         $hotel->tel_contacto = $request->tel_contacto;
         $hotel->activo = true;
         $hotel->paga_cupon = $request->paga_cupon;
+        $hotel->activar_descuentos = $request->activar_descuentos;
+        $hotel->acceso_externo = $request->acceso_externo;
+        $hotel->tipo_id = $request->tipo_id;
 
         if ($hotel->save()) {
             // Guardamos tarifas
             DB::beginTransaction();
+            TarifasHoteles::where('hotel_id', $hotel->id)->update(['activo', false]);
             for ($i = 0; $i < count($request->tarifas_hotel); $i++) {
                 try {
                     $tarifa = new TarifasHoteles();
@@ -83,7 +95,7 @@ class HotelesController extends Controller
                     $tarifa->activo = $request->tarifas_hotel[$i]['activo'];
                     $tarifa->clase_id = $request->tarifas_hotel[$i]['clase_id'];
                     $tarifa->clase = $request->tarifas_hotel[$i]['clase'];
-                    $tarifa->precio = $request->tarifas_hotel[$i]['precio'];
+                    $tarifa->precio_renta = $request->tarifas_hotel[$i]['precio_renta'];
 
                     if ($tarifa->save()) {
                         DB::commit();
@@ -121,8 +133,14 @@ class HotelesController extends Controller
      */
     public function show($id)
     {
+        $totalTariasPorHotel = TarifasHoteles::where('hotel_id', $id)->where('activo', true)->count();
+
         $hotel = Hoteles::where('id', $id)->first();
-        $hotel->tarifas = TarifasHoteles::where('hotel_id', $hotel->id)->latest()->orderBy('id', 'ASC')->limit(4)->get();
+        $hotel->tarifas = TarifasHoteles::where('hotel_id', $hotel->id)->latest()->take($totalTariasPorHotel)->orderBy('id', 'ASC')->get();
+        $hotel->tarifas->load(['tarifas_apollo' => function($q) {
+            $q->where('modelo', 'tarifas_hoteles')
+            ->orderBy('id', 'ASC');
+        }]);
 
         if (!$hotel) {
             return response()->json([
@@ -130,6 +148,8 @@ class HotelesController extends Controller
                 'errors' => ['No se encontro la información solicitada']
             ], JsonResponse::BAD_REQUEST);
         }
+
+        $hotel->load('tipo_externo');
 
         return response()->json([
             'ok' => true,
@@ -182,24 +202,38 @@ class HotelesController extends Controller
         $hotel->tel_contacto = $request->tel_contacto;
         $hotel->activo = true;
         $hotel->paga_cupon = $request->paga_cupon;
+        $hotel->activar_descuentos = $request->activar_descuentos;
+        $hotel->acceso_externo = $request->acceso_externo;
+        $hotel->tipo_id = $request->tipo_id;
 
         if ($hotel->save()) {
             // Guardamos tarifas
             DB::beginTransaction();
+
             for ($i = 0; $i < count($request->tarifas_hotel); $i++) {
                 try {
-                    $tarifa = new TarifasHoteles();
-                    if (isset($request->tarifas_hotel[$i]->id) && $request->tarifas_hotel[$i]->id > 0) {
-                        $tarifa = TarifasHoteles::where('id', $request->tarifas_hotel[$i]->id)->first();
+                    if (isset($request->tarifas_hotel[$i]['id']) && $request->tarifas_hotel[$i]['id'] > 0) {
+                        $tarifa = TarifasHoteles::where('id', $request->tarifas_hotel[$i]['id'])->first();
+                    } else {
+                        $tarifa = new TarifasHoteles();
                     }
 
                     $tarifa->hotel_id = $request->tarifas_hotel[$i]['hotel_id'];
                     $tarifa->activo = $request->tarifas_hotel[$i]['activo'];
                     $tarifa->clase_id = $request->tarifas_hotel[$i]['clase_id'];
                     $tarifa->clase = $request->tarifas_hotel[$i]['clase'];
-                    $tarifa->precio = $request->tarifas_hotel[$i]['precio'];
+                    $tarifa->precio_renta = $request->tarifas_hotel[$i]['precio_renta'];
 
                     if ($tarifa->save()) {
+                        // Sincronizamos con TarifasApollo
+                        $res = CommonHelper::syncWithTarifasApollo('tarifas_hoteles', null, false, $hotel->activar_descuentos);
+                        if ($res !== true) {
+                            DB::rollBack();
+                            return response()->json([
+                                'ok' => false,
+                                'errors' => ['Algo salio mal, intente nuevamente']
+                            ], JsonResponse::BAD_REQUEST);
+                        }
                         DB::commit();
                     } else {
                         DB::rollBack();
@@ -267,6 +301,17 @@ class HotelesController extends Controller
 
     public function getAll(Request $request) {
         $hoteles = Hoteles::orderBy('id', 'ASC')->get();
+
+        for ($i = 0; $i < count($hoteles); $i++) {
+            $totalTariasPorHotel = TarifasHoteles::where('hotel_id', $hoteles[$i]->id)->where('activo', true)->count();
+            $hoteles[$i]->tarifas = TarifasHoteles::where('hotel_id', $hoteles[$i]->id)->latest()->take($totalTariasPorHotel)->orderBy('id', 'ASC')->get();
+            $hoteles[$i]->tarifas->load(['tarifas_apollo' => function($q) {
+                $q->where('modelo', 'tarifas_hoteles')
+                ->orderBy('id', 'ASC');
+            }]);
+         }
+
+        $hoteles->load('tipo_externo');
 
         return response()->json([
             'ok' => true,

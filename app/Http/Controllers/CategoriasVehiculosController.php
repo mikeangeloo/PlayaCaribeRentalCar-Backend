@@ -58,7 +58,10 @@ class CategoriasVehiculosController extends Controller
 
         $categoria = new CategoriasVehiculos();
         $categoria->categoria = $request['categoria']['categoria'];
-        $categoria->imagen_url = $request['layout']['fileName'];
+        if (isset($request['layout']) && isset($request['layout']['fileName'])) {
+            $categoria->imagen_url = $request['layout']['fileName'];
+        }
+
         $categoria->activo = true;
 
         if ($categoria->save()) {
@@ -95,7 +98,7 @@ class CategoriasVehiculosController extends Controller
 
         $layout = null;
 
-        if($getCategoriaDoc->ok == true) {
+        if($getCategoriaDoc->ok == true && isset($getCategoriaDoc->data[0])) {
             $layout = $getCategoriaDoc->data[0];
         }
 
@@ -146,7 +149,10 @@ class CategoriasVehiculosController extends Controller
             ], JsonResponse::BAD_REQUEST);
         }
         $categoria->categoria = $request['categoria']['categoria'];
-        $categoria->imagen_url = $request['layout']['fileName'];
+        if($request->has('layout') && isset($request->layout)) {
+            $categoria->imagen_url = $request['layout']['fileName'];
+        }
+
 
         if ($categoria->save()) {
             return response()->json([

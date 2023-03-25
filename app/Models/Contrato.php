@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\CobranzaStatusEnum;
+use App\Enums\CobranzaTipoEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class Contrato extends Model
@@ -32,6 +34,14 @@ class Contrato extends Model
         return $this->hasOne(User::class, 'id', 'user_create_id');
     }
 
+    public function usuario_close() {
+        return $this->hasOne(User::class, 'id', 'user_close_id');
+    }
+
+    public function comisionista() {
+        return $this->hasOne(Comisionistas::class, 'id', 'modelo_id');
+    }
+
 
     public function vehiculo() {
         return $this->hasOne(Vehiculos::class, 'id', 'vehiculo_id');
@@ -49,12 +59,21 @@ class Contrato extends Model
         return $this->hasMany(Cobranza::class, 'contrato_id', 'id')->where('estatus', 2);
     }
 
+    public function cobranza_tipo($tipo, $moneda) {
+        return $this->hasMany(Cobranza::class, 'contrato_id', 'id')
+                ->where('estatus', 2)
+                ->where('tipo', $tipo)
+                ->where('moneda_cobrada', $moneda);
+    }
+
+
     public function cobranza_salida() {
         return $this->hasMany(Cobranza::class, 'contrato_id', 'id')->where('estatus', 2)->where('cobranza_seccion', 'salida');
     }
 
     public function cobranza_retorno() {
-        return $this->hasMany(Cobranza::class, 'contrato_id', 'id')->where('estatus', 2)->where('cobranza_seccion', 'retorno');
+        return $this->hasMany(Cobranza::class, 'contrato_id', 'id')->where('estatus', 2)
+                    ->where('cobranza_seccion', 'retorno');
     }
 
     public function cobranza_reserva() {
@@ -184,12 +203,15 @@ class Contrato extends Model
     public static function setEtapasGuardadas($num_contrato) {
         $contract = Contrato::where('num_contrato', $num_contrato)
                     ->with(
-                        ['cobranza' => function($q) {
-                            $validCobranzaEstatus = [CobranzaStatusEnum::PROGRAMADO, CobranzaStatusEnum::COBRADO];
-                            $q->whereIn('estatus', $validCobranzaEstatus);
-                        },
-                        'cobranza.tarjeta'
-                        ])
+                            [
+                                'cobranza' => function($q) {
+                                    $validCobranzaEstatus = [CobranzaStatusEnum::PROGRAMADO, CobranzaStatusEnum::COBRADO];
+                                    $q->whereIn('estatus', $validCobranzaEstatus);
+                                },
+                            'cobranza.tarjeta',
+                            'cobranza.tipo_cambio_usado'
+                            ]
+                        )
                     ->first();
 
         if (!$contract) {

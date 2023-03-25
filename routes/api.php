@@ -17,11 +17,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 //region RUTAS GLOBALES
-Route::post('activate-usr-token', 'SessionController@activateUserByCode');
-Route::post('recovery-psw', 'SessionController@generateRecoveryPswToken');
-Route::post('review-recovery-token', 'SessionController@reviewToken');
-Route::post('change-pwd-token', 'SessionController@changePwdByToken');
-Route::get('contratos/pdf/{id}', 'ContratoController@viewReservaPDF');
+
+Route::get('contratos/pdf/{id}', 'ContratoController@viewPDF');
 Route::get('test/pdf', 'ContratoController@viewReservaPDF');
 //endregion
 
@@ -29,11 +26,15 @@ Route::prefix('dash')->group(function () {
     Route::post('login', 'SessionController@login');
     Route::middleware('verify.jwt')->group(function () {
 
+        //region DASHBOARD
+        Route::get('dashboard-info', 'ReportesController@dashboardInfo');
+        //endregion
+
         //region CONTRATOS
         Route::post('contratos/save-progress', 'ContratoController@saveProcess');
         Route::get('contratos/{num_contrato}', 'ContratoController@getContract');
         Route::get('contratos/pdf/{id}', 'ContratoController@getContractPDF');
-        Route::get('reservas/pdf/{id}/{idioma}', 'ContratoController@getReservaPDF');
+        Route::get('reservas/pdf/{id}/{idioma}/{sendMailToClient}', 'ContratoController@getReservaPDF');
         Route::get('contratos/view/pdf/{id}', 'ContratoController@viewPDF');
         Route::get('reservas/view/pdf/{id}/{idioma}', 'ContratoController@viewReservaPDF');
         Route::delete('contratos/cancel/{id}', 'ContratoController@cancelContract');
@@ -70,18 +71,24 @@ Route::prefix('dash')->group(function () {
         Route::get('vehiculos/list-estatus-contract', 'VehiculosController@listWithContract');
         Route::resource('vehiculos', 'VehiculosController');
         Route::put('vehiculos/change-status/{id}', 'VehiculosController@updateStatus');
+        Route::get('vehiculos/polizas', 'VehiculosController@getListWithPolizas');
 
         //endregion
 
         //region REPORTES
         Route::get('reportes/estatus-vehiculos', 'ReportesController@getEstatusVehiculosReport');
         Route::get('reportes/mantenimiento-vehiculos', 'ReportesController@getMantenimientoVehiculosReport');
-        Route::get('reportes/exedente-kilometraje-gasolina', 'ReportesController@getExedenteKilometrajeGasolinaReport');
+        Route::post('reportes/exedente-kilometraje-gasolina', 'ReportesController@getExedenteKilometrajeGasolinaReport');
+        Route::post('reportes/polizas-seguros', 'ReportesController@getVehiculostWithPolizas');
+        Route::post('reportes/detalle-pagos', 'ReportesController@detallePagos');
+        Route::post('reportes/rentas-por-vehiculo', 'ReportesController@rentasPorVehiculo');
+        Route::post('reportes/rentas-comisionistas', 'ReportesController@rentasPorComisionista');
+        Route::post('reportes/general', 'ReportesController@reporteGeneral');
         //endregion
 
         //region CONTROL ACCESO
         Route::get('usuarios/all', 'UsersController@getAll');
-        Route::get('usuarios/enable/{id}', 'UsersController@enable');
+        Route::post('usuarios/enable-disable', 'UsersController@enableDisable');
         Route::post('usuarios/change-psw', 'SessionController@changePwdAdmin');
         Route::resource('usuarios', 'UsersController');
 
@@ -97,12 +104,25 @@ Route::prefix('dash')->group(function () {
         Route::get('sucursales/enable/{id}', 'SucursalesController@enable');
         Route::get('sucursales/list', 'SucursalesController@getList');
         Route::resource('sucursales', 'SucursalesController');
+
+            //region SESION DE USUARIO
+            Route::post('change-password', 'SessionController@changePwd');
+            Route::post('change-pwd-token', 'SessionController@changePwdByToken');
+            Route::post('activate-usr-token', 'SessionController@activateUserByCode');
+            Route::post('recovery-psw', 'SessionController@generateRecoveryPswToken');
+            Route::post('review-recovery-token', 'SessionController@reviewToken');
+            //endregion
+
         //endregion
 
         //region HOTELES
         Route::get('hoteles/all', 'HotelesController@getAll');
         Route::get('hoteles/enable/{id}', 'HotelesController@enable');
         Route::resource('hoteles', 'HotelesController');
+        //endregion
+
+        //region TIPOSEXTERNOS
+        Route::get('tipos-externos', 'TiposExternosController@index');
         //endregion
 
         //region COMISIONISTAS
@@ -126,11 +146,12 @@ Route::prefix('dash')->group(function () {
 
         //region COBRANZA
         Route::post('cobranza/cancel', 'CobranzaController@cancel');
+        Route::post('cobranza/get-cobranza', 'CobranzaController@getCobranza');
         //endregion
 
 
         //region CONFIGURACIÓN APP
-        Route::resource('tipos-tarifas', 'TiposTarifasController');
+            Route::resource('tipos-tarifas', 'TiposTarifasController');
 
             //region TARIFAS EXTRAS
             Route::get('tarifas-extras/all', 'TarifasExtrasController@getAll');
@@ -158,6 +179,15 @@ Route::prefix('dash')->group(function () {
               Route::resource('tarifas-categorias', 'TarifasCategoriasController');
               //endregion
 
+              //region TIPO DE CAMBIO
+              Route::post('tipo-cambio', 'ConversionMonedaController@getTipoCambio');
+              Route::get('tipo-cambio/all', 'ConversionMonedaController@getAllTiposCambio');
+              Route::get('tipo-cambio/all-history', 'ConversionMonedaController@getAllHistory');
+              Route::post('tipo-cambio/save', 'ConversionMonedaController@save');
+              Route::get('tipo-cambio/divisas', 'ConversionMonedaController@getDivisas');
+              Route::delete('tipo-cambio/{id}', 'ConversionMonedaController@deleteTipoCambio');
+              //endregion
+
         //endregion
 
         //region UBICACIONES
@@ -170,6 +200,13 @@ Route::prefix('dash')->group(function () {
         //region NOTAS
         Route::post('notas/save', 'NotasController@saveUpdate');
         Route::get('notas/delete/{id}', 'NotasController@remove');
+        //endregion
+
+        //region POLIZAS
+        Route::get('polizas/all', 'PolizasController@getAll');
+        Route::get('polizas/enable/{id}', 'PolizasController@enable');
+        Route::get('polizas/list', 'PolizasController@getList');
+        Route::resource('polizas', 'PolizasController');
         //endregion
 
     });

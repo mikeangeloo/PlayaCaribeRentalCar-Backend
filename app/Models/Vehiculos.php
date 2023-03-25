@@ -37,6 +37,14 @@ class Vehiculos extends Model
         return $this->hasOne(Contrato::class, 'vehiculo_id', 'id')->where('estatus','2')->with('cliente','usuario');
     }
 
+    public function contratos() {
+        return $this->hasMany(Contrato::class, 'vehiculo_id', 'id');
+    }
+
+    public function poliza() {
+        return $this->belongsTo(Polizas::class, 'poliza_id','id');
+    }
+
     public static function validateBeforeSave($request, $isUpdate = null) {
         $validate = Validator::make($request, [
             'modelo' => 'required|string|max:100',
@@ -44,11 +52,12 @@ class Vehiculos extends Model
             'marca_id' => 'required|exists:marcas_vehiculos,id',
             'estatus' => 'nullable|string',
             'placas' => 'required|string|max:100',
-            'num_poliza_seg' => 'required|string|max:100',
+            'poliza_id' => 'required|numeric',
             'km_recorridos' => 'required|numeric',
-            'prox_servicio' => 'nullable',
+            'fecha_prox_servicio' => 'nullable',
+            'prox_km_servicio' => 'nullable',
             'categoria_vehiculo_id' => 'required|exists:categorias_vehiculos,id',
-            'cant_combustible' => 'nullable|string',
+            'cant_combustible_anterior' => 'nullable|string',
             'color' => 'required|string|max:100',
             'cap_tanque' => 'nullable|string|max:100',
             'version' => 'required|numeric',
