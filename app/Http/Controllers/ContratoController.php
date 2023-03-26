@@ -435,6 +435,8 @@ class ContratoController extends Controller
                 'id' => $contrato->id,
                 'contract_number' => $contrato->num_contrato,
                 'id' => $contrato->id,
+                'status' => $contrato->estatus,
+                'cliente_id' => $contrato->cliente_id
             ], JsonResponse::OK);
         } else {
             DB::rollBack();
