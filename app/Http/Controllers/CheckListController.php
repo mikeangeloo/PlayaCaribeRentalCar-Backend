@@ -59,6 +59,10 @@ class CheckListController extends Controller
                     $checkList->lock = $request->payload[$i]['lock'];
                 }
 
+                if (isset($request->payload[$i]['freeFromDamages'])) {
+                    $checkList->freeFromDamages = $request->payload[$i]['freeFromDamages'];
+                }
+
                 $checkList->saved = true;
                 $checkList->agente_id = $user->id;
                 $checkList->agente = $user->nombre;
