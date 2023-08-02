@@ -404,6 +404,10 @@ class ContratoController extends Controller
             $contrato->hora_retorno = Carbon::now()->toTimeString();
         }
 
+        if($request->has('freeFromDamages') && isset($request->freeFromDamages)) {
+            $contrato->freeFromDamages = $request->freeFromDamages;
+        }
+
         // si viene reserva: true se cambia status a reserva
         if ($request->reserva) {
             $contrato->estatus = 4;
@@ -429,12 +433,17 @@ class ContratoController extends Controller
 
             Contrato::setEtapasGuardadas($contrato->num_contrato);
 
+            $contrato->load('check_list_salida', 'check_list_salida.notas');
+
             return response()->json([
                 'ok' => true,
                 'message' => $message,
                 'id' => $contrato->id,
                 'contract_number' => $contrato->num_contrato,
                 'id' => $contrato->id,
+                'status' => $contrato->estatus,
+                'cliente_id' => $contrato->cliente_id,
+                'check_list_salida' => $contrato->check_list_salida
             ], JsonResponse::OK);
         } else {
             DB::rollBack();

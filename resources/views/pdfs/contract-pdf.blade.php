@@ -20,7 +20,7 @@
         font-family: 'Inconsolata', monospace;
         text-transform: none;
         padding-right: 1.5rem !important;
-        text-align: left;
+        text-align: justify;
     }
 
     .page-break {
@@ -591,7 +591,7 @@
                     <p style="text-align: center; font-size: 8px;"><br />
                     <strong>GLOSARIO</strong></p>
 
-                    <p style="text-align: left;">(a) Consumidor: Persona f&iacute;sica o moral que obtiene en arrendamiento el uso y goce temporal del veh&iacute;culo objeto de este contrato, quien para efectos de este contrato recibir&aacute; el nombre de: arrendatario<br />
+                    <p style="text-align: justify;">(a) Consumidor: Persona f&iacute;sica o moral que obtiene en arrendamiento el uso y goce temporal del veh&iacute;culo objeto de este contrato, quien para efectos de este contrato recibir&aacute; el nombre de: arrendatario<br />
                     (b) Proveedor. Persona moral que ofrece en arrendamiento, el uso y goce temporal de bienes muebles a cambio de una contraprestaci&oacute;n cierta y determinada, quien para efectos de este contrato recibir&aacute; el nombre de: arrendador.<br />
                     (c) Veh&iacute;culo: Aqu&eacute;l bien mueble que es objeto material de este contrato, mismo que se encuentra descrito en el anexo de este contrato.<br />
                     (d) Conductor adicional: La persona que autorizada expresamente por el consumidor en el Anexo para estar en aptitud de conducir el veh&iacute;culo arrendado.</p>
@@ -599,7 +599,7 @@
                     <p style="text-align: center; font-size: 8px;"><br />
                     <strong>DECLARACIONES</strong></p>
 
-                    <p style="text-align: left;"><br />
+                    <p style="text-align: justify;"><br />
                     <strong>PRIMERA. DECLARA EL ARRENDADOR:</strong><br />
                     (a) Ser una persona moral mexicana, constituida conforme la legislaci&oacute;n nacional aplicable, seg&uacute;n consta en la escritura publica numero 148, de fecha 24 de marzo de 2008, exhibida ante la fe del(a) Abog. Jose Enrique Guti&eacute;rrez L&oacute;pez, Notario Publico numero 87 de la ciudad de M&eacute;rida, estado de Yucat&aacute;n, e inscrita en el Registro Publico de la Propiedad y del Comercio del Estado de Yucat&aacute;n, bajo el folio mercantil electr&oacute;nico numero 47135-1, con fecha de registro 12 de junio de 2008, con la denominaci&oacute;n Avasa Turismo Internacional, S.A. de C.V.<br />
                     (b) Que la persona que suscribe el presente contrato tiene capacidad para celebrarlo en t&eacute;rminos de la legislaci&oacute;n aplicable.<br />
@@ -611,10 +611,10 @@
                     (h) Qu&eacute; inform&oacute; al arrendatario los alcances y efectos jur&iacute;dicos del presente contrato.<br />
                     (i) Inform&oacute; al consumidor el monto total a pagar por la operaci&oacute;n de arrendamiento, los servicios y coberturas que incluye, as&iacute; como restricciones que, en su caso, son aplicables para la operaci&oacute;n de este contrato.</p>
 
-                    <p style="text-align: left;"><br />
+                    <p style="text-align: justify;"><br />
                     <strong>SEGUNDA. DECLARA EL ARRENDATARIO:</strong></p>
 
-                    <p style="text-align: left;">(a) Llamarse seg&uacute;n lo anotado en el Anexo de este contrato, para lo cual se identifica con los documentos que se se&ntilde;alan en ese mismo Anexo, as&iacute; como contar con la capacidad legal para cumplir con las obligaciones contenidas en este instrumento contractual.<br />
+                    <p style="text-align: justify;">(a) Llamarse seg&uacute;n lo anotado en el Anexo de este contrato, para lo cual se identifica con los documentos que se se&ntilde;alan en ese mismo Anexo, as&iacute; como contar con la capacidad legal para cumplir con las obligaciones contenidas en este instrumento contractual.<br />
                     (b) Que cuenta con la capacidad legal, en t&eacute;rminos de las leyes aplicables, para obligarse bajo los t&eacute;rminos y condiciones contenidos en este contrato.<br />
                     (c) Qu&eacute; es su deseo contratar el arrendamiento objeto de este contrato, en los t&eacute;rminos y condiciones que se establecen en este documento.<br />
                     (d) Qu&eacute; sus generales corresponden a las anotadas en el anexo de este contrato.<br />
@@ -623,7 +623,7 @@
                     <p style="text-align: center; font-size: 8px;"><br />
                     <strong> CL&Aacute;USULAS</strong></p>
 
-                    <p style="text-align: left;"><br />
+                    <p style="text-align: justify;"><br />
                     PRIMERA. Consentimiento. Por medio del presente contrato, el arrendador se obliga a conceder el uso y goce temporal del veh&iacute;culo, por lo que el arrendatario deber&aacute; pagar un precio cierto y determinado, mismo que se establece en el Anexo, el cual se agrega al presente instrumento para formar para del mismo.<br />
                     SEGUNDA. Objeto. El objeto material de este contrato es el veh&iacute;culo que se encuentra descrito en el Anexo de este contrato, por lo que las caracter&iacute;sticas, condiciones, refacciones y documentos generales del veh&iacute;culo arrendado se encuentran detalladas en el documento mencionado.<br />
                     TERCERA. Condiciones del veh&iacute;culo arrendado. El arrendatario recibe de conformidad el veh&iacute;culo arrendado, el cual, como le fue mostrado se encuentra en &oacute;ptimas condiciones mec&aacute;nicas y de carrocer&iacute;a, las cuales se mencionan en el inventario respectivo, mismo que aparece en el Anexo del presente instrumento. Acordando las partes que el veh&iacute;culo se entregue con el kilometraje sellado, el uso y goce del veh&iacute;culo se destinar&aacute; exclusivamente al transporte del arrendatario y sus acompa&ntilde;antes. Cualquier otro uso y goce del veh&iacute;culo deber&aacute; se&ntilde;alarse por escrito para la debida informaci&oacute;n de las partes. As&iacute; mismo, el arrendatario recibe, exceptuando los vicios ocultos, el veh&iacute;culo a su entera satisfacci&oacute;n por lo que se obliga, en su caso, a pagar al arrendador a la terminaci&oacute;n del contrato, a precios de agencia, el o los faltantes o desperfectos de accesorios y partes del veh&iacute;culo arrendado al momento de la entrega del mismo. Para tal efecto. el arrendador deber&aacute; informar al correo electr&oacute;nico del arrendatario que aparece en el anexo, el costo de las reparaciones dentro de las 24 horas posteriores al se&ntilde;alamiento de los faltantes o desperfectos de accesorios y partes del veh&iacute;culo arrendado y podr&aacute; utilizar el monto del dep&oacute;sito en garant&iacute;a a que se refiere la cl&aacute;usula octava para cubrir dicho pago. En caso de que los costos de la reparaci&oacute;n excedan el monto del dep&oacute;sito de garant&iacute;a referido, el arrendatario se obliga a cubrir dichos excedentes tan pronto el arrendador le informe sobre el monto de los mismos.<br />
@@ -640,7 +640,7 @@
                     </p>
                 </td>
                 <td style="width: 50%; float:right; vertical-align:baseline">
-                    <p style="text-align: left;">
+                    <p style="text-align: justify;">
                         DECIMA. Prohibici&oacute;n al veh&iacute;culo arrendado de salir de la Rep&uacute;blica. Sin el previo consentimiento por escrito del arrendador, el veh&iacute;culo arrendado no podr&aacute; salir de los l&iacute;mites de la Rep&uacute;blica Mexicana, tampoco podr&aacute; ser trasladado de una ciudad a otra por v&iacute;a mar&iacute;tima tanto dentro como afuera de la Rep&uacute;blica Mexicana; en caso de incumplimiento a lo anteriormente se&ntilde;alado, el arrendador podr&aacute; este contrato, recuperando el veh&iacute;culo en las condiciones y estado en que se localice, siendo responsable la arrendataria del pago de la pena convencional correspondiente, m&aacute;s de los gastos de recuperaci&oacute;n del veh&iacute;culo debidamente comprobados por el arrendador.<br>
                         D&Eacute;CIMA PRIMERA. Derechos y obligaciones de las partes. Los contratantes se reconocen como derechos exigibles, el cumplimiento de todas las disposiciones del presente contrato, normando su consentimiento por la observancia de las siguientes obligaciones:<br />
                         En el cumplimiento del presente contrato el arrendador se obliga a:<br />
@@ -680,7 +680,7 @@
                         VIG&Eacute;SIMA PRIMERA. Competencia Administrativa. La Procuradur&iacute;a Federal del Consumidor es competente en la v&iacute;a administrativa para resolver cualquier controversia que se suscite sobre la interpretaci&oacute;n o cumplimiento del presente contrato y su Anexo. Sin perjuicio de lo anterior, las partes se someten a la jurisdicci&oacute;n de los Tribunales competentes en la ciudad de M&eacute;rida, estado de Yucat&aacute;n, renunciando expresamente a cualquier otra jurisdicci&oacute;n que pudiera corresponderles, por raz&oacute;n de sus domicilios presentes o futuros o por cualquier otra raz&oacute;n.<br />
                         VIG&Eacute;SIMA SEGUNDA. Aviso de privacidad. El arrendador manifiesta que la informaci&oacute;n que recibe del arrendatario con motivo de la celebraci&oacute;n del presente contrato ser&aacute; empleada en t&eacute;rminos del aviso de privacidad que en este momento le entrega.<br />
                         Le&iacute;do que fue el presente contrato y su Anexo, comprendiendo las partes el alcance legal de todo lo ah&iacute; contenido, lo suscriben en su Anexo en el lugar y fecha que ah&iacute; mismo se establece. El arrendatario recibe el presente contrato por correo electr&oacute;nico a la direcci&oacute;n que ha especificado en el Anexo y, si lo solicita, tambi&eacute;n lo puede recibir impreso.<br />
-                        VIG&Eacute;SIMA TERCERA. Autorizaci&oacute;n para la utilizaci&oacute;n con fines mercadot&eacute;cnicos o publicitarios. El arrendatario del servicio SI ( ) NO ( ) acepta que el arrendador ceda o transmita a terceros, con fines mercadot&eacute;cnicos o publicitarios, la informaci&oacute;n proporcionada por &eacute;l con motivo del presente contrato y SI ( ) NO ( ) acepta que el arrendador le env&iacute;e publicidad sobre bienes o servicios. Este contrato fue aprobado y registrado por la Procuradur&iacute;a Federal del Consumidor bajo el n&uacute;mero 3227-2020 de fecha 25 de agosto de 2020.<br />
+                        VIG&Eacute;SIMA TERCERA. Autorizaci&oacute;n para la utilizaci&oacute;n con fines mercadot&eacute;cnicos o publicitarios. El arrendatario del servicio &nbsp; SI ( ) &nbsp; NO ( ) acepta que el arrendador ceda o transmita a terceros, con fines mercadot&eacute;cnicos o publicitarios, la informaci&oacute;n proporcionada por &eacute;l con motivo del presente contrato y SI ( ) NO ( ) acepta que el arrendador le env&iacute;e publicidad sobre bienes o servicios. Este contrato fue aprobado y registrado por la Procuradur&iacute;a Federal del Consumidor bajo el n&uacute;mero 3227-2020 de fecha 25 de agosto de 2020.<br />
                         &nbsp;</p>
                 </td>
             </tr>
