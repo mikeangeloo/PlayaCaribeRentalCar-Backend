@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+    backend:
+        build: .
+        container_name: laravel-backend
+        restart: always
+        environment:
+            - APP_ENV=local
+            - APP_DEBUG=true
+            - APP_KEY=${APP_KEY}
+            - DB_CONNECTION=mysql
+            - DB_HOST=db
+            - DB_PORT=3306
+            - DB_DATABASE=${DB_DATABASE}
+            - DB_USERNAME=${DB_USERNAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+        depends_on:
+            - db
+        volumes:
+            - .:/var/www
+        networks:
+            - laravel-network
+
+    nginx:
+        image: nginx:latest
+        container_name: nginx-server
+        restart: always
+        ports:
+            - "8081:80"
+        volumes:
+            - .:/var/www
+            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - backend
+        networks:
+            - laravel-network
+
+    db:
+        image: mariadb
+        container_name: mariadb
+        restart: always
+        ports:
+            - "3307:3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+            - MYSQL_DATABASE=${DB_DATABASE}
+            - MYSQL_USER=${DB_USERNAME}
+            - MYSQL_PASSWORD=${DB_PASSWORD}
+        volumes:
+            - mariadb_data:/var/lib/mysql
+            - ./database/backups/apollodb.backup.sql:/docker-entrypoint-initdb.d/backup.sql
+        networks:
+            - laravel-network
+
+volumes:
+    mariadb_data:
+
+networks:
+    laravel-network:
+        driver: bridge
