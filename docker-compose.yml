@@ -3,7 +3,7 @@ version: "3.8"
 services:
     backend:
         build: .
-        container_name: laravel-backend
+        container_name: playacaribe-rental-car-backend
         restart: always
         environment:
             - APP_ENV=local
@@ -20,11 +20,11 @@ services:
         volumes:
             - .:/var/www
         networks:
-            - laravel-network
+            - playacaribe-rental-car-network
 
     nginx:
         image: nginx:latest
-        container_name: nginx-server
+        container_name: playacaribe-rental-car-server
         restart: always
         ports:
             - "8081:80"
@@ -34,7 +34,7 @@ services:
         depends_on:
             - backend
         networks:
-            - laravel-network
+            - playacaribe-rental-car-network
 
     db:
         image: mariadb
@@ -49,13 +49,13 @@ services:
             - MYSQL_PASSWORD=${DB_PASSWORD}
         volumes:
             - mariadb_data:/var/lib/mysql
-            - ./database/backups/apollodb.backup.sql:/docker-entrypoint-initdb.d/backup.sql
+            - ./database/backups/playacaribe-rental-car-db.backup.sql:/docker-entrypoint-initdb.d/backup.sql
         networks:
-            - laravel-network
+            - playacaribe-rental-car-network
 
 volumes:
     mariadb_data:
 
 networks:
-    laravel-network:
+    playacaribe-rental-car-network:
         driver: bridge

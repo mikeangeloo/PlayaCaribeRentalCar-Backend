@@ -31,7 +31,7 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Instalar dependencias de Laravel
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs --verbose
 
 # Exponemos el puerto 9000 (PHP-FPM)
 EXPOSE 9000

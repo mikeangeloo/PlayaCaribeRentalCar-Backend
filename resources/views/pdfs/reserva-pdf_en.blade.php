@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>APOLLO_RESERVATION_{{$contrato->num_contrato}}</title>
+    <title>PLAYACARIBE_RENTAL_CAR_RESERVATION_{{$contrato->num_contrato}}</title>
 </head>
 <style>
     p {

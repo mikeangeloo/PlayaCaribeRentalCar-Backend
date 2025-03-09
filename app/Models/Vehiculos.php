@@ -67,20 +67,6 @@ class Vehiculos extends Model
             'clase_id' => 'required|numeric',
 
             'tarifa_categoria_id' => 'required|numeric',
-
-            // 'tarifas_apollo' => 'required',
-            // 'tarifas_apollo.*.frecuencia' => 'required|string',
-            // 'tarifas_apollo.*.frecuencia_ref' => 'required|string',
-            // 'tarifas_apollo.*.activo' => 'nullable|boolean',
-            // 'tarifas_apollo.*.modelo' => 'required|string',
-            // 'tarifas_apollo.*.modelo_id' => 'nullable|numeric',
-            // 'tarifas_apollo.*.precio_base' => 'required|numeric',
-            // 'tarifas_apollo.*.precio_final_editable' => 'required|boolean',
-            // 'tarifas_apollo.*.ap_descuento' => 'required|boolean',
-            // 'tarifas_apollo.*.valor_descuento' => 'nullable|numeric',
-            // 'tarifas_apollo.*.descuento' => 'nullable|numeric',
-            // 'tarifas_apollo.*.precio_final' => 'required|numeric',
-            // 'tarifas_apollo.*.required' => 'required|boolean',
         ]);
 
 
